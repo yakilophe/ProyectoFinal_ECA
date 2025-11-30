@@ -2,56 +2,76 @@
 using namespace std;
 
 const int MAXN = 100;
+
+// --------------------------------------------------------------
+// Variables globales
+// --------------------------------------------------------------
 int n;
 int grafo[MAXN][MAXN];
 int padre[MAXN];
 
-// ----------- Estructura Union-Find -----------
-int find(int u) {
+// --------------------------------------------------------------
+// Funcion FIND (con compresion de caminos)
+// --------------------------------------------------------------
+int findSet(int u) {
     if (padre[u] == u) return u;
-    return padre[u] = find(padre[u]);
+    return padre[u] = findSet(padre[u]);
 }
 
+// --------------------------------------------------------------
+// Funcion UNION (une dos componentes)
+// --------------------------------------------------------------
 void unite(int a, int b) {
-    a = find(a);
-    b = find(b);
+    a = findSet(a);
+    b = findSet(b);
     if (a != b) padre[b] = a;
 }
-// ---------------------------------------------
 
+// --------------------------------------------------------------
+// Main
+// --------------------------------------------------------------
 int main() {
-    cout << "Número de nodos: ";
+    cout << "Numero de nodos: ";
     cin >> n;
 
-    cout << "Ingresa la Matriz de adyacencia:\n";
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
+    cout << "Ingresa la matriz de adyacencia:\n";
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
             cin >> grafo[i][j];
+        }
+    }
 
-    for (int i = 0; i < n; i++) padre[i] = i;
+    // Inicializar Union-Find
+    for (int i = 0; i < n; i++) {
+        padre[i] = i;
+    }
 
-    // unir todos los que estén conectados
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
-            if (grafo[i][j] == 1)
+    // Unir nodos conectados
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (grafo[i][j] == 1) {
                 unite(i, j);
+            }
+        }
+    }
 
     cout << "\nComponentes Conexas:\n";
     bool impreso[MAXN] = {false};
 
     for (int i = 0; i < n; i++) {
-        int raiz = find(i);
+        int raiz = findSet(i);
 
         if (!impreso[raiz]) {
             cout << "CC: ";
-            for (int j = 0; j < n; j++)
-                if (find(j) == raiz)
+            for (int j = 0; j < n; j++) {
+                if (findSet(j) == raiz) {
                     cout << j << " ";
-            cout << "\n";
+                }
+            }
+            cout << endl;
             impreso[raiz] = true;
         }
     }
 
     return 0;
 }
-

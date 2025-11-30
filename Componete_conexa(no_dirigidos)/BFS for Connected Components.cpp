@@ -3,17 +3,26 @@
 using namespace std;
 
 const int MAXN = 100;
+
+// --------------------------------------------------------------
+// Variables globales
+// --------------------------------------------------------------
 int n;
 int grafo[MAXN][MAXN];
 bool visitado[MAXN];
 
+// --------------------------------------------------------------
+// BFS desde un nodo inicial
+// --------------------------------------------------------------
 void bfs(int inicio) {
     queue<int> q;
     q.push(inicio);
     visitado[inicio] = true;
 
     while (!q.empty()) {
-        int u = q.front(); q.pop();
+        int u = q.front();
+        q.pop();
+
         cout << u << " ";
 
         for (int v = 0; v < n; v++) {
@@ -25,26 +34,32 @@ void bfs(int inicio) {
     }
 }
 
+// --------------------------------------------------------------
+// Main
+// --------------------------------------------------------------
 int main() {
-    cout << "Número de nodos: ";
+    cout << "Numero de nodos: ";
     cin >> n;
 
-    cout << "Ingresa la Matriz de adyacencia:\n";
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
+    cout << "Ingresa la matriz de adyacencia:" << endl;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
             cin >> grafo[i][j];
+        }
+    }
 
-    for (int i = 0; i < n; i++) visitado[i] = false;
+    for (int i = 0; i < n; i++)
+        visitado[i] = false;
 
     cout << "\nComponentes Conexas:\n";
+
     for (int i = 0; i < n; i++) {
         if (!visitado[i]) {
             cout << "CC: ";
             bfs(i);
-            cout << "\n";
+            cout << endl;
         }
     }
 
     return 0;
 }
-
