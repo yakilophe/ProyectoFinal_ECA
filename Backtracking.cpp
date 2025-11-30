@@ -1,106 +1,180 @@
 #include <iostream>
 #include <vector>
-#include <climits> // Para INT_MAX
-
+#include <limits>
 using namespace std;
 
-// Estructura para representar una arista
-struct Arista {
-    int destino;
-    int peso;
+const int MAXN = 50;
+const int NO_EDGE = 0;
+const int INF = 1000000000;
+
+int n;
+bool directed;
+bool weighted;
+int mat[MAXN][MAXN];
+char elementos[] = {
+    'A','B','C','D','E','F','G','H','I','J',
+    'K','L','M','N','O','P','Q','R','S','T',
+    'U','V','W','X','Y','Z'
 };
 
-// Grafo como lista de adyacencia
-vector< vector<Arista> > grafo;
+// --------------- Lectura de parametros ---------------
+void leerParametros() {
+    int choice;
+    cout << "===== BACKTRACKING CON PODA - CAMINO MAS CORTO =====\n";
+    cout << "Seleccione el tipo de grafo:\n";
+    cout << "1. No ponderado (matriz 0/1)\n";
+    cout << "2. Ponderado (matriz de pesos, 0 = no arista)\n";
+    cout << "Opcion (1 o 2): ";
+    cin >> choice;
+    if (choice == 1) weighted = false;
+    else weighted = true;
 
-// Variables globales
-int mejorCosto = INT_MAX;         // Guarda el menor costo encontrado
-vector<int> mejorCamino;          // Guarda el mejor camino encontrado
-int limiteMaximo;                 // Límite de costo que el usuario define
+    cout << "El grafo es dirigido? (0=No, 1=Si): ";
+    cin >> directed;
 
-// --------------------------------------------
-// Función recursiva del Backtracking con poda
-// --------------------------------------------
-void buscarCamino(int nodoActual, int destino, vector<bool>& visitado, vector<int>& camino, int costoActual) {
-    // Si ya superamos el límite, cortamos ("poda")
-    if (costoActual > limiteMaximo) return;
+    cout << "Ingrese el numero de nodos (max " << MAXN << "): ";
+    cin >> n;
+    if (n <= 0 || n > MAXN) {
+        cout << "Numero de nodos invalido. Saliendo.\n";
+        exit(1);
+    }
+}
 
-    // Si ya superamos el mejor costo encontrado, también podamos
-    if (costoActual >= mejorCosto) return;
+// --------------- Lectura matriz no ponderada (0/1) ---------------
+void leerMatrizNoPonderada() {
+    cout << "\nIngrese la matriz de adyacencia (0/1), fila por fila:\n";
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j)
+            cin >> mat[i][j];
 
-    // Si llegamos al destino, actualizamos si es mejor
-    if (nodoActual == destino) {
-        if (costoActual < mejorCosto) {
-            mejorCosto = costoActual;
-            mejorCamino = camino;
+    if (!directed) {
+        for (int i = 0; i < n; ++i)
+            for (int j = i + 1; j < n; ++j)
+                mat[j][i] = mat[i][j];
+    }
+}
+
+// --------------- Lectura matriz ponderada (pesos) ---------------
+void leerMatrizPonderada() {
+    cout << "\nIngrese la matriz de pesos (0 = no arista), fila por fila:\n";
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j)
+            cin >> mat[i][j];
+
+    if (!directed) {
+        for (int i = 0; i < n; ++i)
+            for (int j = i + 1; j < n; ++j) {
+                // Si el usuario dio una mitad, hacemos simetrica
+                if (mat[i][j] != NO_EDGE && mat[j][i] == NO_EDGE) mat[j][i] = mat[i][j];
+                else if (mat[j][i] != NO_EDGE && mat[i][j] == NO_EDGE) mat[i][j] = mat[j][i];
+            }
+    }
+}
+
+// --------------- Mostrar matriz ---------------
+void mostrarMatriz() {
+    cout << "\n=== Matriz de adyacencia ===\n";
+    cout << "   ";
+    for (int j = 0; j < n; ++j) cout << " " << elementos[j];
+    cout << "\n";
+    for (int i = 0; i < n; ++i) {
+        cout << " " << elementos[i] << " ";
+        for (int j = 0; j < n; ++j) {
+            if (weighted) cout << " " << mat[i][j];
+            else cout << " " << mat[i][j];
         }
+        cout << "\n";
+    }
+}
+
+// --------------- Buscar indice de letra ---------------
+int indiceNodo(char c) {
+    for (int i = 0; i < n; ++i)
+        if (elementos[i] == c) return i;
+    return -1;
+}
+
+// --------------- Backtracking con poda ---------------
+int bestCost;
+vector<int> bestPath;
+
+void backtrack(int u, int dest, int currCost, vector<int> &path, vector<bool> &visited) {
+    // poda
+    if (currCost >= bestCost) return;
+
+    if (u == dest) {
+        // camino completo
+        bestCost = currCost;
+        bestPath = path;
         return;
     }
 
-    // Marcamos este nodo como visitado
-    visitado[nodoActual] = true;
+    // explorar vecinos
+    for (int v = 0; v < n; ++v) {
+        if (mat[u][v] != NO_EDGE && !visited[v]) {
+            int w = weighted ? mat[u][v] : 1;
+            visited[v] = true;
+            path.push_back(v);
 
-    // Recorremos los vecinos del nodo actual
-    for (int i = 0; i < grafo[nodoActual].size(); i++) {
-        int vecino = grafo[nodoActual][i].destino;
-        int peso = grafo[nodoActual][i].peso;
+            backtrack(v, dest, currCost + w, path, visited);
 
-        if (!visitado[vecino]) {
-            camino.push_back(vecino); // agregamos al camino
-            buscarCamino(vecino, destino, visitado, camino, costoActual + peso);
-            camino.pop_back();        // retrocedemos ("backtrack")
+            // deshacer
+            path.pop_back();
+            visited[v] = false;
         }
     }
-
-    // Desmarcamos el nodo antes de regresar (para otras rutas)
-    visitado[nodoActual] = false;
 }
 
-int main() {
-    int nodos, aristas;
-    cout << "Ingrese la cantidad de nodos del grafo: ";
-    cin >> nodos;
-    cout << "Ingrese la cantidad de aristas: ";
-    cin >> aristas;
+// --------------- Ejecutar backtracking ---------------
+void ejecutarBacktracking() {
+    // leer nodos origen y destino
+    char ca, cb;
+    cout << "\nIngrese nodo origen (letra A..): ";
+    cin >> ca;
+    cout << "Ingrese nodo destino (letra A..): ";
+    cin >> cb;
 
-    grafo.resize(nodos);
-
-    cout << "\nIngrese las aristas en formato: origen destino peso\n";
-    for (int i = 0; i < aristas; i++) {
-        int u, v, w;
-        cin >> u >> v >> w;
-        grafo[u].push_back( (Arista){v, w} );
-        // Si es no dirigido, también agrega el inverso:
-        // grafo[v].push_back( (Arista){u, w} );
+    int src = indiceNodo(ca);
+    int dest = indiceNodo(cb);
+    if (src == -1 || dest == -1) {
+        cout << "Nodo invalido.\n";
+        return;
     }
 
-    int origen, destino;
-    cout << "\nNodo origen: ";
-    cin >> origen;
-    cout << "Nodo destino: ";
-    cin >> destino;
+    // inicializaciones
+    bestCost = INF;
+    bestPath.clear();
+    vector<int> path;
+    vector<bool> visited(n, false);
 
-    cout << "Límite máximo de costo: ";
-    cin >> limiteMaximo;
+    // inicio
+    visited[src] = true;
+    path.push_back(src);
+    backtrack(src, dest, 0, path, visited);
 
-    vector<bool> visitado(nodos, false);
-    vector<int> camino;
-    camino.push_back(origen);
-
-    buscarCamino(origen, destino, visitado, camino, 0);
-
-    cout << "\n--------------------------------------\n";
-    if (mejorCosto == INT_MAX) {
-        cout << "No se encontró un camino dentro del límite.\n";
+    if (bestCost == INF) {
+        cout << "\nNo existe camino entre " << ca << " y " << cb << ".\n";
     } else {
-        cout << "Mejor camino encontrado: ";
-        for (int i = 0; i < mejorCamino.size(); i++) {
-            cout << mejorCamino[i];
-            if (i != mejorCamino.size() - 1) cout << " -> ";
+        cout << "\nMejor costo: " << bestCost << "\n";
+        cout << "Camino: ";
+        for (size_t i = 0; i < bestPath.size(); ++i) {
+            cout << elementos[ bestPath[i] ];
+            if (i + 1 < bestPath.size()) cout << " -> ";
         }
-        cout << "\nCosto total: " << mejorCosto << "\n";
+        cout << "\n";
     }
-    cout << "--------------------------------------\n";
+}
+
+// --------------- Main limpio con menu ---------------
+int main() {
+    leerParametros();
+
+    if (!weighted) leerMatrizNoPonderada();
+    else leerMatrizPonderada();
+
+    mostrarMatriz();
+
+    ejecutarBacktracking();
 
     return 0;
 }
