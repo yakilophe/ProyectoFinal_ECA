@@ -1,43 +1,54 @@
-#include <iostream>   // Para entrada y salida (cin, cout)
-#include <vector>     // Para manejar listas dinamicas y vectores
-#include <iomanip>    // Para setw, que nos ayuda a alinear la matriz
+#include <iostream>   // Para cin, cout
+#include <vector>     // Para usar vector<bool>
+#include <iomanip>    // Para setw (alinear columnas)
 using namespace std;
 
-const int MAXN = 50;   // Maximo numero de nodos permitidos
-const int NO_EDGE = 0; // Valor que representa que no hay arista entre dos nodos
+// Maximo numero de nodos que puede tener el grafo
+const int MAXN = 50;
 
-// ----------------------
-//   FUNCION DFS
-// ----------------------
-// u: nodo actual
-// n: numero total de nodos
-// mat: matriz de adyacencia
-// visitado: vector para evitar repetir nodos
-// elementos: arreglo de letras que representan cada nodo
+// Valor que representa "no hay arista" dentro de la matriz
+const int NO_EDGE = 0;
+
+// ===================================================================
+// FUNCION DFS (recursiva)
+// u = nodo actual
+// n = numero total de nodos
+// mat = matriz de adyacencia
+// visitado = vector que indica si un nodo ya fue visitado
+// elementos = arreglo con las letras A, B, C...
+// ===================================================================
 void DFS(int u, int n, int mat[MAXN][MAXN], vector<bool> &visitado, char elementos[]) {
 
-    visitado[u] = true;           // Marcamos el nodo actual como visitado
-    cout << elementos[u] << " ";  // Imprimimos el nodo actual en el recorrido
+    visitado[u] = true;      // Marco este nodo como visitado para no repetirlo
 
-    // Recorremos todos los nodos posibles para ver si son vecinos
+    cout << elementos[u] << " ";  // Imprimo la letra del nodo que estoy visitando
+
+    // Recorro todos los posibles vecinos del nodo u
     for(int v = 0; v < n; v++) {
-        // Si existe arista y el nodo NO ha sido visitado
+
+        // Si hay arista y todavia no visitamos ese nodo
         if(mat[u][v] != NO_EDGE && !visitado[v]) {
-            // Llamada recursiva para seguir la profundidad desde el vecino
+
+            // Llamamos a DFS recursivamente sobre ese nodo vecino
             DFS(v, n, mat, visitado, elementos);
         }
     }
 }
 
 int main() {
-    int n;
-    bool directed, weighted;
 
+    int n;              // Numero de nodos
+    bool directed;      // El grafo es dirigido
+    bool weighted;      // El grafo es ponderado
+
+    // Encabezado bonito
     cout << "========================================\n";
     cout << "                  DFS                   \n";
     cout << "========================================\n";
 
-    // Menu para elegir si el grafo es ponderado o no
+    // --------------------------------------------------------------
+    // SELECCION DEL TIPO DE GRAFO (PONDERADO O NO PONDERADO)
+    // --------------------------------------------------------------
     int choice;
     cout << "Seleccione el tipo de grafo:\n";
     cout << "1. No ponderado (matriz de 0/1)\n";
@@ -45,43 +56,60 @@ int main() {
     cout << "Ingrese su opcion (1 o 2): ";
     cin >> choice;
 
-    // Segun la opcion, activamos o no el modo ponderado
     switch(choice) {
-        case 1: weighted = false; break;
-        case 2: weighted = true; break;
-        default: cout << "Opcion invalida.\n"; return 1;
+        case 1:
+            weighted = false;   // El grafo solo tendra 0/1 → hay arista o no
+            break;
+        case 2:
+            weighted = true;    // El grafo tendra pesos en las aristas
+            break;
+        default:
+            cout << "Opcion invalida.\n";
+            return 1;           // Termina el programa por error
     }
 
-    // Preguntamos si el grafo tiene direcciones (aristas un sentido)
-    cout << "El grafo es dirigido? (0=No, 1=Si): ";
+    // --------------------------------------------------------------
+    // ES DIRIGIDO
+    // --------------------------------------------------------------
+    cout << "El grafo es dirigido (0=No, 1=Si): ";
     cin >> directed;
 
-    // Pedimos el numero de nodos
+    // --------------------------------------------------------------
+    // INGRESO DEL NUMERO DE NODOS
+    // --------------------------------------------------------------
     cout << "Ingrese el numero de nodos (max " << MAXN << "): ";
     cin >> n;
-    if(n <= 0 || n > MAXN){ 
-        cout << "Numero invalido.\n"; 
-        return 1; 
+
+    // Validacion de rango
+    if(n <= 0 || n > MAXN){
+        cout << "Numero invalido.\n";
+        return 1;
     }
 
-    // Nombres de los nodos
+    // Letras para representar cada nodo (A, B, C...)
     char elementos[] = {'A','B','C','D','E','F','G','H','I','J',
                         'K','L','M','N','O','P','Q','R','S','T',
                         'U','V','W','X','Y','Z'};
 
-    int mat[MAXN][MAXN]; // Matriz de adyacencia
+    int mat[MAXN][MAXN];   // Matriz de adyacencia
 
-    // -------------------------------------
-    //           GRAFO NO PONDERADO
-    // -------------------------------------
+    // ===================================================================
+    //                 INGRESO DE LA ESTRUCTURA DEL GRAFO
+    //     Dependiendo si es ponderado o no, cambia la forma de entrada
+    // ===================================================================
     if(!weighted){
+
+        // ------------------------------------------------------------
+        // GRAFO NO PONDERADO (solo 0 o 1)
+        // ------------------------------------------------------------
         cout << "\n=== Ingrese la matriz de adyacencia 0/1 ===\n";
+
+        // Se ingresa la matriz directamente
         for(int i=0;i<n;i++)
             for(int j=0;j<n;j++)
                 cin >> mat[i][j];
 
-        // Si NO es dirigido, simetrizamos la matriz
-        // (lo que hay en [i][j] tambien va en [j][i])
+        // Si el grafo NO es dirigido, se copia la simetria
         if(!directed){
             for(int i=0;i<n;i++)
                 for(int j=i+1;j<n;j++)
@@ -90,78 +118,94 @@ int main() {
 
     } else {
 
-        // -------------------------------------
-        //           GRAFO PONDERADO
-        // -------------------------------------
-
+        // ------------------------------------------------------------
+        // GRAFO PONDERADO (lista de adyacencia con pesos)
+        // ------------------------------------------------------------
         cout << "\n=== Ingrese la lista de adyacencia con pesos ===\n";
         cout << "Para cada nodo, ingrese num_vecinos seguido de (vecino peso)\n";
 
-        vector<pair<int,int> > adj[MAXN]; // Lista de pares (nodo vecino, peso)
+        vector<pair<int,int>> adj[MAXN];   // Lista de adyacencia temporal
 
-        // Leemos la lista con pesos
         for(int i=0;i<n;i++){
-            int num; cin >> num; // numero de vecinos del nodo i
-            for(int k=0;k<num;k++){
-                int v,w; cin >> v >> w; // v = vecino, w = peso
-                adj[i].push_back(make_pair(v,w));
+            int num;
+            cin >> num;    // Cantidad de vecinos de este nodo
 
-                // Si no es dirigido, agregamos la arista en ambos sentidos
-                if(!directed) adj[v].push_back(make_pair(i,w));
+            for(int k=0;k<num;k++){
+                int v, w;
+                cin >> v >> w;   // vecino y peso
+                adj[i].push_back({v, w});  // Agrego la arista a la lista
+
+                // Si no es dirigido, tambien agrego la inversa
+                if(!directed)
+                    adj[v].push_back({i, w});
             }
         }
 
-        // Inicializamos la matriz en ceros
+        // Inicializo toda la matriz como sin aristas
         for(int i=0;i<n;i++)
             for(int j=0;j<n;j++)
                 mat[i][j] = NO_EDGE;
 
-        // Convertimos la lista de adyacencia a matriz
+        // Paso la lista a matriz
         for(int i=0;i<n;i++)
             for(size_t k=0;k<adj[i].size();k++)
-                mat[i][adj[i][k].first] = adj[i][k].second;
+                mat[i][ adj[i][k].first ] = adj[i][k].second;
     }
 
-    // ---------------------------------------
-    //     MOSTRAR MATRIZ DE ADYACENCIA
-    // ---------------------------------------
+    // ===================================================================
+    //           SECCION 1 — MOSTRAR LA MATRIZ DE ADYACENCIA
+    // ===================================================================
     cout << "\n=== Matriz de adyacencia ===\n";
-    cout << setw(6) << " "; // Encabezado vacio
-    for(int j=0;j<n;j++) cout << setw(6) << elementos[j];
+
+    // Encabezado de columnas (A, B, C...)
+    cout << setw(6) << " ";   // Espacio alineado antes del encabezado
+    for(int j=0;j<n;j++)
+        cout << setw(6) << elementos[j];
     cout << "\n";
 
+    // Imprimir fila por fila
     for(int i=0;i<n;i++){
-        cout << setw(6) << elementos[i]; // Fila con letra del nodo
+
+        cout << setw(6) << elementos[i];   // Etiqueta de la fila
+
         for(int j=0;j<n;j++)
-            cout << setw(6) << mat[i][j]; // Valor de arista
+            cout << setw(6) << mat[i][j]; // Valores de la fila
+
         cout << "\n";
     }
 
-    // ---------------------------------------
-    //             NODO INICIAL
-    // ---------------------------------------
+    // ===================================================================
+    //           SECCION 2 — PEDIR EL NODO DE INICIO DEL DFS
+    // ===================================================================
     char origen;
     cout << "\nIngrese el nodo de inicio para DFS (letra): ";
     cin >> origen;
 
-    int src=-1;
-    for(int i=0;i<n;i++) 
-        if(elementos[i]==origen) 
-            src=i;
+    int src = -1;  // Indice del nodo de inicio (A=0, B=1,...)
 
-    if(src==-1){ 
-        cout << "Nodo invalido\n"; 
-        return 1; 
+    // Busco que numero corresponde a la letra ingresada
+    for(int i=0;i<n;i++)
+        if(elementos[i] == origen)
+            src = i;
+
+    // Si la letra no existe dentro de los nodos validos
+    if(src == -1){
+        cout << "Nodo invalido\n";
+        return 1;
     }
 
-    // ---------------------------------------
-    //                  DFS
-    // ---------------------------------------
-    vector<bool> visitado(n,false); // Para evitar repetir nodos
+    // ===================================================================
+    //           SECCION 3 — EJECUTAR EL RECORRIDO DFS
+    // ===================================================================
+    vector<bool> visitado(n, false);  // Todos los nodos comienzan como no visitados
 
     cout << "\n=== Recorrido DFS desde nodo " << origen << " ===\n";
-    DFS(src, n, mat, visitado, elementos); // Llamamos la funcion DFS
+
+    // Llamada a la funcion DFS (procesa el grafo recursivamente)
+    DFS(src, n, mat, visitado, elementos);
+
     cout << "\n========================================\n";
 
-    return 0;
+    return 0;  // Fin del programa
 }
+  
