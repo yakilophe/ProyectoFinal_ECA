@@ -4,16 +4,31 @@
 
 using namespace std;
 
-// Estructura para representar una arista con sus nodos (u, v) y su peso
+// ====================== GRAFOS PREDEFINIDOS ==========================
+
+// NO DIRIGIDO – NO PONDERADO (sin duplicados)
+int ND_NP_u[] = {0,0,0,1,1,2};
+int ND_NP_v[] = {1,4,3,3,2,3};
+int ND_NP_m = 6;
+int ND_NP_n = 5;
+
+// NO DIRIGIDO – PONDERADO (sin duplicados)
+int ND_P_u[] = {0,0,0,1,1,2};
+int ND_P_v[] = {1,4,3,3,2,3};
+int ND_P_w[] = {4,6,9,8,7,5};
+int ND_P_m = 6;
+int ND_P_n = 5;
+
+// ====================================================================
+
+// Estructura para representar una arista
 struct Arista {
     int u, v;
     int peso;
 };
 
-// Funcion para mostrar el titulo de manera limpia y profesional
+// ---------------------------------------------------------
 void mostrarTitulo() {
-    // setlocale(LC_ALL, ""); // Eliminado
-
     cout << "\n=======================================================\n";
     cout << "         ALGORITMO GREEDY MAXIMAL MATCHING\n";
     cout << "=======================================================\n";
@@ -25,64 +40,139 @@ void mostrarTitulo() {
     cout << "-------------------------------------------------------\n";
 }
 
+// ================= MATRIZ DE ADYACENCIA ======================
+void imprimirMatriz(int n, vector<Arista> &A) {
+    vector< vector<int> > M(n, vector<int>(n, 0));
+
+    for (int i = 0; i < A.size(); i++) {
+        int u = A[i].u;
+        int v = A[i].v;
+        int w = A[i].peso;
+        M[u][v] = w;
+        M[v][u] = w; // no dirigido
+    }
+
+    cout << "\nMATRIZ DE ADYACENCIA:\n\n   ";
+    for (int i = 0; i < n; i++)
+        cout << setw(3) << i;
+    cout << "\n";
+
+    for (int i = 0; i < n; i++) {
+        cout << setw(3) << i;
+        for (int j = 0; j < n; j++)
+            cout << setw(3) << M[i][j];
+        cout << "\n";
+    }
+}
+// =============================================================
+
+
 int main() {
 
     mostrarTitulo();
 
-    int tipo;
-    // 1. Configuracion del tipo de grafo
-    cout << "1. Seleccione el tipo de grafo:\n";
-    cout << " [1] No ponderado\n";
-    cout << " [2] Ponderado\n";
+    // ========================== MENÚ A/B ===============================
+    char origen;
+    cout << "Seleccione origen del grafo:\n";
+    cout << " A) Ingresar manualmente\n";
+    cout << " B) Usar grafo predefinido\n";
     cout << "Opcion: ";
-    cin >> tipo;
+    cin >> origen;
 
-    if (tipo == 2) {
-        cout << "\n[ADVERTENCIA IMPORTANTE]:\n";
-        cout << "Este algoritmo Greedy NO garantiza el pareo de\n";
-        cout << "mayor peso total.\n";
-        cout << "Solo selecciona aristas por orden de ingreso.\n";
-        cout << "-------------------------------------------------------\n";
-    }
-
-    // 2. Configuracion del grafo
+    int tipo;
     int n, m;
-    cout << "\nIngrese el numero de vertices (nodos): ";
-    cin >> n;
+    vector<Arista> aristas;
 
-    cout << "Ingrese el numero de aristas (conexiones): ";
-    cin >> m;
+    // ===================== PREDEFINIDOS ======================
+    if (origen == 'B' || origen == 'b') {
 
-    vector<Arista> aristas(m);
+        cout << "\nSeleccione grafo predefinido:\n";
+        cout << " 1) No dirigido y no ponderado\n";
+        cout << " 2) No dirigido y ponderado\n";
+        cout << "Opcion: ";
+        int op; cin >> op;
 
-    // 3. Lectura de aristas
-    cout << "\n=======================================================\n";
-    cout << "                INGRESO DE ARISTAS\n";
-    cout << "=======================================================\n";
-    cout << "Usa numeros del 1 al " << n << " para los vertices.\n";
-
-    for (int i = 0; i < m; i++) {
-        if (tipo == 1) {
-            cout << "Arista " << i + 1 << " (u v): ";
-            cin >> aristas[i].u >> aristas[i].v;
-            aristas[i].peso = 1; // Peso uniforme
-        } else {
-            cout << "Arista " << i + 1 << " (u v peso): ";
-            cin >> aristas[i].u >> aristas[i].v >> aristas[i].peso;
+        if (op == 1) {
+            tipo = 1;
+            n = ND_NP_n;
+            m = ND_NP_m;
+            aristas.resize(m);
+            for (int i = 0; i < m; i++) {
+                aristas[i].u = ND_NP_u[i];
+                aristas[i].v = ND_NP_v[i];
+                aristas[i].peso = 1;
+            }
+        }
+        else {
+            tipo = 2;
+            n = ND_P_n;
+            m = ND_P_m;
+            aristas.resize(m);
+            for (int i = 0; i < m; i++) {
+                aristas[i].u = ND_P_u[i];
+                aristas[i].v = ND_P_v[i];
+                aristas[i].peso = ND_P_w[i];
+            }
         }
 
-        // Validacion de nodos
-        if (aristas[i].u <= 0 || aristas[i].u > n || aristas[i].v <= 0 || aristas[i].v > n) {
-            cout << "[ERROR]: Los nodos deben estar entre 1 y " << n << ". Reingrese la arista.\n";
-            i--;
+    } else {
+    // ===================== INGRESO MANUAL =====================
+
+        cout << "1. Seleccione el tipo de grafo:\n";
+        cout << " [1] No ponderado\n";
+        cout << " [2] Ponderado\n";
+        cout << "Opcion: ";
+        cin >> tipo;
+
+        if (tipo == 2) {
+            cout << "\n[ADVERTENCIA IMPORTANTE]:\n";
+            cout << "Este algoritmo Greedy NO garantiza el pareo de\n";
+            cout << "mayor peso total.\n";
+            cout << "-------------------------------------------------------\n";
+        }
+
+        cout << "\nIngrese el numero de vertices (nodos): ";
+        cin >> n;
+
+        cout << "Ingrese el numero de aristas (conexiones): ";
+        cin >> m;
+
+        aristas.resize(m);
+
+        cout << "\n=======================================================\n";
+        cout << "                INGRESO DE ARISTAS\n";
+        cout << "=======================================================\n";
+        cout << "Usa numeros del 0 al " << n - 1 << " para los vertices.\n";
+
+        for (int i = 0; i < m; i++) {
+
+            if (tipo == 1) {
+                cout << "Arista " << i + 1 << " (u v): ";
+                cin >> aristas[i].u >> aristas[i].v;
+                aristas[i].peso = 1;
+            }
+            else {
+                cout << "Arista " << i + 1 << " (u v peso): ";
+                cin >> aristas[i].u >> aristas[i].v >> aristas[i].peso;
+            }
+
+            if (aristas[i].u < 0 || aristas[i].u >= n ||
+                aristas[i].v < 0 || aristas[i].v >= n) {
+                cout << "[ERROR]: Nodos fuera de rango. Reingrese.\n";
+                i--;
+            }
         }
     }
 
-    // 4. PREPARACION DEL ALGORITMO
-    vector<bool> usado(n + 1, false);  // Control de nodos usados
-    vector<Arista> matching;           // Almacena el pareo
+    // ========= IMPRIMIR MATRIZ DE ADYACENCIA ===========
+    imprimirMatriz(n, aristas);
 
-    // 5. ALGORITMO GREEDY MAXIMAL MATCHING
+    // ================================================
+    //         ALGORITMO GREEDY MAXIMAL MATCHING
+    // ================================================
+    vector<bool> usado(n, false);
+    vector<Arista> matching;
+
     cout << "\n=======================================================\n";
     cout << "                PROCESO GREEDY\n";
     cout << "=======================================================\n";
@@ -93,20 +183,21 @@ int main() {
         int v = aristas[i].v;
 
         if (!usado[u] && !usado[v]) {
-            // Aceptar arista
+
             matching.push_back(aristas[i]);
             usado[u] = true;
             usado[v] = true;
-            cout << " -> [ACEPTADA] Arista (" << u << " , " << v << ") Peso: "
-                 << aristas[i].peso << ". Nodos bloqueados.\n";
-        } else {
-            // Rechazar arista
+
+            cout << " -> [ACEPTADA] Arista (" << u << " , " << v
+                 << ") Peso: " << aristas[i].peso << ". Nodos bloqueados.\n";
+        }
+        else {
             cout << " -> [RECHAZADA] Arista (" << u << " , " << v
                  << ") -> Conflicto con nodo(s) ya emparejado(s).\n";
         }
     }
 
-    // 6. RESULTADOS FINALES
+    // ============== RESULTADOS ====================
     cout << "\n=======================================================\n";
     cout << "                RESULTADO FINAL\n";
     cout << "=======================================================\n";
@@ -117,8 +208,8 @@ int main() {
     int sumaPesos = 0;
     for (int i = 0; i < matching.size(); i++) {
         cout << "PAREJA " << setfill('0') << setw(2) << i + 1
-             << ": (Nodo " << matching[i].u
-             << " <-> Nodo " << matching[i].v << ")";
+             << ": (" << matching[i].u
+             << " <-> " << matching[i].v << ")";
 
         if (tipo == 2) {
             cout << " [Peso: " << matching[i].peso << "]";
