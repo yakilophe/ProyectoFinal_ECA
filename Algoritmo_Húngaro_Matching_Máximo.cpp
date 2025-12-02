@@ -1,5 +1,5 @@
 #include <iostream>   // Es la herramienta principal que permite que el programa hable con el usuario (mostrar textos y pedir datos).
-#include <vector>     // Permite crear "listas" o "tablas" flexibles que se ajustan al tamaÒo de los datos que pones (como la matriz de costos).
+#include <vector>     // Permite crear "listas" o "tablas" flexibles que se ajustan al tama√±o de los datos que pones (como la matriz de costos).
 #include <iomanip>    // Ayuda a darle formato bonito a los numeros que se muestran.
 #include <climits>    // Nos da el numero mas grande posible (INT_MAX), util para buscar el "minimo" inicialmente.
 #include <locale.h>   // Se usa para configurar el idioma y que las tildes, enes y otros caracteres especiales se vean bien en la consola.
@@ -26,7 +26,7 @@ void mostrarTitulo() {
 // IMPLEMENTACION DEL HUNGARO (MINIMO)
 // ============================
 // Esta es la "receta magica" que resuelve el problema de ASIGNACION de MINIMO COSTO.
-// Recibe la matriz 'costo' y el tamaÒo del problema 'n'.
+// Recibe la matriz 'costo' y el tama√±o del problema 'n'.
 int hungaroMin(vector< vector<int> >& costo, int n) {
     // Listas internas que el algoritmo usa para hacer sus calculos:
     // u y v: Son "etiquetas" que se ajustan a cada nodo. Ayudan a encontrar la mejor solucion.
@@ -108,7 +108,7 @@ int main() {
 
     int n;
     cout << "\nIngrese el numero de nodos por cada lado del bipartito: ";
-    cin >> n; // 'n' es el numero de elementos en cada grupo (tamaÒo del problema).
+    cin >> n; // 'n' es el numero de elementos en cada grupo (tama√±o del problema).
 
     // Crea la tabla de 'costo' (la matriz nxn) y una variable para guardar el peso mas alto que ingrese el usuario.
     vector< vector<int> > costo(n + 1, vector<int>(n + 1));
