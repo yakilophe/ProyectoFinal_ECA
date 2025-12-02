@@ -1,28 +1,29 @@
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <utility>
-#include <limits>
+#include <iostream>   // Librería para entrada y salida estándar
+#include <vector>     // Librería para usar vectores dinámicos
+#include <queue>      // Librería para colas (usadas en BFS)
+#include <utility>    // Librería para usar pair (pares de valores)
+#include <limits>     // Librería para manejar límites de entrada
 
 using namespace std;
 
-// ---------- Configuracion global ----------
-const int MAXN = 100;
-int nNodos = 0;
+// ---------- Configuración global ----------
+const int MAXN = 100;   // Máximo número de nodos permitido
+int nNodos = 0;         // Número de nodos actual
 
-// ========== Edmonds (Blossom) - 0-based implementation ==========
+// ========== Clase MicaliVazirani (Edmonds/Blossom) ==========
 class MicaliVazirani {
 private:
-    int V;
-    vector<vector<int> > adj;
+    int V;                          // Número de nodos
+    vector<vector<int> > adj;       // Lista de adyacencia
 
-    vector<int> match;    // match[v] = u or -1
-    vector<int> p;        // parent in bfs
-    vector<int> base;     // base of blossom
-    vector<bool> used;    // used in bfs
-    vector<bool> blossom; // blossom marks
-    queue<int> Q;
+    vector<int> match;              // match[v] = nodo emparejado con v, o -1 si libre
+    vector<int> p;                  // padre en BFS
+    vector<int> base;               // base de un "blossom" (ciclo especial)
+    vector<bool> used;              // nodos usados en BFS
+    vector<bool> blossom;           // marcas de blossom
+    queue<int> Q;                   // cola para BFS
 
+    // Función para encontrar el mínimo ancestro común (LCA) en un blossom
     int lca(int a, int b) {
         vector<bool> used_path(V, false);
         while (true) {
@@ -40,6 +41,7 @@ private:
         return -1;
     }
 
+    // Marca el camino dentro de un blossom
     void mark_path(int v, int b, int children) {
         while (base[v] != b) {
             blossom[base[v]] = blossom[base[match[v]]] = true;
@@ -49,13 +51,12 @@ private:
         }
     }
 
+    // Contrae un blossom (ciclo impar) en un solo nodo base
     void contract(int v, int u) {
         int b = lca(v, u);
-        // reset blossom flags
         for (int i = 0; i < V; ++i) blossom[i] = false;
         mark_path(v, b, u);
         mark_path(u, b, v);
-        // set base of involved vertices to b
         for (int i = 0; i < V; ++i) {
             if (blossom[base[i]]) {
                 base[i] = b;
@@ -67,6 +68,7 @@ private:
         }
     }
 
+    // BFS para buscar caminos aumentantes
     bool bfs(int root) {
         used.assign(V, false);
         p.assign(V, -1);
@@ -87,7 +89,7 @@ private:
                 } else if (p[to] == -1) {
                     p[to] = v;
                     if (match[to] == -1) {
-                        // augmenting path found: augment along path
+                        // Se encontró un camino aumentante
                         int cur = to;
                         while (cur != -1) {
                             int prev = p[cur];
@@ -111,6 +113,7 @@ private:
     }
 
 public:
+    // Constructor
     MicaliVazirani(int n) : V(n) {
         adj.assign(V, vector<int>());
         match.assign(V, -1);
@@ -120,6 +123,7 @@ public:
         blossom.assign(V, false);
     }
 
+    // Cargar grafo desde lista de aristas
     void load_graph(const vector<pair<int,int> >& edges) {
         adj.assign(V, vector<int>());
         for (size_t i = 0; i < edges.size(); ++i) {
@@ -131,15 +135,17 @@ public:
         match.assign(V, -1);
     }
 
+    // Añadir arista no dirigida
     void addEdgeUndirected(int u, int v) {
         if (u < 0 || u >= V || v < 0 || v >= V) return;
         adj[u].push_back(v);
         adj[v].push_back(u);
     }
 
+    // Algoritmo principal: encontrar matching máximo
     int maxMatching() {
         int res = 0;
-        // greedy init
+        // Inicialización greedy
         for (int v = 0; v < V; ++v) {
             if (match[v] == -1) {
                 for (size_t i = 0; i < adj[v].size(); ++i) {
@@ -154,6 +160,7 @@ public:
             }
         }
 
+        // Buscar caminos aumentantes hasta que no haya más
         while (true) {
             bool found = false;
             used.assign(V, false);
@@ -167,7 +174,7 @@ public:
                     if (bfs(v)) {
                         ++res;
                         found = true;
-                        break; // restart after augmentation
+                        break;
                     }
                 }
             }
@@ -176,6 +183,7 @@ public:
         return res;
     }
 
+    // Obtener aristas del matching
     vector<pair<int,int> > getMatchingEdges() const {
         vector<pair<int,int> > edges;
         for (int i = 0; i < V; ++i) {
@@ -186,6 +194,7 @@ public:
         return edges;
     }
 
+    // Contar nodos cubiertos por el matching
     int countCoveredNodes() const {
         int covered = 0;
         for (int i = 0; i < V; ++i) {
@@ -194,6 +203,7 @@ public:
         return covered;
     }
 
+    // Obtener matriz de adyacencia
     vector<vector<int> > getAdjMatrix() const {
         vector<vector<int> > M(V, vector<int>(V, 0));
         for (int u = 0; u < V; ++u) {
@@ -205,14 +215,14 @@ public:
         return M;
     }
 
-    // expose V for external use
+    // Obtener número de nodos
     int getV() const { return V; }
 };
 
-// ========== Utilidades de impresion ==========
+// ========== Funciones de impresión ==========
 void imprimirMatriz(const vector<vector<int> >& M) {
     if (M.empty()) {
-        cout << "(Matriz vacia)\n";
+        cout << "(Matriz vacía)\n";
         return;
     }
     int n = (int)M.size();
@@ -232,7 +242,7 @@ void mostrarResultado(int res, MicaliVazirani& MV) {
     cout << "\n===============================================\n";
     cout << "  RESULTADO DEL EMPAREJAMIENTO (Edmonds / Blossom)\n";
     cout << "===============================================\n";
-    cout << "  Tamano del pareo (maximo): " << res << "\n";
+    cout << "  Tamaño del pareo (máximo): " << res << "\n";
     cout << "-----------------------------------------------\n";
 
     cout << "  Aristas en el pareo (u -- v):\n";
@@ -281,7 +291,7 @@ void menu() {
 
         switch (op) {
         case 1: {
-            // Ingresar grafo manual (0-based)
+            // Ingresar grafo manual
             int n;
             cout << "Numero de nodos (max " << MAXN << "): ";
             cin >> n;
@@ -294,22 +304,20 @@ void menu() {
             cout << "Numero de aristas: ";
             cin >> m;
             vector<pair<int,int> > edges;
-            cout << "Ingresa aristas (u v) con nodos 0.." << (n-1) << " (una por linea):\n";
+            cout << "Ingresa aristas (u v) con nodos 0.." << (n-1) << ":\n";
             for (int i = 0; i < m; ++i) {
                 int u,v;
                 cin >> u >> v;
                 if (u < 0 || u >= n || v < 0 || v >= n) {
-                    cout << "[ERROR] Arista invalida ignorada: " << u << " " << v << "\n";
+                    cout << "[ERROR] Arista invalida ignorada.\n";
                     continue;
                 }
-                // For undirected usage, we will add both directions later if desired;
-                // Here we store a single directed pair (user can input either).
                 edges.push_back(make_pair(u,v));
             }
             if (MV) { delete MV; MV = NULL; }
             MV = new MicaliVazirani(nNodos);
             MV->load_graph(edges);
-            cout << "[OK] Grafo manual cargado (0-based).\n";
+            cout << "[OK] Grafo manual cargado.\n";
             break;
         }
 
@@ -318,9 +326,9 @@ void menu() {
                 cout << "[ERROR] No hay grafo cargado.\n";
                 break;
             }
-            cout << "[INFO] Ejecutando algoritmo para emparejamiento maximo...\n";
+            cout << "[INFO] Ejecutando algoritmo...\n";
             int result = MV->maxMatching();
-            cout << "[OK] Tamano del pareo maximo encontrado: " << result << "\n";
+            cout << "[OK] Tamaño del pareo máximo: " << result << "\n";
             break;
         }
 
@@ -329,16 +337,8 @@ void menu() {
                 cout << "[ERROR] No hay grafo cargado.\n";
                 break;
             }
-            // compute matching size by calling maxMatching? We assume user ran option 2.
-            // But we can call getMatchingEdges and countCoveredNodes.
-            vector<pair<int,int> > matching = MV->getMatchingEdges();
-            int covered = MV->countCoveredNodes();
-            cout << "\n--- Resultado actual (segun estado interno) ---\n";
-            cout << "Tamano pareo (en aristas): " << matching.size() << "\n";
-            for (size_t i = 0; i < matching.size(); ++i) {
-                cout << " (" << matching[i].first << " -- " << matching[i].second << ")\n";
-            }
-            cout << "Nodos cubiertos: " << covered << " / " << MV->getV() << "\n";
+            int result = MV->getMatchingEdges().size();
+            mostrarResultado(result, *MV);
             break;
         }
 
@@ -353,28 +353,17 @@ void menu() {
         }
 
         case 5: {
-            // Cargar el grafo predefinido (0-based), no dirigido: añadimos cada arista en ambas direcciones.
             if (MV) { delete MV; MV = NULL; }
             nNodos = 5;
             MV = new MicaliVazirani(nNodos);
-
-            // Lista original (segun tu entrada). We'll add only unique undirected edges,
-            // but since addEdgeUndirected adds both directions, just call it with pairs.
-            // Your original edges included duplicates (u->v and v->u); we use set-like behaviour.
-            // We'll add the undirected edges (unique) corresponding to the connections:
-            // 0-1, 0-4, 0-3, 1-3, 1-2, 2-3  (these cover the list you provided)
             MV->addEdgeUndirected(0, 1);
             MV->addEdgeUndirected(0, 4);
             MV->addEdgeUndirected(0, 3);
             MV->addEdgeUndirected(1, 3);
             MV->addEdgeUndirected(1, 2);
             MV->addEdgeUndirected(2, 3);
-            // Note: edges like 3-0 etc are redundant because undirected additions already added them.
-
-            cout << "[OK] Grafo predefinido cargado (5 nodos, 0-based).\n";
-
-            vector<vector<int> > Mat = MV->getAdjMatrix();
-            imprimirMatriz(Mat);
+            cout << "[OK] Grafo predefinido cargado.\n";
+            imprimirMatriz(MV->getAdjMatrix());
             break;
         }
 
