@@ -6,6 +6,23 @@
 
 using namespace std; // Una simplificacion para no tener que escribir "std::" antes de cada comando.
 
+// ====================== GRAFOS PREDEFINIDOS ==========================
+
+// No dirigido – No ponderado
+int ND_NP_u[] = {0,0,0,1,1,2,3,3,3,4};
+int ND_NP_v[] = {1,4,3,0,3,1,2,1,0,0};
+int ND_NP_m = 10;
+int ND_NP_n = 5;
+
+// No dirigido – Ponderado
+int ND_P_u[] = {0,0,0,1,1,1,2,2,3,3,3,4};
+int ND_P_v[] = {1,4,3,0,3,2,1,3,2,1,0,0};
+int ND_P_w[] = {4,6,9,4,8,7,7,5,5,8,9,6};
+int ND_P_m = 12;
+int ND_P_n = 5;
+
+// ====================================================================
+
 // Estructura: Es como una "ficha de conexion" o tarjeta de identificacion para cada posible arista.
 struct Arista {
     int u, v;     // 'u' y 'v' son los dos "puntos" (nodos) que conecta la arista.
@@ -15,9 +32,6 @@ struct Arista {
 
 // Funcion para mostrar el titulo y las reglas del algoritmo.
 void mostrarTitulo() {
-    // setlocale(LC_ALL, ""); // Eliminado
-
-    // A partir de aqui, todo es texto que se muestra al usuario sin modificar.
     cout << "\n=======================================================\n";
     cout << "         ALGORITMO ISRAELI-ITAI - MATCHING MAXIMAL\n";
     cout << "=======================================================\n";
@@ -29,168 +43,216 @@ void mostrarTitulo() {
     cout << "-------------------------------------------------------\n";
 }
 
+// ================= MATRIZ DE ADYACENCIA ======================
+void imprimirMatriz(int n, vector<Arista> &A) {
+    vector< vector<int> > M(n, vector<int>(n, 0));
+
+    for (size_t i = 0; i < A.size(); i++) {
+        int u = A[i].u;
+        int v = A[i].v;
+        int w = A[i].peso;
+        M[u][v] = w;
+        M[v][u] = w;
+    }
+
+    cout << "\nMATRIZ DE ADYACENCIA:\n\n   ";
+    for (int i = 0; i < n; i++)
+        cout << setw(3) << i;
+    cout << "\n";
+
+    for (int i = 0; i < n; i++) {
+        cout << setw(3) << i;
+        for (int j = 0; j < n; j++)
+            cout << setw(3) << M[i][j];
+        cout << "\n";
+    }
+}
+// ===============================================================
+
+
 // La funcion 'main' es la "Receta Principal" donde sucede toda la accion del programa.
 int main() {
-    // Inicializa el generador de numeros al azar usando la hora actual del sistema.
+
     srand((unsigned)time(NULL));
     mostrarTitulo();
 
-    int tipo;
-    // 1. Configuracion del tipo de red (grafo).
-    cout << "1. Seleccione el tipo de grafo:\n";
-    cout << " [1] No ponderado\n";
-    cout << " [2] Ponderado\n";
+    // ========================== MENÚ A/B ===============================
+    char origen;
+    cout << "Seleccione origen del grafo:\n";
+    cout << " A) Ingresar manualmente\n";
+    cout << " B) Usar grafo predefinido\n";
     cout << "Opcion: ";
-    cin >> tipo;
+    cin >> origen;
 
-    // Muestra una advertencia si se elige un grafo con peso (ponderado).
-    if (tipo == 2) {
-        cout << "\n[ADVERTENCIA]: El algoritmo Israeli-Itai NO considera pesos.\n";
-        cout << "El resultado NO garantiza mayor peso total; los pesos solo se muestran.\n";
-        cout << "-------------------------------------------------------\n";
-    }
-
-    // 2. Configuracion de los puntos y las conexiones.
+    int tipo; // 1 no ponderado, 2 ponderado
     int n, m;
-    cout << "\nIngrese el numero de vertices (nodos): ";
-    cin >> n; // 'n' guarda la cantidad total de puntos.
-    cout << "Ingrese el numero de aristas (conexiones): ";
-    cin >> m; // 'm' guarda la cantidad total de conexiones.
+    vector<Arista> aristas;
 
-    // Creamos la lista 'aristas' para guardar las 'm' fichas de conexion.
-    vector<Arista> aristas(m);
-    cout << "\n=======================================================\n";
-    cout << "                 INGRESO DE ARISTAS\n";
-    cout << "=======================================================\n";
-    cout << "Usa numeros del 1 al " << n << " para los vertices.\n";
+    if (origen == 'B' || origen == 'b') {
 
-    // Bucle: Repite 'm' veces para pedir la informacion de cada conexion.
-    for (int i = 0; i < m; ++i) {
-        if (tipo == 1) {
-            // Si es sin peso: se piden solo los dos puntos (u, v).
-            cout << "Arista " << i + 1 << " (u v): ";
-            cin >> aristas[i].u >> aristas[i].v;
-            aristas[i].peso = 1; // El peso se fija en 1.
-        } else {
-            // Si es con peso: se piden los dos puntos (u, v) y el valor (peso).
-            cout << "Arista " << i + 1 << " (u v peso): ";
-            cin >> aristas[i].u >> aristas[i].v >> aristas[i].peso;
+        cout << "\nSeleccione grafo predefinido:\n";
+        cout << " 1) No dirigido y no ponderado\n";
+        cout << " 2) No dirigido y ponderado\n";
+        cout << "Opcion: ";
+        int op; cin >> op;
+
+        if (op == 1) {
+            tipo = 1;
+            n = ND_NP_n;
+            m = ND_NP_m;
+            aristas.resize(m);
+            for (int i = 0; i < m; i++) {
+                aristas[i].u = ND_NP_u[i];
+                aristas[i].v = ND_NP_v[i];
+                aristas[i].peso = 1;
+                aristas[i].activa = true;
+            }
         }
-        aristas[i].activa = true; // Al inicio, todas las conexiones estan activas.
-
-        // Validacion: Verifica que los numeros de los puntos esten dentro del rango permitido [1, n].
-        if (aristas[i].u <= 0 || aristas[i].u > n || aristas[i].v <= 0 || aristas[i].v > n) {
-            cout << "[ERROR]: Nodos fuera de rango. Reingrese.\n";
-            --i; // Regresa el contador para pedir de nuevo esta conexion.
+        else {
+            tipo = 2;
+            n = ND_P_n;
+            m = ND_P_m;
+            aristas.resize(m);
+            for (int i = 0; i < m; i++) {
+                aristas[i].u = ND_P_u[i];
+                aristas[i].v = ND_P_v[i];
+                aristas[i].peso = ND_P_w[i];
+                aristas[i].activa = true;
+            }
+            cout << "\n[ADVERTENCIA]: Israeli-Itai NO usa pesos.\n";
         }
     }
+    else {
+        // ================= INGRESO MANUAL ==========================
+        cout << "1. Seleccione el tipo de grafo:\n";
+        cout << " [1] No ponderado\n";
+        cout << " [2] Ponderado\n";
+        cout << "Opcion: ";
+        cin >> tipo;
+
+        if (tipo == 2) {
+            cout << "\n[ADVERTENCIA]: El algoritmo Israeli-Itai NO considera pesos.\n";
+            cout << "-------------------------------------------------------\n";
+        }
+
+        cout << "\nIngrese el numero de vertices (nodos): ";
+        cin >> n;
+        cout << "Ingrese el numero de aristas (conexiones): ";
+        cin >> m;
+
+        aristas.resize(m);
+
+        cout << "\n=======================================================\n";
+        cout << "                 INGRESO DE ARISTAS\n";
+        cout << "=======================================================\n";
+        cout << "Usa numeros del 0 al " << n - 1 << " para los vertices.\n";
+
+        for (int i = 0; i < m; i++) {
+            if (tipo == 1) {
+                cout << "Arista " << i + 1 << " (u v): ";
+                cin >> aristas[i].u >> aristas[i].v;
+                aristas[i].peso = 1;
+            }
+            else {
+                cout << "Arista " << i + 1 << " (u v peso): ";
+                cin >> aristas[i].u >> aristas[i].v >> aristas[i].peso;
+            }
+            aristas[i].activa = true;
+
+            if (aristas[i].u < 0 || aristas[i].u >= n || aristas[i].v < 0 || aristas[i].v >= n) {
+                cout << "[ERROR]: Nodos fuera de rango. Reingrese.\n";
+                i--;
+            }
+        }
+    }
+
+    // ========= IMPRIMIR MATRIZ DE ADYACENCIA ==========
+    imprimirMatriz(n, aristas);
 
     // 3. PREPARACION DEL ALGORITMO ISRAELI-ITAI
-
-    // 'incidentes': Una lista de listas. Para cada punto (nodo), guarda una lista de las conexiones (indices de aristas) que lo tocan.
-    vector< vector<int> > incidentes(n + 1);
-    for (int i = 0; i < m; ++i) {
-        // Agrega el indice de la arista 'i' a la lista del punto 'u' y a la lista del punto 'v'.
+    vector< vector<int> > incidentes(n);
+    for (int i = 0; i < m; i++) {
         incidentes[ aristas[i].u ].push_back(i);
         incidentes[ aristas[i].v ].push_back(i);
     }
 
-    vector<bool> usado(n + 1, false); // 'usado': Marca que puntos ya tienen pareja ('true' = ocupado).
-    vector<Arista> matching; // 'matching': Lista final donde se guardan las conexiones elegidas.
+    vector<bool> usado(n, false);
+    vector<Arista> matching;
 
     cout << "\n=======================================================\n";
     cout << "                 PROCESO ISRAELI-ITAI\n";
     cout << "=======================================================\n";
 
-    bool quedanAristas = true; // Indicador de si el proceso debe seguir.
-    int ronda = 1; // Contador de rondas.
+    int ronda = 1;
 
-    // El bucle principal: Continua hasta que no se pueda formar ninguna pareja nueva.
     while (true) {
-        // Verificar si queda alguna arista activa y con ambos nodos libres:
-        // Buscamos si hay alguna conexion disponible que tenga dos puntos sin pareja.
+
         bool anyActive = false;
-        for (int i = 0; i < m; ++i) {
+        for (int i = 0; i < m; i++) {
             if (aristas[i].activa && !usado[ aristas[i].u ] && !usado[ aristas[i].v ]) {
                 anyActive = true;
-                break; // Si encontramos una, el proceso sigue.
+                break;
             }
         }
-        if (!anyActive) break; // Si no encontramos ninguna, terminamos el bucle.
+        if (!anyActive) break;
 
         cout << "\n--- RONDA " << ronda++ << " ---\n";
 
-        // Paso 1: Cada nodo no usado elige UNA arista activa al azar (si tiene)
-        // 'elegidaPorNodo[u]': Guarda el indice de la arista que el punto 'u' eligio. (-1 significa que no eligio nada).
-        vector<int> elegidaPorNodo(n + 1, -1);
+        vector<int> elegidaPorNodo(n, -1);
 
-        for (int u = 1; u <= n; ++u) { // Recorremos todos los puntos.
-            if (usado[u]) continue; // Si el punto ya esta en una pareja, lo ignoramos.
+        for (int u = 0; u < n; u++) {
+            if (usado[u]) continue;
 
-            // Recolectar aristas activas incidentes al punto 'u'.
             vector<int> opciones;
-            for (int k = 0; k < incidentes[u].size(); ++k) {
-                int idx = incidentes[u][k]; // 'idx' es la posicion de la arista que toca a 'u'.
-                if (!aristas[idx].activa) continue; // Si la arista ya fue descartada, la ignoramos.
 
-                // Averiguamos cual es el otro punto de la arista.
+            for (size_t k = 0; k < incidentes[u].size(); k++) {
+                int idx = incidentes[u][k];
+                if (!aristas[idx].activa) continue;
+
                 int v = (aristas[idx].u == u) ? aristas[idx].v : aristas[idx].u;
-                if (usado[v]) continue; // Si el otro punto ('v') ya tiene pareja, ignoramos esta opcion.
+                if (usado[v]) continue;
 
-                opciones.push_back(idx); // Si es una buena opcion, la anadimos a la lista de opciones de 'u'.
+                opciones.push_back(idx);
             }
+
             if (opciones.size() > 0) {
-                // Sorteo: 'u' elige una opcion al azar de su lista.
                 int elegido = opciones[ rand() % opciones.size() ];
                 elegidaPorNodo[u] = elegido;
             }
         }
 
-        // Paso 2: Aceptar aquellas aristas que fueron elegidas mutuamente por ambos extremos
-        // Solo si el punto 'u' eligio la arista 'e' Y el punto 'v' tambien eligio la misma arista 'e'.
-        for (int e = 0; e < m; ++e) { // Recorremos todas las aristas.
-            if (!aristas[e].activa) continue; // Si esta inactiva, la ignoramos.
+        for (int e = 0; e < m; e++) {
+            if (!aristas[e].activa) continue;
+
             int u = aristas[e].u;
             int v = aristas[e].v;
-            if (usado[u] || usado[v]) continue; // Si alguno de sus puntos ya tiene pareja, la ignoramos.
+            if (usado[u] || usado[v]) continue;
 
-            // La condicion clave: Ambos puntos deben haber elegido esta misma arista 'e' en el Paso 1.
             if (elegidaPorNodo[u] == e && elegidaPorNodo[v] == e) {
-                // Aceptar la arista:
-                matching.push_back(aristas[e]); // La anadimos al pareo final.
-                usado[u] = true; // Marcamos 'u' como ocupado.
-                usado[v] = true; // Marcamos 'v' como ocupado.
-                
-                // Muestra el resultado de la aceptacion (sin modificar el texto del cout).
+
+                matching.push_back(aristas[e]);
+                usado[u] = true;
+                usado[v] = true;
+
                 cout << " -> [ACEPTADA] Arista (" << u << " , " << v << ")";
                 if (tipo == 2) cout << " [Peso: " << aristas[e].peso << "]";
                 cout << "\n";
 
-                // Desactivar todas las aristas incidentes a u y v (la regla del pareo).
-                // Descartamos todas las conexiones que tocan a los puntos recien emparejados.
-                for (int k = 0; k < incidentes[u].size(); ++k) {
-                    int idx = incidentes[u][k];
-                    aristas[idx].activa = false;
-                }
-                for (int k = 0; k < incidentes[v].size(); ++k) {
-                    int idx = incidentes[v][k];
-                    aristas[idx].activa = false;
-                }
+                for (size_t k = 0; k < incidentes[u].size(); k++)
+                    aristas[ incidentes[u][k] ].activa = false;
+
+                for (size_t k = 0; k < incidentes[v].size(); k++)
+                    aristas[ incidentes[v][k] ].activa = false;
             }
         }
 
-        // Despues de aceptar las aristas mutuamente elegidas, puede quedar aristas activas
-        // que quedaron "huerfanas" (sus puntos ahora estan ocupados por otras parejas).
-        // Las desactivamos para limpiar la lista.
-        for (int i = 0; i < m; ++i) {
+        for (int i = 0; i < m; i++) {
             if (!aristas[i].activa) continue;
-            if (usado[ aristas[i].u ] || usado[ aristas[i].v ]) {
+            if (usado[ aristas[i].u ] || usado[ aristas[i].v ])
                 aristas[i].activa = false;
-            }
         }
     }
 
-    // Mostrar resultados
     cout << "\n=======================================================\n";
     cout << "                 RESULTADO FINAL\n";
     cout << "=======================================================\n";
@@ -198,20 +260,19 @@ int main() {
     cout << "-------------------------------------------------------\n";
 
     int sumaPesos = 0;
-    // Bucle para mostrar las conexiones seleccionadas en el pareo final.
-    for (int i = 0; i < matching.size(); ++i) {
-        // Usa comandos para asegurar que el numero de pareja tenga dos digitos (ej. 01, 02).
-        cout << "PAREJA " << setw(2) << setfill('0') << i + 1 << ": ("
-             << matching[i].u << " <-> " << matching[i].v << ")";
+
+    for (size_t i = 0; i < matching.size(); i++) {
+        cout << "PAREJA " << setw(2) << setfill('0') << i + 1 << ": (";
+        cout << matching[i].u << " <-> " << matching[i].v << ")";
+        cout << setfill(' '); // ? NECESARIO EN GCC 4.9.2
+
         if (tipo == 2) {
-            // Si el grafo fue ponderado, muestra el peso y lo suma.
             cout << " [Peso: " << matching[i].peso << "]";
             sumaPesos += matching[i].peso;
         }
         cout << endl;
     }
 
-    // Muestra la suma total de pesos si el grafo fue ponderado.
     if (tipo == 2) {
         cout << "-------------------------------------------------------\n";
         cout << "PESO TOTAL DEL PAREO: " << sumaPesos << endl;
@@ -219,5 +280,6 @@ int main() {
 
     cout << "=======================================================\n";
     cout << "\nProceso finalizado correctamente.\n";
-    return 0; // El programa termina.
+
+    return 0;
 }
