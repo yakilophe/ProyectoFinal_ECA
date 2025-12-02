@@ -10,8 +10,8 @@ using namespace std;     // Para evitar std::
 vector<int> lista[100];   // Lista de adyacencia 
 bool visitado[100];       // Marca si un nodo ya fue visitado
 bool enRecursion[100];    // Para detectar ciclos dirigidos
-int N;                    // Número de vértices
-int E;                    // Número de aristas
+int N;                    // NÃºmero de vÃ©rtices
+int E;                    // NÃºmero de aristas
 bool esDirigido;          // Indica si el grafo es dirigido o no
 
 /**************************************************************
@@ -24,17 +24,17 @@ void limpiarGrafo()
     {
         lista[i].clear();         // Borra lista de adyacencia
         visitado[i] = false;      // Borra visitas
-        enRecursion[i] = false;   // Borra pila de recursión
+        enRecursion[i] = false;   // Borra pila de recursiÃ³n
     }
 }
 
 /**************************************************************
-   Detecta ciclos en grafos dirigidos usando recursión
+   Detecta ciclos en grafos dirigidos usando recursiÃ³n
 **************************************************************/
 bool dfsDirigido(int u)
 {
     visitado[u] = true;       // Marcamos el nodo como visitado
-    enRecursion[u] = true;    // Lo agregamos a la pila de recursión
+    enRecursion[u] = true;    // Lo agregamos a la pila de recursiÃ³n
 
     int i;
     for(i = 0; i < lista[u].size(); i++)
@@ -44,7 +44,7 @@ bool dfsDirigido(int u)
         if(!visitado[v])      // Si v NO ha sido visitado
         {
             if(dfsDirigido(v))   // Llamada recursiva
-                return true;     // Se detectó ciclo
+                return true;     // Se detectÃ³ ciclo
         }
         else if(enRecursion[v])  // Si ya estaba en la pila ? ciclo
         {
@@ -70,13 +70,12 @@ bool dfsNoDirigido(int u, int padre)
 
         if(!visitado[v])
         {
-            if(dfsNoDirigido(v, u))  // Recursión
+            if(dfsNoDirigido(v, u))  // RecursiÃ³n
                 return true;         // Ciclo encontrado
         }
         else if(v != padre)
         {
-            // Si v ya fue visitado y NO es el padre ? ciclo
-            return true;
+            return true;             // Si v ya fue visitado y NO es el padre ? ciclo
         }
     }
 
@@ -100,7 +99,7 @@ void dfsConectividad(int u)
 }
 
 /**************************************************************
-   Verifica si el grafo es un árbol
+   Verifica si el grafo es un Ã¡rbol
 **************************************************************/
 bool esArbol()
 {
@@ -120,7 +119,7 @@ bool esArbol()
         {
             if(!visitado[i])
                 if(dfsDirigido(i))
-                    return false;  // Tiene ciclo ? NO árbol
+                    return false;  // Tiene ciclo ? NO Ã¡rbol
         }
 
         // 2. Verificar conectividad
@@ -131,9 +130,9 @@ bool esArbol()
 
         for(i = 0; i < N; i++)
             if(!visitado[i])
-                return false; // No es conexo ? NO árbol
+                return false; // No es conexo ? NO Ã¡rbol
 
-        return true;          // Es árbol dirigido
+        return true;          // Es Ã¡rbol dirigido
     }
 
     /**************** GRAFO NO DIRIGIDO ****************/
@@ -144,7 +143,7 @@ bool esArbol()
             visitado[i] = false;
 
         if(dfsNoDirigido(0, -1))
-            return false;   // Tiene ciclo ? NO árbol
+            return false;   // Tiene ciclo ? NO Ã¡rbol
 
         // 2. Verificar conectividad
         for(i = 0; i < N; i++)
@@ -154,14 +153,105 @@ bool esArbol()
 
         for(i = 0; i < N; i++)
             if(!visitado[i])
-                return false; // No es conexo ? NO árbol
+                return false; // No es conexo ? NO Ã¡rbol
 
-        return true;          // Es árbol no dirigido
+        return true;          // Es Ã¡rbol no dirigido
     }
 }
 
 /**************************************************************
-   Captura N, E y las aristas
+   Carga uno de los grafos predefinidos del menÃº
+**************************************************************/
+void cargarGrafoPredefinido(int opcion)
+{
+    limpiarGrafo();
+
+    if(opcion == 1)   // No dirigido y NO ponderado
+    {
+        N = 5;
+        E = 12;
+        esDirigido = false;
+
+        int conexiones[][2] = {
+            {0,1},{0,4},{0,3},
+            {1,0},{1,3},{1,2},
+            {2,1},{2,3},
+            {3,2},{3,1},{3,0},
+            {4,0}
+        };
+
+        for(int i=0; i<E; i++)
+        {
+            int u = conexiones[i][0];
+            int v = conexiones[i][1];
+            lista[u].push_back(v);
+            lista[v].push_back(u);
+        }
+
+        cout << "\nGrafo NO dirigido y NO ponderado cargado.\n";
+    }
+
+    else if(opcion == 2)   // Dirigido y NO ponderado
+    {
+        N = 5;
+        E = 6;
+        esDirigido = true;
+
+        int datos[][2] = {
+            {1,0},{0,3},{1,2},
+            {3,2},{3,1},{4,0}
+        };
+
+        for(int i=0; i<E; i++)
+            lista[ datos[i][0] ].push_back( datos[i][1] );
+
+        cout << "\nGrafo DIRIGIDO y NO ponderado cargado.\n";
+    }
+
+    else if(opcion == 3)  // No dirigido y PONDERADO (pero ignoramos pesos)
+    {
+        N = 5;
+        E = 12;
+        esDirigido = false;
+
+        int datos[][3] = {
+            {0,1,4},{0,4,6},{0,3,9},
+            {1,0,4},{1,3,8},{1,2,7},
+            {2,1,7},{2,3,5},
+            {3,2,5},{3,1,8},{3,0,9},
+            {4,0,6}
+        };
+
+        for(int i=0; i<E; i++)
+        {
+            int u = datos[i][0], v = datos[i][1];
+            lista[u].push_back(v);
+            lista[v].push_back(u);
+        }
+
+        cout << "\nGrafo NO dirigido y PONDERADO cargado (pesos ignorados).\n";
+    }
+
+    else if(opcion == 4)   // Dirigido y PONDERADO (pesos ignorados)
+    {
+        N = 5;
+        E = 6;
+        esDirigido = true;
+
+        int datos[][3] = {
+            {1,0,3},{0,3,12},{1,2,18},
+            {3,2,15},{3,1,9},{4,0,6}
+        };
+
+        for(int i=0; i<E; i++)
+            lista[ datos[i][0] ].push_back( datos[i][1] );
+
+        cout << "\nGrafo DIRIGIDO y PONDERADO cargado (pesos ignorados).\n";
+    }
+}
+
+/**************************************************************
+   Captura N, E y las aristas (modo manual)
 **************************************************************/
 void capturarGrafo()
 {
@@ -173,7 +263,7 @@ void capturarGrafo()
     cout << "Numero de aristas: ";
     cin >> E;
 
-    cout << "¿Grafo dirigido? (1 = Si, 0 = No): ";
+    cout << "Â¿Grafo dirigido? (1 = Si, 0 = No): ";
     cin >> esDirigido;
 
     cout << "\nIngrese las aristas (u v):\n";
@@ -193,7 +283,7 @@ void capturarGrafo()
 }
 
 /**************************************************************
-   FUNCIÓN PRINCIPAL (MENÚ)
+   FUNCIÃ“N PRINCIPAL (MENÃš)
 **************************************************************/
 int main()
 {
@@ -201,7 +291,7 @@ int main()
 
     do {
         cout << "\n===== MENU =====\n";
-        cout << "1. Capturar grafo\n";
+        cout << "1. Seleccionar grafo (predefinido o manual)\n";
         cout << "2. Verificar si es arbol\n";
         cout << "0. Salir\n";
         cout << "Opcion: ";
@@ -209,7 +299,22 @@ int main()
 
         if(opcion == 1)
         {
-            capturarGrafo();
+            int g;
+            cout << "\nGRAFOS PREDEFINIDOS:\n";
+            cout << "1. No dirigido y no ponderado\n";
+            cout << "2. Dirigido y no ponderado\n";
+            cout << "3. No dirigido y ponderado\n";
+            cout << "4. Dirigido y ponderado\n";
+            cout << "5. Ingresar grafo manualmente\n";
+            cout << "\nElija una opcion: ";
+            cin >> g;
+
+            if(g >= 1 && g <= 4)
+                cargarGrafoPredefinido(g);
+            else if(g == 5)
+                capturarGrafo();
+            else
+                cout << "\nOpcion invalida.\n";
         }
         else if(opcion == 2)
         {
@@ -223,4 +328,3 @@ int main()
 
     return 0;
 }
-

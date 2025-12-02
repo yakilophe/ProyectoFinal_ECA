@@ -1,138 +1,228 @@
-#include <iostream>      // Para entrada/salida
-#include <vector>        // Para listas de adyacencia antiguas
-#include <queue>         // Para BFS clásico
-using namespace std;     // Para no usar std::
+#include <iostream>
+#include <vector>
+#include <queue>
+using namespace std;
 
 /***************************************************************
    VARIABLES GLOBALES
 ***************************************************************/
-vector<int> lista[100];   // Lista de adyacencia NO ponderada
-int N;                    // Número de vértices
-int E;                    // Número de aristas
-bool esDirigido;          // Indica si es dirigido
-bool visitado[100];       // Para BFS o DFS
-int indegree[100];        // Grado de entrada (solo dirigido)
+vector<int> lista[100]; 
+int N;
+int E;
+bool esDirigido;
+bool visitado[100];
+int indegreeArr[100];
 
 /***************************************************************
-   Limpia TODO el grafo para poder capturar otro
+   Limpiar grafo
 ***************************************************************/
 void limpiar()
 {
-    int i;
-    for(i = 0; i < 100; i++)
+    for(int i = 0; i < 100; i++)
     {
-        lista[i].clear();     // Vacía la lista del nodo i
-        visitado[i] = false;  // Marca como no visitado
-        indegree[i] = 0;      // Reinicia indegree
+        lista[i].clear();
+        visitado[i] = false;
+        indegreeArr[i] = 0;
     }
 }
 
 /***************************************************************
-   Recorre desde el nodo 0 y marca nodos visitados
+   BFS normal
 ***************************************************************/
 void bfs(int inicio)
 {
-    queue<int> q;         // Cola de nodos
-    q.push(inicio);       // Empieza en el nodo elegido
+    queue<int> q;         
+    q.push(inicio);       
     visitado[inicio] = true;
 
-    while(!q.empty())     // Mientras haya nodos por recorrer
+    while(!q.empty())     
     {
         int u = q.front();
         q.pop();
 
         int i;
-        for(i = 0; i < lista[u].size(); i++)
+        for(i = 0; i < lista[u].size(); i++)   
         {
-            int v = lista[u][i];   // Vecino v de u
-            if(!visitado[v])       // Si no está visitado
+            int v = lista[u][i];
+
+            if(!visitado[v])
             {
                 visitado[v] = true;
-                q.push(v);         // Lo agregamos a la cola
+                q.push(v);
             }
         }
     }
 }
 
 /***************************************************************
-   Usa BFS + propiedad E = N-1
+   Ãrbol NO dirigido
 ***************************************************************/
 bool esArbolNoDirigido()
 {
-    int i;
-
-    // -------- Verificar propiedad E = N - 1 --------
     if(E != N - 1)
-        return false;  // Si no se cumple ? NO es árbol
+        return false;
 
-    // -------- Verificar conectividad con BFS --------
-    for(i = 0; i < N; i++)
+    for(int i = 0; i < N; i++)
         visitado[i] = false;
 
-    bfs(0);  // Recorremos desde el nodo 0
+    bfs(0);
 
-    // Si algún nodo sigue sin visitarse ? no es árbol
-    for(i = 0; i < N; i++)
+    for(int i = 0; i < N; i++)
         if(!visitado[i])
             return false;
 
-    return true;  // Cumple propiedades ? es árbol
+    return true;
 }
 
 /***************************************************************
-   Usa indegree y un BFS desde la raíz
+   Ãrbol dirigido
 ***************************************************************/
 bool esArbolDirigido()
 {
-    int i;
-
-    // 1. Buscar nodo RAÍZ (indegree = 0)
     int raiz = -1;
-    int contadorRaices = 0;
+    int conteoRaices = 0;
 
-    for(i = 0; i < N; i++)
+    for(int i = 0; i < N; i++)
     {
-        if(indegree[i] == 0)
+        if(indegreeArr[i] == 0)
         {
             raiz = i;
-            contadorRaices++;
+            conteoRaices++;
         }
     }
 
-    // Si NO hay raíz o hay más de una ? NO es árbol
-    if(contadorRaices != 1)
+    if(conteoRaices != 1)
         return false;
 
-    // 2. Verificar que TODOS los demás nodos tengan indegree = 1
-    int nodosCorrectos = 0;
+    int correctos = 0;
 
-    for(i = 0; i < N; i++)
-        if(i != raiz && indegree[i] == 1)
-            nodosCorrectos++;
+    for(int i = 0; i < N; i++)
+        if(i != raiz && indegreeArr[i] == 1)
+            correctos++;
 
-    // Debe haber N-1 nodos con indegree=1
-    if(nodosCorrectos != N - 1)
+    if(correctos != N - 1)
         return false;
 
-    // 3. Usar BFS para verificar conectividad desde la raíz
-    for(i = 0; i < N; i++)
+    for(int i = 0; i < N; i++)
         visitado[i] = false;
 
     bfs(raiz);
 
-    for(i = 0; i < N; i++)
+    for(int i = 0; i < N; i++)
         if(!visitado[i])
             return false;
 
-    return true;   // Cumple todo ? es árbol dirigido
+    return true;
 }
 
 /***************************************************************
-   Guardamos el grafo introducido por el usuario
+   Cargar grafos predefinidos
+***************************************************************/
+void cargarGrafoPredefinido(int opcion)
+{
+    limpiar();
+
+    if(opcion == 1)   // No dirigido y NO ponderado
+    {
+        esDirigido = false;
+        N = 5;
+        E = 12;
+
+        int conexiones[][2] = {
+            {0,1},{0,4},{0,3},
+            {1,0},{1,3},{1,2},
+            {2,1},{2,3},
+            {3,2},{3,1},{3,0},
+            {4,0}
+        };
+
+        for(int i = 0; i < E; i++)
+        {
+            int u = conexiones[i][0];
+            int v = conexiones[i][1];
+            lista[u].push_back(v);
+            lista[v].push_back(u);
+        }
+
+        cout << "\nGrafo NO dirigido y NO ponderado cargado.\n";
+    }
+
+    else if(opcion == 2) // Dirigido y NO ponderado
+    {
+        esDirigido = true;
+        N = 5;
+        E = 6;
+
+        int conexiones[][2] = {
+            {1,0},{0,3},{1,2},
+            {3,2},{3,1},{4,0}
+        };
+
+        for(int i = 0; i < E; i++)
+        {
+            int u = conexiones[i][0];
+            int v = conexiones[i][1];
+            lista[u].push_back(v);
+            indegreeArr[v]++;
+        }
+
+        cout << "\nGrafo DIRIGIDO y NO ponderado cargado.\n";
+    }
+
+    else if(opcion == 3) // No dirigido y ponderado
+    {
+        esDirigido = false;
+        N = 5;
+        E = 12;
+
+        int datos[][3] = {
+            {0,1,4},{0,4,6},{0,3,9},
+            {1,0,4},{1,3,8},{1,2,7},
+            {2,1,7},{2,3,5},
+            {3,2,5},{3,1,8},{3,0,9},
+            {4,0,6}
+        };
+
+        for(int i = 0; i < E; i++)
+        {
+            int u = datos[i][0];
+            int v = datos[i][1];
+            lista[u].push_back(v);
+            lista[v].push_back(u);
+        }
+
+        cout << "\nGrafo NO dirigido y PONDERADO cargado (pesos ignorados).\n";
+    }
+
+    else if(opcion == 4) // Dirigido y ponderado
+    {
+        esDirigido = true;
+        N = 5;
+        E = 6;
+
+        int datos[][3] = {
+            {1,0,3},{0,3,12},{1,2,18},
+            {3,2,15},{3,1,9},{4,0,6}
+        };
+
+        for(int i = 0; i < E; i++)
+        {
+            int u = datos[i][0];
+            int v = datos[i][1];
+            lista[u].push_back(v);
+            indegreeArr[v]++;
+        }
+
+        cout << "\nGrafo DIRIGIDO y PONDERADO cargado (pesos ignorados).\n";
+    }
+}
+
+/***************************************************************
+   Capturar grafo manual
 ***************************************************************/
 void capturarGrafo()
 {
-    limpiar();     // Siempre reiniciar todo
+    limpiar();
 
     cout << "\nNumero de vertices: ";
     cin >> N;
@@ -140,24 +230,23 @@ void capturarGrafo()
     cout << "Numero de aristas: ";
     cin >> E;
 
-    cout << "¿Es dirigido? (1 = Si, 0 = No): ";
+    cout << "Â¿Es dirigido? (1 = Si, 0 = No): ";
     cin >> esDirigido;
 
     cout << "\nIngrese las aristas (u v):\n";
 
-    int i, u, v;
-
-    for(i = 0; i < E; i++)
+    for(int i = 0; i < E; i++)
     {
+        int u, v;
         cout << "Arista " << i << ": ";
         cin >> u >> v;
 
-        lista[u].push_back(v);  // Agregar arista u ? v
+        lista[u].push_back(v);
 
         if(esDirigido)
-            indegree[v]++;      // En dirigido se suma indegree
+            indegreeArr[v]++;
         else
-            lista[v].push_back(u); // En NO dirigido agregamos v ? u
+            lista[v].push_back(u);
     }
 }
 
@@ -169,8 +258,8 @@ int main()
     int opcion;
 
     do {
-        cout << "\n====== MENU ======\n";
-        cout << "1. Capturar grafo\n";
+        cout << "\n====== MENU PRINCIPAL ======\n";
+        cout << "1. Seleccionar grafo (predefinido o manual)\n";
         cout << "2. Verificar si es arbol\n";
         cout << "0. Salir\n";
         cout << "Opcion: ";
@@ -178,8 +267,24 @@ int main()
 
         if(opcion == 1)
         {
-            capturarGrafo();
+            int g;
+            cout << "\nGRAFOS PREDEFINIDOS:\n";
+            cout << "1. No dirigido y no ponderado\n";
+            cout << "2. Dirigido y no ponderado\n";
+            cout << "3. No dirigido y ponderado\n";
+            cout << "4. Dirigido y ponderado\n";
+            cout << "5. Ingresar grafo manualmente\n";
+            cout << "\nElija una opcion: ";
+            cin >> g;
+
+            if(g >= 1 && g <= 4)
+                cargarGrafoPredefinido(g);
+            else if(g == 5)
+                capturarGrafo();
+            else
+                cout << "\nOpcion invalida.\n";
         }
+
         else if(opcion == 2)
         {
             if(esDirigido)

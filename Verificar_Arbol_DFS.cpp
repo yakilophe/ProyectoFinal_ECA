@@ -9,9 +9,9 @@ vector<int> lista[100];   // Lista de adyacencia
 bool visitado[100];       // Para DFS
 bool enProceso[100];      // Para ciclos dirigidos
 int indegree[100];        // Grado de entrada
-int N, E;                 // VÈrtices y aristas
+int N, E;                 // V√©rtices y aristas
 bool esDirigido;          // Tipo de grafo
-int aristasDFS;           // Cuenta aristas del ·rbol DFS
+int aristasDFS;           // Cuenta aristas del √°rbol DFS
 
 /************************************************************
    LIMPIAR DATOS
@@ -31,7 +31,7 @@ void limpiar()
 
 /************************************************************
    DFS PARA GRAFO NO DIRIGIDO
-   Cuenta aristas del ·rbol DFS, si pasa de N-1 = ciclo
+   Cuenta aristas del √°rbol DFS, si pasa de N-1 = ciclo
 ************************************************************/
 void dfsNoDirigido(int u, int padre)
 {
@@ -44,13 +44,13 @@ void dfsNoDirigido(int u, int padre)
 
         if(!visitado[v])
         {
-            aristasDFS++;      // Arista v·lida del ·rbol DFS
+            aristasDFS++;      // Arista v√°lida del √°rbol DFS
             dfsNoDirigido(v, u);
         }
         else if(v != padre)
         {
-            // Si est· visitado y NO es el padre ? ciclo
-            aristasDFS = 999999; // Marcamos ciclo explÌcito
+            // Si est√° visitado y NO es el padre ? ciclo
+            aristasDFS = 999999; // Marcamos ciclo expl√≠cito
         }
     }
 }
@@ -62,7 +62,7 @@ void dfsNoDirigido(int u, int padre)
 bool dfsDirigido(int u)
 {
     visitado[u] = true;
-    enProceso[u] = true; // Nodo est· en el stack
+    enProceso[u] = true; // Nodo est√° en el stack
 
     int i;
     for(i = 0; i < lista[u].size(); i++)
@@ -85,20 +85,20 @@ bool dfsDirigido(int u)
 }
 
 /************************************************************
-   VERIFICAR ARBOL NO DIRIGIDO (nuevo mÈtodo DFS)
+   VERIFICAR ARBOL NO DIRIGIDO (nuevo m√©todo DFS)
 ************************************************************/
 bool esArbolNoDirigido()
 {
     int i;
 
-    // 1. DFS para contar aristas del ·rbol DFS
+    // 1. DFS para contar aristas del √°rbol DFS
     dfsNoDirigido(0, -1);
 
     // 2. Si detectamos ciclo
     if(aristasDFS == 999999)
         return false;
 
-    // 3. Si las aristas del DFS no son N-1 = no es ·rbol
+    // 3. Si las aristas del DFS no son N-1 = no es √°rbol
     if(aristasDFS != N - 1)
         return false;
 
@@ -111,13 +111,13 @@ bool esArbolNoDirigido()
 }
 
 /************************************************************
-   VERIFICAR ARBOL DIRIGIDO (nuevo mÈtodo DFS)
+   VERIFICAR ARBOL DIRIGIDO (nuevo m√©todo DFS)
 ************************************************************/
 bool esArbolDirigido()
 {
     int i;
 
-    // 1. Buscar raÌz (indegree = 0)
+    // 1. Buscar ra√≠z (indegree = 0)
     int raiz = -1;
     int cantidadRaices = 0;
 
@@ -130,7 +130,7 @@ bool esArbolDirigido()
         }
         else if(indegree[i] > 1)
         {
-            return false; // Nodo con m·s de un padre = NO ·rbol
+            return false; // Nodo con m√°s de un padre = NO √°rbol
         }
     }
 
@@ -141,12 +141,12 @@ bool esArbolDirigido()
     if(dfsDirigido(raiz))
         return false;
 
-    // 3. Verificar que todos los nodos se visitan desde la raÌz
+    // 3. Verificar que todos los nodos se visitan desde la ra√≠z
     for(i = 0; i < N; i++)
         if(!visitado[i])
             return false;
 
-    // 4. Propiedad del ·rbol dirigido: E = N - 1
+    // 4. Propiedad del √°rbol dirigido: E = N - 1
     if(E != N - 1)
         return false;
 
@@ -154,7 +154,102 @@ bool esArbolDirigido()
 }
 
 /************************************************************
-   CAPTURAR EL GRAFO
+   CARGAR GRAFOS PREDEFINIDOS
+************************************************************/
+void cargarGrafoNoDirigidoNoPonderado()
+{
+    limpiar();
+    esDirigido = false;
+    N = 5;
+    E = 12;
+
+    int datos[][2] = {
+        {0,1},{0,4},{0,3},
+        {1,0},{1,3},{1,2},
+        {2,1},{2,3},
+        {3,2},{3,1},{3,0},
+        {4,0}
+    };
+
+    int i;
+    for(i = 0; i < E; i++)
+    {
+        int u = datos[i][0];
+        int v = datos[i][1];
+        lista[u].push_back(v);
+        lista[v].push_back(u);
+    }
+}
+
+void cargarGrafoDirigidoNoPonderado()
+{
+    limpiar();
+    esDirigido = true;
+    N = 5;
+    E = 6;
+
+    int datos[][2] = {
+        {1,0},{0,3},{1,2},{3,2},{3,1},{4,0}
+    };
+
+    int i;
+    for(i = 0; i < E; i++)
+    {
+        int u = datos[i][0];
+        int v = datos[i][1];
+        lista[u].push_back(v);
+        indegree[v]++;
+    }
+}
+
+void cargarGrafoNoDirigidoPonderado()
+{
+    limpiar();
+    esDirigido = false;
+    N = 5;
+    E = 12;
+
+    int datos[][2] = {
+        {0,1},{0,4},{0,3},
+        {1,0},{1,3},{1,2},
+        {2,1},{2,3},
+        {3,2},{3,1},{3,0},
+        {4,0}
+    };
+
+    int i;
+    for(i = 0; i < E; i++)
+    {
+        int u = datos[i][0];
+        int v = datos[i][1];
+        lista[u].push_back(v);
+        lista[v].push_back(u);
+    }
+}
+
+void cargarGrafoDirigidoPonderado()
+{
+    limpiar();
+    esDirigido = true;
+    N = 5;
+    E = 6;
+
+    int datos[][2] = {
+        {1,0},{0,3},{1,2},{3,2},{3,1},{4,0}
+    };
+
+    int i;
+    for(i = 0; i < E; i++)
+    {
+        int u = datos[i][0];
+        int v = datos[i][1];
+        lista[u].push_back(v);
+        indegree[v]++;
+    }
+}
+
+/************************************************************
+   CAPTURAR EL GRAFO (MANUAL)
 ************************************************************/
 void capturarGrafo()
 {
@@ -166,7 +261,7 @@ void capturarGrafo()
     cout << "Numero de aristas: ";
     cin >> E;
 
-    cout << "øEs dirigido? (1 = Si, 0 = No): ";
+    cout << "¬øEs dirigido? (1 = Si, 0 = No): ";
     cin >> esDirigido;
 
     cout << "\nIngrese aristas (u v):\n";
@@ -198,18 +293,35 @@ int main()
     int opcion;
 
     do {
-        cout << "\n===== MENU =====\n";
-        cout << "1. Capturar grafo\n";
-        cout << "2. Verificar si es arbol\n";
+        cout << "\n===== MENU PRINCIPAL =====\n";
+        cout << "1. Seleccionar grafo predefinido\n";
+        cout << "2. Capturar grafo manual\n";
+        cout << "3. Verificar si es arbol\n";
         cout << "0. Salir\n";
         cout << "Opcion: ";
         cin >> opcion;
 
         if(opcion == 1)
         {
-            capturarGrafo();
+            int tipo;
+            cout << "\nGRAFOS PREDEFINIDOS:\n";
+            cout << "1. No dirigido y no ponderado\n";
+            cout << "2. Dirigido y no ponderado\n";
+            cout << "3. No dirigido y ponderado\n";
+            cout << "4. Dirigido y ponderado\n";
+            cout << "Elija una opcion: ";
+            cin >> tipo;
+
+            if(tipo == 1) cargarGrafoNoDirigidoNoPonderado();
+            else if(tipo == 2) cargarGrafoDirigidoNoPonderado();
+            else if(tipo == 3) cargarGrafoNoDirigidoPonderado();
+            else if(tipo == 4) cargarGrafoDirigidoPonderado();
         }
         else if(opcion == 2)
+        {
+            capturarGrafo();
+        }
+        else if(opcion == 3)
         {
             if(esDirigido)
             {
