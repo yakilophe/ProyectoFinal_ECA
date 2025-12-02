@@ -12,6 +12,8 @@
 // 'limits' se usa para manejar los limites de los numeros, por ejemplo, al limpiar el bufer de entrada en el menu.
 #include <locale.h>
 // 'locale.h' se usa para configurar el idioma local y que los acentos y caracteres especiales se vean bien en la consola.
+#include <iomanip>
+// 'iomanip' se usa para manipular la salida formateada (ej: setw) â€” se agregÃ³ para corregir el error de 'setw'.
 
 using namespace std;
 // Usar el espacio de nombres estandar para no tener que escribir 'std::' antes de cada herramienta.
@@ -175,7 +177,7 @@ private:
                     parent[v] = u;
                     
                     if (match[v] == -1) {
-                        // ¡Camino aumentante encontrado!
+                        // Â¡Camino aumentante encontrado!
                         augment_path(u, v);
 // Se encuentra un nodo libre 'v' y se invierte el camino para aumentar el emparejamiento.
                         cout << " -> Camino aumentante encontrado desde " << root << " hasta " << v << endl;
@@ -206,7 +208,7 @@ private:
 public:
     // Constructor
     EdmondsMatching(int num_nodos) : V(num_nodos) {
-// Funcion que se ejecuta al crear el objeto, inicializando las estructuras de datos con el tamaño V.
+// Funcion que se ejecuta al crear el objeto, inicializando las estructuras de datos con el tamaÃ±o V.
         adj.resize(V + 1);
         match.assign(V + 1, -1);
     }
@@ -248,7 +250,7 @@ public:
 // Itera por cada nodo. Si el nodo 'i' esta libre (-1), intenta encontrar un camino aumentante desde el.
                 if (find_augmenting_path(i)) {
                     max_m_size++;
-// Si se encuentra un camino, el tamaño del emparejamiento aumenta en 1.
+// Si se encuentra un camino, el tamaÃ±o del emparejamiento aumenta en 1.
                     cout << " -> Emparejamiento aumentado a: " << max_m_size << endl;
                 }
             }
@@ -335,8 +337,8 @@ void mostrarResultado(int res, EdmondsMatching& EM) {
 
     // 2. Comprobar Maximalidad
     cout << "\nVERIFICACION DE MAXIMALIDAD:\n";
-// El algoritmo de Edmonds siempre garantiza que el resultado sea MAXIMO (el de mayor tamaño), por lo tanto, tambien es MAXIMAL.
-    cout << "[¡SI ES MAXIMAL!] El pareo encontrado es **MAXIMO**. ";
+// El algoritmo de Edmonds siempre garantiza que el resultado sea MAXIMO (el de mayor tamaÃ±o), por lo tanto, tambien es MAXIMAL.
+    cout << "[Â¡SI ES MAXIMAL!] El pareo encontrado es **MAXIMO**. ";
     cout << "Dado que el algoritmo de Edmonds encuentra el emparejamiento con mayor cardinalidad posible,\n";
     cout << "ninguna arista puede ser anadida sin chocar con una ya existente (es decir, es **MAXIMAL**).\n";
 
@@ -347,7 +349,7 @@ void mostrarResultado(int res, EdmondsMatching& EM) {
     cout << "  - Nodos cubiertos por el pareo: " << nodosCubiertos << ".\n";
     
     if (nodosCubiertos == nNodos) {
-        cout << "[¡LOGRADO!] SE ENCONTRO PAREO **PERFECTO**. Todos los " << nNodos << " nodos estan cubiertos.\n";
+        cout << "[Â¡LOGRADO!] SE ENCONTRO PAREO **PERFECTO**. Todos los " << nNodos << " nodos estan cubiertos.\n";
     } else {
         cout << "[NO PERFECTO] El pareo es Maximo/Maximal, pero NO PERFECTO. Quedaron " << (nNodos - nodosCubiertos) << " nodos libres sin emparejar.\n";
         cout << "  Relacion: " << nodosCubiertos << "/" << nNodos << endl;
@@ -376,6 +378,7 @@ void menu() {
         cout << "3. Mostrar Resultados y Verificaciones\n";
         cout << "4. Mostrar Estado del Grafo\n";
         cout << "5. Salir del Programa\n";
+        cout << "6. Cargar grafo predefinido (no dirigido, no ponderado)\n";
         cout << "-----------------------------------------------\n";
         cout << "Selecciona una opcion: ";
         
@@ -490,13 +493,64 @@ void menu() {
 
         case 5:
             // Salir
-            cout << "\nSaliendo del programa... ¡Hasta pronto!\n";
+            cout << "\nSaliendo del programa... Â¡Hasta pronto!\n";
 // Libera la memoria del objeto EM antes de salir.
             if (EM) delete EM;
             break;
+            
+        case 6: {
+            cout << "\n--- CARGANDO GRAFO PREDEFINIDO ---\n";
+
+            // ----- GRAFO PREDEFINIDO (NO DIRIGIDO - NO PONDERADO) -----
+            // Usamos el grafo que confirmaste, sin duplicados, adaptado a 1-based:
+            // Original (0-based): 0 1,0 4,0 3,1 3,1 2,2 3
+            // Convertido a 1-based:
+            nNodos = 5;
+            todasAristas.clear();
+
+            todasAristas.push_back(make_pair(1, 2));
+            todasAristas.push_back(make_pair(1, 5));
+            todasAristas.push_back(make_pair(1, 4));
+            todasAristas.push_back(make_pair(2, 4));
+            todasAristas.push_back(make_pair(2, 3));
+            todasAristas.push_back(make_pair(3, 4));
+
+            cout << "Se cargo el siguiente grafo predefinido:\n";
+            cout << "Nodos: " << nNodos << "\n";
+            cout << "Aristas:\n";
+            for (size_t i = 0; i < todasAristas.size(); ++i)
+                cout << "  " << todasAristas[i].first << " -- " << todasAristas[i].second << endl;
+
+            if (EM) delete EM;
+            EM = new EdmondsMatching(nNodos);
+            EM->load_graph(todasAristas);
+
+            // Imprimir matriz de adyacencia construida a partir de todasAristas
+            {
+                vector<vector<int> > M(nNodos + 1, vector<int>(nNodos + 1, 0));
+                for (size_t i = 0; i < todasAristas.size(); ++i) {
+                    int u = todasAristas[i].first;
+                    int v = todasAristas[i].second;
+                    M[u][v] = 1;
+                    M[v][u] = 1;
+                }
+                cout << "\nMATRIZ DE ADYACENCIA (predefinido):\n\n   ";
+                for (int j = 1; j <= nNodos; ++j) cout << setw(3) << j;
+                cout << "\n";
+                for (int i = 1; i <= nNodos; ++i) {
+                    cout << setw(3) << i;
+                    for (int j = 1; j <= nNodos; ++j) cout << setw(3) << M[i][j];
+                    cout << "\n";
+                }
+            }
+
+            cout << "[EXITO] Grafo predefinido cargado correctamente.\n";
+            break;
+        }
+
 
         default:
-            cout << "\n[ERROR] Opcion invalida. Por favor elige 1-5.\n";
+            cout << "\n[ERROR] Opcion invalida. Por favor elige 1-6.\n";
         }
     } while (op != 5);
 }
