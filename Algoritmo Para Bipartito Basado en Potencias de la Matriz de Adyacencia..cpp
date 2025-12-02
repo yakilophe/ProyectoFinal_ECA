@@ -73,6 +73,23 @@ bool verificar_bipartito_matriz(const vector< vector<int> >& matriz_adyacencia, 
     return true;
 }
 
+// ***************************************************************
+// FUNCION PARA MOSTRAR LA MATRIZ DE ADYACENCIA
+// ***************************************************************
+void mostrarMatriz(const vector< vector<int> >& matriz, int V) {
+
+    cout << "\n=======================================================" << endl;
+    cout << "               MATRIZ DE ADYACENCIA" << endl;
+    cout << "=======================================================" << endl;
+
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            cout << matriz[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
 
 // ***************************************************************
 // FUNCION PRINCIPAL DEL PROGRAMA (EL QUE INICIA TODO)
@@ -139,8 +156,7 @@ int main() {
         cout << "\n[GRAFO CARGADO]: No dirigido PONDERADO (pesos ignorados para analisis)\n";
     }
     else if (opcion_menu == 3) {
-        // Ingreso manual: el usuario decide nodos y aristas (se usará la lógica original)
-        // NOTA: para mantener consistencia con tus definiciones usamos numeración 0..V-1
+        // Ingreso manual
         do {
             cout << "Introduce el numero de vertices (nodos) [Maximo " << MAX_NODES << "]: ";
             cin >> V;
@@ -156,20 +172,19 @@ int main() {
         cout << " (ejemplo: 0 1)" << endl; 
         
         for (int i = 0; i < E; i++) {
-            int u, v; // u es el nodo de inicio, v es el nodo de llegada.
+            int u, v;
             cout << "Arista " << i + 1 << ": ";
-            cin >> u >> v; // Leemos los dos nodos conectados.
+            cin >> u >> v;
 
-            int u_idx = u; // Ya asume 0-based
-            int v_idx = v; 
+            int u_idx = u;
+            int v_idx = v;
 
             if (u_idx >= 0 && u_idx < V && v_idx >= 0 && v_idx < V) {
-                // Marcamos la conexion con un 1 en la matriz A.
                 matriz_adyacencia[u_idx][v_idx] = 1; 
-                matriz_adyacencia[v_idx][u_idx] = 1; // Como es NO Dirigido, la conexion va en ambos sentidos.
+                matriz_adyacencia[v_idx][u_idx] = 1;
             } else {
                 cout << "[ERROR]: Los nodos ingresados no existen. Deben ser entre 0 y " << (V-1) << "." << endl;
-                i--; // Hacemos que el bucle repita esta arista porque el dato fue invalido.
+                i--;
             }
         }
     }
@@ -182,7 +197,9 @@ int main() {
     cout << "\n=======================================================" << endl;
     cout << "                 ANALISIS DE MATRIZ" << endl;
     cout << "=======================================================" << endl;
-    // Llamamos a la funcion principal que hara todas las multiplicaciones de matriz.
+
+    mostrarMatriz(matriz_adyacencia, V);  // ? MOSTRAR MATRIZ
+
     bool es_bipartito = verificar_bipartito_matriz(matriz_adyacencia, V);
 
     // --- RESULTADO ---
@@ -196,7 +213,6 @@ int main() {
     } else {
         cout << "\n[FALLO] El grafo NO ES BIPARTITO." << endl;
         cout << "EXPLICACION: La multiplicacion de matrices confirmo la existencia de un ciclo de longitud impar (3, 5, 7, etc.), lo que viola la propiedad de biparticion." << endl;
-        
     }
 
     return 0; // El programa termina correctamente.
