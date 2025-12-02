@@ -54,7 +54,7 @@ bool esBipartito(vector< vector<int> >& grafo, int V) {
                         // Anadimos el vecino a la cola para seguir el recorrido.
                         cola.push(vecino);
                     }
-                    // CONDICION 2: ¡CONFLICTO DE COLORES!
+                    // CONDICION 2: Â¡CONFLICTO DE COLORES!
                     // Si el vecino ya esta coloreado y su color es IGUAL al del nodo 'u'.
                     else if (color[vecino] == color[u]) {
                         // El grafo NO es bipartito (hay dos nodos conectados con el mismo color).
@@ -72,103 +72,117 @@ bool esBipartito(vector< vector<int> >& grafo, int V) {
 }
 
 // ***************************************************************
+// FUNCION PARA MOSTRAR LA MATRIZ DE ADYACENCIA
+// ***************************************************************
+void mostrarMatriz(const vector< vector<int> >& grafo, int V) {
+
+    vector< vector<int> > matriz(V, vector<int>(V, 0));
+
+    for (int i = 0; i < V; i++) {
+        for (size_t j = 0; j < grafo[i].size(); j++) {
+            int v = grafo[i][j];
+            matriz[i][v] = 1;
+        }
+    }
+
+    cout << "\n===============================================" << endl;
+    cout << "               MATRIZ DE ADYACENCIA" << endl;
+    cout << "===============================================" << endl;
+
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            cout << matriz[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+// ***************************************************************
 // FUNCION PRINCIPAL DEL PROGRAMA (ENTRADA, SALIDA Y MENU)
 // ***************************************************************
 int main() {
     // setlocale(LC_ALL, ""); // Eliminado
     
     int V, E;
-    int opcion_ponderacion;
-    bool es_ponderado = false;
+    int opcion_menu;
 
-    // --- MENU DE TITULO ---
     cout << "===============================================" << endl;
     cout << "        VERIFICACION DE GRAFO BIPARTITO      " << endl;
     cout << "===============================================" << endl;
-    cout << "  (El algoritmo funciona para Grafos NO DIRIGIDOS)" << endl;
-    cout << "-----------------------------------------------" << endl;
 
-    // --- MENU DE PONDERACION CON VALIDACION ---
-    // Este ciclo 'do-while' repite la pregunta si el usuario no escribe 1 o 2.
-    do {
-        cout << "1. Su grafo es Ponderado (tiene pesos) o No Ponderado?" << endl;
-        cout << "    [1] No Ponderado" << endl;
-        cout << "    [2] Ponderado" << endl;
-        cout << "    Opcion: ";
-        cin >> opcion_ponderacion;
+    cout << "1. Usar grafo NO dirigido NO ponderado (predefinido)" << endl;
+    cout << "2. Usar grafo NO dirigido PONDERADO (predefinido)" << endl;
+    cout << "3. Ingresar grafo manualmente" << endl;
+    cout << "4. Salir" << endl;
+    cout << "Opcion: ";
+    cin >> opcion_menu;
 
-        // Si la opcion NO es 1 Y TAMPOCO es 2, mostramos error.
-        if (opcion_ponderacion != 1 && opcion_ponderacion != 2) {
-            cout << "\n[ERROR] Opcion invalida. Por favor ingrese 1 o 2.\n" << endl;
+    if (opcion_menu == 4) return 0;
+
+    vector< vector<int> > grafo_adyacencia;
+
+    // ----- GRAFO 1 PREDEFINIDO -----
+    if (opcion_menu == 1 || opcion_menu == 2) {
+        V = 5;
+        grafo_adyacencia.assign(V, vector<int>());
+
+        grafo_adyacencia[0].push_back(1);
+        grafo_adyacencia[1].push_back(0);
+
+        grafo_adyacencia[0].push_back(4);
+        grafo_adyacencia[4].push_back(0);
+
+        grafo_adyacencia[0].push_back(3);
+        grafo_adyacencia[3].push_back(0);
+
+        grafo_adyacencia[1].push_back(3);
+        grafo_adyacencia[3].push_back(1);
+
+        grafo_adyacencia[1].push_back(2);
+        grafo_adyacencia[2].push_back(1);
+
+        grafo_adyacencia[2].push_back(3);
+        grafo_adyacencia[3].push_back(2);
+
+        if (opcion_menu == 2) {
+            cout << "\n[NOTA]: Los pesos se ignoran para la verificacion de biparticion.\n";
         }
-
-    // El ciclo se repite MIENTRAS la opcion sea diferente de 1 y de 2.
-    } while (opcion_ponderacion != 1 && opcion_ponderacion != 2);
-    
-    // Una vez validada la opcion, configuramos el modo.
-    if (opcion_ponderacion == 2) {
-        es_ponderado = true;
-        cout << "\n[NOTA]: Los pesos se ignoraran para la verificacion de biparticion." << endl;
     }
 
-    // --- LECTURA DEL GRAFO ---
-    cout << "\n===============================================" << endl;
-    cout << "            CONFIGURACION DEL GRAFO            " << endl;
-    cout << "===============================================" << endl;
-    
-    // 1. SOLICITAR NUMERO DE NODOS (VALIDADO)
-    // Nos aseguramos de que al menos haya 1 nodo.
-    do {
-        cout << "Introduce el numero de vertices (nodos): ";
-        cin >> V;
-        if (V <= 0) cout << "[ERROR] Debe haber al menos 1 nodo." << endl;
-    } while (V <= 0);
+    // ----- INGRESO MANUAL (DESDE 0) -----
+    if (opcion_menu == 3) {
+        do {
+            cout << "Introduce el numero de vertices (nodos): ";
+            cin >> V;
+            if (V <= 0) cout << "[ERROR] Debe haber al menos 1 nodo." << endl;
+        } while (V <= 0);
 
-    cout << "Introduce el numero de aristas (conexiones): ";
-    cin >> E;
+        cout << "Introduce el numero de aristas (conexiones): ";
+        cin >> E;
 
-    // 2. CREAR LA ESTRUCTURA
-    // Lista de adyacencia (lista de listas que almacena las conexiones).
-    vector< vector<int> > grafo_adyacencia(V);
+        grafo_adyacencia.assign(V, vector<int>());
 
-    // 3. LEER LAS CONEXIONES (ARISTAS)
-    cout << "Introduce las aristas (u v). PUEDES USAR NUMEROS DEL 1 AL " << V << ":" << endl;
-    if (es_ponderado) {
-           cout << " (ejemplo: 1 2 5.5)" << endl;
-    } else {
-           cout << " (ejemplo: 1 2)" << endl;
-    }
-    
-    for (int i = 0; i < E; i++) {
-        int u, v;
-        double peso = 0; 
-
-        cout << "Arista " << i + 1 << ": ";
-        cin >> u >> v;
-
-        if (es_ponderado) {
-            cin >> peso; // Leemos el peso si el usuario dijo que es ponderado.
-        }
+        cout << "Introduce las aristas (u v). PUEDES USAR NUMEROS DEL 0 AL " << (V - 1) << ":" << endl;
+        cout << " (ejemplo: 0 1)" << endl;
         
-        // --- AJUSTE "HUMANO" ---
-        // Restamos 1 porque la gente cuenta desde 1, pero la computadora cuenta desde 0.
-        u = u - 1;
-        v = v - 1;
+        for (int i = 0; i < E; i++) {
+            int u, v;
+            cout << "Arista " << i + 1 << ": ";
+            cin >> u >> v;
 
-        // --- PROTECCION CONTRA ERRORES ---
-        // Verificamos si los nodos ingresados existen realmente.
-        if (u >= 0 && u < V && v >= 0 && v < V) {
-            // Agregamos la conexion en ambos sentidos (Grafo No Dirigido).
-            grafo_adyacencia[u].push_back(v);
-            grafo_adyacencia[v].push_back(u); 
-        } else {
-            cout << "[ERROR]: Los nodos ingresados no existen. Deben ser entre 1 y " << V << "." << endl;
-            // Restamos 1 al contador 'i' para que el programa vuelva a pedir esta misma arista.
-            i--; 
+            if (u >= 0 && u < V && v >= 0 && v < V) {
+                grafo_adyacencia[u].push_back(v);
+                grafo_adyacencia[v].push_back(u); 
+            } else {
+                cout << "[ERROR]: Los nodos ingresados no existen. Deben ser entre 0 y " << (V - 1) << "." << endl;
+                i--; 
+            }
         }
     }
 
-    // 4. EJECUTAR EL ALGORITMO Y MOSTRAR RESULTADO
+    // ----- MOSTRAR MATRIZ -----
+    mostrarMatriz(grafo_adyacencia, V);
+
     cout << "\n===============================================" << endl;
     cout << "                RESULTADO                      " << endl;
     cout << "===============================================" << endl;
