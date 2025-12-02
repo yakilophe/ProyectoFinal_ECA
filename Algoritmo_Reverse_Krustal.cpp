@@ -1,152 +1,107 @@
-#include <iostream>
-#include <algorithm>   // Para sort()
-using namespace std;
+#include <iostream>                                   // incluye libreria para entrada/salida
+#include <algorithm>                                  // incluye algoritmo para sort
+using namespace std;                                  // usa el espacio de nombres std
 
-/***********************************************************
-   ESTRUCTURA PARA GUARDAR UNA ARISTA
-***********************************************************/
-struct Arista {
-    int u;   // nodo 1
-    int v;   // nodo 2
-    int w;   // peso
-};
+struct Arista {                                       // estructura para aristas del grafo
+    int u;                                            // nodo u
+    int v;                                            // nodo v
+    int w;                                            // peso de la arista
+};                                                    // fin estructura
 
-/***********************************************************
-   VARIABLES GLOBALES
-***********************************************************/
-Arista aristas[300];   // aristas originales
-bool eliminar[300];    // marca si la arista sera borrada
-bool visitado[100];    // para DFS
+Arista aristas[300];                                  // arreglo de aristas
+bool eliminar[300];                                   // marca si una arista se eliminara
+bool visitado[100];                                   // arreglo de visita para DFS
 
-int N, E;              // vertices y aristas
+int N, E;                                             // N = vertices, E = aristas
 
-/***********************************************************
-   DFS para verificar si el grafo sigue conectado sin una arista
-***********************************************************/
-void dfs(int u, bool matriz[100][100])
-{
-    visitado[u] = true;
+void dfs(int u, bool matriz[100][100])                // DFS para verificar conectividad
+{                                                     // inicio funcion
+    visitado[u] = true;                               // marcar nodo como visitado
 
-    int v;
-    for(v = 0; v < N; v++)
+    for(int v = 0; v < N; v++)                        // recorrer todos los posibles nodos v
     {
-        // Si existe conexi�n y no fue visitado, avanzar
-        if(matriz[u][v] && !visitado[v])
-            dfs(v, matriz);
+        if(matriz[u][v] && !visitado[v])              // si hay conexion y no visitado
+            dfs(v, matriz);                           // continuar DFS
     }
+}                                                     // fin DFS
+
+bool ordenarDesc(const Arista &A, const Arista &B)    // comparador para ordenar pesos desc
+{
+    return A.w > B.w;                                 // true si A pesa mas que B
 }
 
-/***********************************************************
-   COMPARADOR PARA ORDENAR ARISTAS DE MAYOR A MENOR PESO
-***********************************************************/
-bool ordenarDesc(const Arista &A, const Arista &B)
+void ejecutarReverseKruskal()                         // algoritmo Reverse Delete
 {
-    return A.w > B.w;        // mayor primero
-}
+    sort(aristas, aristas + E, ordenarDesc);          // ordenar aristas de mayor a menor
 
-/***********************************************************
-   Reverse-Kruskal (Reverse Delete Algorithm)
-***********************************************************/
-void ejecutarReverseKruskal()
-{
-    // Ordenamos aristas de mayor a menor
-    sort(aristas, aristas + E, ordenarDesc);
-
-    // Inicialmente ninguna esta eliminada
-    int i;
-    for(i = 0; i < E; i++)
+    for(int i = 0; i < E; i++)                        // inicialmente ninguna eliminada
         eliminar[i] = false;
 
-    /*********************************************************
-       MATRIZ DE ADYACENCIA TEMPORAL:
-       Aqu� a�adimos TODAS las aristas primero.
-    *********************************************************/
-    bool matriz[100][100];
-    int u, v;
+    bool matriz[100][100];                            // matriz de adyacencia temporal
 
-    for(u = 0; u < N; u++)
-        for(v = 0; v < N; v++)
-            matriz[u][v] = false;
+    for(int i = 0; i < N; i++)                        // limpiar matriz
+        for(int j = 0; j < N; j++)
+            matriz[i][j] = false;
 
-    // Colocar todas las aristas
-    for(i = 0; i < E; i++)
+    for(int i = 0; i < E; i++)                        // agregar todas las aristas
     {
-        matriz[ aristas[i].u ][ aristas[i].v ] = true;
-        matriz[ aristas[i].v ][ aristas[i].u ] = true;
+        matriz[ aristas[i].u ][ aristas[i].v ] = true; // u-v
+        matriz[ aristas[i].v ][ aristas[i].u ] = true; // v-u
     }
 
-    /*********************************************************
-       PROCESO PRINCIPAL:
-       Intentamos ELIMINAR aristas en orden DESCENDENTE.
-       - Quitamos una arista.
-       - Verificamos si el grafo sigue conectado.
-       - Si se desconecta, devolvemos la arista.
-    *********************************************************/
-    for(i = 0; i < E; i++)
+    for(int i = 0; i < E; i++)                        // recorrer aristas en orden descendente
     {
-        int a = aristas[i].u;
-        int b = aristas[i].v;
+        int a = aristas[i].u;                         // extremo a
+        int b = aristas[i].v;                         // extremo b
 
-        // Eliminamos temporalmente
-        matriz[a][b] = false;
+        matriz[a][b] = false;                         // quitar arista temporalmente
         matriz[b][a] = false;
 
-        // Limpiar visitados para DFS
-        int k;
-        for(k = 0; k < N; k++)
+        for(int k = 0; k < N; k++)                    // limpiar marcas del DFS
             visitado[k] = false;
 
-        // Hacemos DFS desde cualquier nodo (0)
-        dfs(0, matriz);
+        dfs(0, matriz);                               // correr DFS desde nodo 0
 
-        // Revisar si todos fueron alcanzados
-        bool conectado = true;
-        for(k = 0; k < N; k++)
+        bool conectado = true;                        // verificar conectividad
+
+        for(int k = 0; k < N; k++)                    // si algun nodo no fue visitado
         {
             if(!visitado[k])
             {
-                conectado = false;
+                conectado = false;                   // grafo se desconecto
                 break;
             }
         }
 
-        // Si se desconect�, la arista NO puede eliminarse
-        if(!conectado)
+        if(!conectado)                                // si desconecto, restaurar arista
         {
             matriz[a][b] = true;
             matriz[b][a] = true;
         }
-        else
+        else                                          // si sigue conectado, eliminarla
         {
-            eliminar[i] = true;  // queda eliminada
+            eliminar[i] = true;
         }
     }
 
-    /*********************************************************
-       MOSTRAR RESULTADOS DEL MST
-    *********************************************************/
     cout << "\n======= MST OBTENIDO (Reverse Kruskal) =======\n";
 
-    int total = 0;
+    int total = 0;                                    // acumulador del peso total
 
-    for(i = 0; i < E; i++)
+    for(int i = 0; i < E; i++)                        // mostrar aristas del MST
     {
-        if(!eliminar[i])
+        if(!eliminar[i])                              // si no fue eliminada
         {
             cout << aristas[i].u << " -- " << aristas[i].v
                  << "  (peso = " << aristas[i].w << ")\n";
-
-            total += aristas[i].w;
+            total += aristas[i].w;                    // sumar peso
         }
     }
 
     cout << "\nPeso total del MST = " << total << "\n";
 }
 
-/***********************************************************
-   Captura del grafo (SIEMPRE NO DIRIGIDO)
-***********************************************************/
-void capturarGrafo()
+void capturarGrafo()                                  // captura manual del grafo
 {
     cout << "\nNumero de vertices: ";
     cin >> N;
@@ -156,33 +111,98 @@ void capturarGrafo()
 
     cout << "\nIngrese (u v peso):\n";
 
-    int i;
-    for(i = 0; i < E; i++)
+    for(int i = 0; i < E; i++)
     {
         cout << "Arista " << i << ": ";
         cin >> aristas[i].u >> aristas[i].v >> aristas[i].w;
     }
 
-    cout << "\nGrafo cargado!!.\n";
+    cout << "\nGrafo cargado.\n";
 }
 
-/***********************************************************
-   MENU PRINCIPAL
-***********************************************************/
+void cargarGrafoPredefinido(int tipo)                 // cargar opciones predefinidas
+{
+    if(tipo == 1)                                     // grafo no dirigido PONDERADO
+    {
+        N = 5;
+        E = 6;
+
+        int datos[6][3] = {
+            {0,1,4},
+            {0,4,6},
+            {0,3,9},
+            {1,3,8},
+            {1,2,7},
+            {2,3,5}
+        };
+
+        for(int i = 0; i < E; i++)
+        {
+            aristas[i].u = datos[i][0];
+            aristas[i].v = datos[i][1];
+            aristas[i].w = datos[i][2];
+        }
+
+        cout << "\nGrafo NO dirigido y PONDERADO cargado.\n";
+    }
+    else if(tipo == 2)                                // grafo dirigido PONDERADO
+    {
+        N = 5;
+        E = 6;
+
+        int datos[6][3] = {
+            {1,0,3}, {0,3,12}, {1,2,18},
+            {3,2,15}, {3,1,9}, {4,0,6}
+        };
+
+        for(int i = 0; i < E; i++)
+        {
+            aristas[i].u = datos[i][0];
+            aristas[i].v = datos[i][1];
+            aristas[i].w = datos[i][2];
+        }
+
+        cout << "\nGrafo DIRIGIDO y PONDERADO cargado.\n";
+    }
+    else
+    {
+        cout << "\nOpcion de grafo predefinido invalida.\n";
+    }
+}
+
+void menuGrafosPredef()                               // menu para grafos predefinidos
+{
+    int opcion;
+
+    cout << "\nGRAFOS PREDEFINIDOS:\n";
+    cout << "1. No dirigido y ponderado\n";
+    cout << "2. Dirigido y ponderado\n";
+    cout << "3. Ingresar grafo manualmente\n";
+    cout << "\nElija una opcion: ";
+    cin >> opcion;
+
+    if(opcion == 1 || opcion == 2)
+        cargarGrafoPredefinido(opcion);
+    else if(opcion == 3)
+        capturarGrafo();
+    else
+        cout << "\nOpcion invalida.\n";
+}
+
 int main()
 {
     int opcion;
 
     do {
         cout << "\n========== MENU ==========\n";
-        cout << "1. Capturar grafo\n";
+        cout << "1. Seleccionar grafo predefinido o manual\n";
         cout << "2. Ejecutar Reverse-Kruskal\n";
         cout << "0. Salir\n";
         cout << "Opcion: ";
         cin >> opcion;
 
         if(opcion == 1)
-            capturarGrafo();
+            menuGrafosPredef();
         else if(opcion == 2)
             ejecutarReverseKruskal();
 
@@ -190,4 +210,3 @@ int main()
 
     return 0;
 }
-

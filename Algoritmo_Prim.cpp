@@ -1,206 +1,194 @@
-#include <iostream>
-using namespace std;
+#include <iostream>                                                     // incluye la libreria estándar para entrada y salida
+using namespace std;                                                    // evita escribir std:: en cada uso
 
-/**************************************************************
-   REPRESENTACIÓN DEL GRAFO:
-   - adyNodo[u][k]  guarda el k-ésimo vecino de u
-   - adyPeso[u][k]  guarda el peso correspondiente
-   - grado[u]       dice cuántos vecinos tiene u
+// ===============================================================
+//  ARREGLOS PARA REPRESENTAR EL GRAFO
+// ===============================================================
+int adyNodo[100][100];                                                  // adyNodo[u][k] guarda el k-esimo vecino de u
+int adyPeso[100][100];                                                  // adyPeso[u][k] guarda el peso correspondiente
+int grado[100];                                                         // grado[u] indica cuantos vecinos tiene u
 
-   Se usa esta forma porque funciona en compiladores viejos
-   sin usar vector ni pair.
-**************************************************************/
-int adyNodo[100][100];
-int adyPeso[100][100];
-int grado[100];
+int N, E;                                                               // N = numero de vertices, E = numero de aristas
 
-int N, E;   // número de vértices y aristas
+// ===============================================================
+//  ARREGLOS USADOS POR EL ALGORITMO DE PRIM
+// ===============================================================
+int dist[100];                                                          // dist[v] almacena el peso minimo para alcanzar v
+bool visitado[100];                                                     // visitado[v] indica si v ya esta en el MST
+int padre[100];                                                         // padre[v] indica desde que nodo llega v al MST
 
-/**************************************************************
-   Arreglos usados por el algoritmo de Prim:
-   - dist[]   almacena el peso mínimo para conectar cada nodo al MST
-   - padre[]  almacena desde qué nodo llega
-   - visitado[] marca si ya se agregó al MST
-**************************************************************/
-int dist[100];
-bool visitado[100];
-int padre[100];
-
-/**************************************************************
-   Limpia completamente el grafo:
-   - Borra la lista de vecinos
-   - Reinicia grados
-**************************************************************/
-void limpiarGrafo()
+// ===============================================================
+//  LIMPIAR TODO EL GRAFO
+// ===============================================================
+void limpiarGrafo()                                                     // funcion que borra totalmente el grafo
 {
-    int i, j;
-    for(i = 0; i < 100; i++)
+    int i, j;                                                           // indices para ciclos
+    for(i = 0; i < 100; i++)                                            // recorre todos los posibles nodos
     {
-        grado[i] = 0;  // sin vecinos
-
-        for(j = 0; j < 100; j++)
+        grado[i] = 0;                                                   // resetea el numero de vecinos del nodo i
+        for(j = 0; j < 100; j++)                                        // recorre posibles posiciones de vecinos
         {
-            // Todo en 0 para evitar basura
-            adyNodo[i][j] = 0;
-            adyPeso[i][j] = 0;
+            adyNodo[i][j] = 0;                                          // limpia el vecino j del nodo i
+            adyPeso[i][j] = 0;                                          // limpia el peso j del nodo i
         }
     }
 }
 
-/**************************************************************
-   Permite capturar un grafo NO dirigido con pesos.
-   El usuario proporciona: (u v peso)
-   Se agrega en ambos sentidos porque el grafo es NO dirigido.
-**************************************************************/
-void capturarGrafo()
+// ===============================================================
+//  CAPTURA MANUAL DEL GRAFO
+// ===============================================================
+void capturarGrafo()                                                    // permite ingresar el grafo manualmente
 {
-    cout << "\nNumero de vertices: ";
-    cin >> N;
+    cout << "\nNumero de vertices: ";                     // solicita numero de vertices
+    cin >> N;                                                           // lee N
 
-    cout << "Numero de aristas: ";
-    cin >> E;
+    cout << "Numero de aristas: ";                      // solicita numero de aristas
+    cin >> E;                                                           // lee E
 
-    limpiarGrafo();
+    limpiarGrafo();                                                     // limpia el grafo antes de cargar datos
 
-    cout << "\nIngrese cada arista como: u v peso\n";
+    cout << "\nIngrese cada arista como: u v peso\n";    // indica el formato de entrada
 
-    int i, u, v, w;
+    int i, u, v, w;                                                     // variables para lectura
 
-    for(i = 0; i < E; i++)
+    for(i = 0; i < E; i++)                                              // lee cada arista del usuario
     {
-        cout << "Arista " << i << ": ";
-        cin >> u >> v >> w;
+        cout << "Arista " << i << ": ";                        // muestra numero de arista
+        cin >> u >> v >> w;                                             // lee los datos u, v, w
 
-        // Se guarda el vecino para u
-        adyNodo[u][ grado[u] ] = v;
-        adyPeso[u][ grado[u] ] = w;
-        grado[u]++;
+        adyNodo[u][ grado[u] ] = v;                                     // agrega v como vecino de u
+        adyPeso[u][ grado[u] ] = w;                                     // agrega el peso correspondiente
+        grado[u]++;                                                     // incrementa grado de u
 
-        // Se guarda el vecino para v (gráfo NO dirigido)
-        adyNodo[v][ grado[v] ] = u;
-        adyPeso[v][ grado[v] ] = w;
-        grado[v]++;
+        adyNodo[v][ grado[v] ] = u;                                     // agrega u como vecino de v (grafo no dirigido)
+        adyPeso[v][ grado[v] ] = w;                                     // agrega el peso correspondiente
+        grado[v]++;                                                     // incrementa grado de v
     }
 
-    cout << "\nGrafo cargado correctamente.\n";
+    cout << "\nGrafo cargado correctamente.\n";             // confirma carga
 }
 
-/**************************************************************
-   Algoritmo de Prim:
-   1. Inicia desde el nodo 0.
-   2. Siempre elige el nodo NO visitado con menor peso dist[].
-   3. Actualiza el MST agregando ese nodo.
-   4. Intenta mejorar las distancias de sus vecinos.
-**************************************************************/
-void ejecutarPrim()
+// ===============================================================
+//  CARGA PREDEFINIDA DEL GRAFO (NO DIRIGIDO)
+// ===============================================================
+void cargarGrafoPredef()                                                // carga el grafo predefinido
 {
-    int i;
+    limpiarGrafo();                                                     // limpia todo antes de cargar
 
-    /**********************************************************
-       Inicialización básica:
-       - dist[] se llena con un valor muy grande (simulación de infinito)
-       - visitado[] en false, nadie en el MST
-       - padre[] sin definir
-    **********************************************************/
-    for(i = 0; i < N; i++)
+    N = 5;                                                              // establece numero de vertices
+    E = 6;                                                              // establece numero de aristas
+
+    int A[6][3] = {                                                     // matriz con aristas predefinidas
+        {0,1,4},                                                        // arista: 0 - 1 peso 4
+        {0,4,6},                                                        // arista: 0 - 4 peso 6
+        {1,2,7},                                                        // arista: 1 - 2 peso 7
+        {2,3,5},                                                        // arista: 2 - 3 peso 5
+        {1,3,12},                                                       // arista: 1 - 3 peso 12
+        {3,4,8}                                                         // arista: 3 - 4 peso 8
+    };
+
+    for(int i = 0; i < 6; i++)                                          // recorre cada arista
     {
-        dist[i] = 999999;    // infinito
-        visitado[i] = false; // aún no en el MST
-        padre[i] = -1;       // sin padre
+        int u = A[i][0];                                               // obtiene nodo u
+        int v = A[i][1];                                               // obtiene nodo v
+        int w = A[i][2];                                               // obtiene el peso w
+
+        adyNodo[u][grado[u]] = v;                                      // inserta v como vecino de u
+        adyPeso[u][grado[u]] = w;                                      // inserta peso
+        grado[u]++;                                                    // aumenta grado de u
+
+        adyNodo[v][grado[v]] = u;                                      // inserta u como vecino de v
+        adyPeso[v][grado[v]] = w;                                      // inserta peso
+        grado[v]++;                                                    // aumenta grado de v
     }
 
-    // Comenzamos desde el nodo 0
-    dist[0] = 0;
+    cout << "\nGrafo predefinido NO dirigido ponderado cargado.\n"; // confirma carga
+}
 
-    /**********************************************************
-       Se agregan N nodos al MST, uno por iteración.
-       En cada iteración:
-       - Se selecciona el nodo NO visitado con menor dist[]
-       - Se marca como visitado
-       - Se relajan las distancias de sus vecinos
-    **********************************************************/
-    int iter;
-    for(iter = 0; iter < N; iter++)
+// ===============================================================
+//  ALGORITMO DE PRIM
+// ===============================================================
+void ejecutarPrim()                                                     // inicia calculo del MST
+{
+    int i;                                                              // indice
+
+    for(i = 0; i < N; i++)                                              // inicializa todos los arreglos
     {
-        int u = -1;
-        int mejor = 999999;
+        dist[i] = 999999;                                               // valor muy grande (infinito)
+        visitado[i] = false;                                            // aun no esta en el MST
+        padre[i] = -1;                                                  // sin padre asignado
+    }
 
-        /**********************************************************
-            BÚSQUEDA DEL NODO DE MENOR DIST NO VISITADO
-        **********************************************************/
-        for(i = 0; i < N; i++)
+    dist[0] = 0;                                                        // arranca desde el nodo 0
+
+    for(int iter = 0; iter < N; iter++)                                 // agrega N nodos al MST
+    {
+        int u = -1;                                                     // nodo seleccionado
+        int mejor = 999999;                                             // mejor peso encontrado
+
+        for(i = 0; i < N; i++)                                          // busca nodo no visitado de menor dist
         {
-            if(!visitado[i] && dist[i] < mejor)
+            if(!visitado[i] && dist[i] < mejor)                         // verifica mejor opcion
             {
-                mejor = dist[i];
-                u = i;   // nodo con menor costo actual
+                mejor = dist[i];                                        // actualiza mejor peso
+                u = i;                                                  // selecciona este nodo
             }
         }
 
-        // Se agrega al MST
-        visitado[u] = true;
+        visitado[u] = true;                                             // marca nodo como parte del MST
 
-        /**********************************************************
-           RELAJACIÓN:
-           Se revisan todos los vecinos de u:
-           Si un vecino v NO está visitado y el peso w es menor
-           que la mejor distancia actual dist[v], se actualiza.
-        **********************************************************/
-        int k;
-        for(k = 0; k < grado[u]; k++)
+        for(int k = 0; k < grado[u]; k++)                               // revisa vecinos de u
         {
-            int v = adyNodo[u][k];
-            int w = adyPeso[u][k];
+            int v = adyNodo[u][k];                                      // vecino v
+            int w = adyPeso[u][k];                                      // peso de u a v
 
-            if(!visitado[v] && w < dist[v])
+            if(!visitado[v] && w < dist[v])                             // mejora posible?
             {
-                dist[v] = w;    // mejor peso encontrado
-                padre[v] = u;   // u es el padre de v en el MST
+                dist[v] = w;                                            // actualiza mejor peso
+                padre[v] = u;                                           // guarda padre
             }
         }
     }
 
-    /**************************************************************
-       Se imprime el MST construido:
-       Las aristas están dadas por padre[v] -- v
-       excepto v = 0 (que es la raíz)
-    **************************************************************/
-    cout << "\n=========== MST OBTENIDO (Prim) ===========\n";
+    cout << "\n=========== MST OBTENIDO (Prim) ===========\n";   // encabezado MST
 
-    int total = 0;
+    int total = 0;                                                      // suma de pesos del MST
 
-    for(i = 1; i < N; i++)
+    for(i = 1; i < N; i++)                                              // imprime aristas del MST
     {
-        cout << padre[i] << " -- " << i
-             << "   (peso = " << dist[i] << ")\n";
+        cout << padre[i] << " -- " << i                               // muestra arista
+             << "   (peso = " << dist[i] << ")\n";                   // muestra peso correspondiente
 
-        total += dist[i];
+        total += dist[i];                                               // acumula peso
     }
 
-    cout << "\nPeso total del MST = " << total << "\n";
+    cout << "\nPeso total del MST = " << total << "\n";          // imprime peso total
 }
 
-/**************************************************************
-   Menú principal
-**************************************************************/
-int main()
+// ===============================================================
+//  MENU PRINCIPAL
+// ===============================================================
+int main()                                                              // funcion principal
 {
-    int opcion;
+    int opcion;                                                         // almacena opcion del menu
 
     do {
-        cout << "\n========== MENU ==========\n";
-        cout << "1. Capturar grafo\n";
-        cout << "2. Ejecutar Prim\n";
-        cout << "0. Salir\n";
-        cout << "Opcion: ";
-        cin >> opcion;
+        cout << "\n========== MENU ==========\n";              // imprime menu
+        cout << "1. Capturar grafo manualmente\n";                  // opcion 1
+        cout << "2. Cargar grafo NO dirigido ponderado\n";           // opcion 2
+        cout << "3. Ejecutar Prim\n";                               // opcion 3
+        cout << "0. Salir\n";                                        // opcion 0
+        cout << "Opcion: ";                                           // pide opcion
+        cin >> opcion;                                                  // lee opcion
 
-        if(opcion == 1)
-            capturarGrafo();
-        else if(opcion == 2)
-            ejecutarPrim();
+        if(opcion == 1)                                                 // si selecciona 1
+            capturarGrafo();                                            // llama captura manual
+        else if(opcion == 2)                                            // si selecciona 2
+            cargarGrafoPredef();                                        // carga grafo predefinido
+        else if(opcion == 3)                                            // si selecciona 3
+            ejecutarPrim();                                             // ejecuta Prim
 
-    } while(opcion != 0);
+    } while(opcion != 0);                                               // repite hasta elegir salir
 
-    return 0;
+    return 0;                                                           // fin del programa
 }
