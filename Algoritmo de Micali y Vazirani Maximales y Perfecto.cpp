@@ -1,291 +1,410 @@
-#include <iostream>  // Necesaria para la entrada y salida de datos (cin y cout).
-#include <vector>    // Proporciona la estructura 'vector', una lista dinamica para el grafo y las aristas.
-#include <queue>     // Proporciona la estructura 'queue' (cola), esencial para las busquedas de caminos aumentantes (BFS).
-#include <algorithm> // Contiene funciones utiles como 'random_shuffle' o herramientas de ordenamiento.
-#include <utility>   // Proporciona la estructura 'pair' (par), usada para representar las aristas (u, v).
-#include <limits>    // Contiene informacion sobre limites numericos, util para manejar errores de entrada con cin.
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <utility>
+#include <limits>
+
 using namespace std;
 
-// --- CONFIGURACION GLOBAL ---
-// Maximo de nodos que podemos manejar.
+// ---------- Configuracion global ----------
 const int MAXN = 100;
-// Cantidad de nodos que el usuario ingresara.
 int nNodos = 0;
-// Lista de todas las conexiones (aristas) del grafo, como pares (nodo u, nodo v).
-vector<pair<int, int> > todasAristas;
 
-// =========================================================================
-// CLASE PRINCIPAL: MICALI Y VAZIRANI MATCHING
-// Esta es la "caja negra" que hace el trabajo pesado del Emparejamiento Maximo.
-// NOTA: La version real de MV es extremadamente compleja. Esta implementacion
-//       simula su estructura de fases (O(sqrt(V)) repeticiones de la fase de busqueda O(E)).
-// =========================================================================
-
+// ========== Edmonds (Blossom) - 0-based implementation ==========
 class MicaliVazirani {
 private:
-    // V es el numero total de nodos.
     int V;
-    // Lista de adyacencia: quien esta conectado con quien.
     vector<vector<int> > adj;
-    
-    // Estructuras de Emparejamiento
-    // match[u] = v: Guarda con que nodo esta emparejado 'u'. Si es -1, esta libre.
-    vector<int> match;      
-    
-    // Estructuras de Busqueda (prestadas de Edmonds para encontrar caminos aumentantes)
-    vector<int> parent;      // Quien es el padre de un nodo en el arbol de busqueda.
-    vector<int> base;        // La 'raiz' de un nodo en un grupo contraido (Flor/Blossom).
-    vector<int> label;       // Etiqueta: 0 (no visitado), 1 (par), 2 (impar).
-    queue<int> Q;            // Cola de espera para la busqueda de amplitud (BFS).
 
-    // --- FUNCIONES AUXILIARES (Logica de Blossom simplificada) ---
+    vector<int> match;    // match[v] = u or -1
+    vector<int> p;        // parent in bfs
+    vector<int> base;     // base of blossom
+    vector<bool> used;    // used in bfs
+    vector<bool> blossom; // blossom marks
+    queue<int> Q;
 
-    // Obtener la raiz (base) de un nodo (Union-Find). 
-    // Si un grupo de nodos se contrae en una "Flor", esta funcion encuentra la raiz de ese grupo.
-    int get_base(int v) { 
-        return (v == base[v]) ? v : (base[v] = get_base(base[v]));
-    }
-
-    // Encuentra el Ancestor Comun Mas Bajo (LCA). Necesario para la contraccion de Flores.
-    int find_lca(int u, int v) { 
-        // ... (Logica de busqueda para encontrar el punto de encuentro de dos caminos) ...
-        vector<bool> visited(V + 1, false);
-        int cur = get_base(u);
+    int lca(int a, int b) {
+        vector<bool> used_path(V, false);
         while (true) {
-            visited[cur] = true;
-            if (cur == get_base(v)) return cur;
-            if (match[cur] == -1) break; 
-            cur = get_base(parent[match[cur]]);
+            a = base[a];
+            used_path[a] = true;
+            if (match[a] == -1) break;
+            a = p[match[a]];
         }
-        cur = get_base(v);
-        while (!visited[cur]) {
-            if (match[cur] == -1) return -1; 
-            cur = get_base(parent[match[cur]]);
+        while (true) {
+            b = base[b];
+            if (used_path[b]) return b;
+            if (match[b] == -1) break;
+            b = p[match[b]];
         }
-        return cur; 
+        return -1;
     }
 
-    // Aumentar el camino: Invertir las aristas a lo largo del camino aumentante encontrado.
-    // Esto aumenta el tamano del emparejamiento final en 1.
-    void augment_path(int u, int v) {
-        int next_u = match[u];
-        match[u] = v;
-        match[v] = u;
-        if (next_u != -1) {
-            augment_path(next_u, parent[next_u]); // Sigue invirtiendo el camino hacia atras (recursividad).
+    void mark_path(int v, int b, int children) {
+        while (base[v] != b) {
+            blossom[base[v]] = blossom[base[match[v]]] = true;
+            p[v] = children;
+            children = match[v];
+            v = p[match[v]];
         }
     }
-    
-    // BFS simple para encontrar un camino aumentante (simulacion de la busqueda por capas)
-    // Busca un camino que empiece y termine en nodos libres, y que alterne entre aristas NO emparejadas y SI emparejadas.
-    bool simple_augmenting_path_search(int root) {
-        // Inicializacion de las estructuras de busqueda.
-        parent.assign(V + 1, -1);
-        base.assign(V + 1, 0); 
-        for (int i = 1; i <= V; ++i) { base[i] = i; }
-        label.assign(V + 1, 0); 
-        Q = queue<int>();
-        
+
+    void contract(int v, int u) {
+        int b = lca(v, u);
+        // reset blossom flags
+        for (int i = 0; i < V; ++i) blossom[i] = false;
+        mark_path(v, b, u);
+        mark_path(u, b, v);
+        // set base of involved vertices to b
+        for (int i = 0; i < V; ++i) {
+            if (blossom[base[i]]) {
+                base[i] = b;
+                if (!used[i]) {
+                    used[i] = true;
+                    Q.push(i);
+                }
+            }
+        }
+    }
+
+    bool bfs(int root) {
+        used.assign(V, false);
+        p.assign(V, -1);
+        base.resize(V);
+        for (int i = 0; i < V; ++i) base[i] = i;
+        while (!Q.empty()) Q.pop();
+
+        used[root] = true;
         Q.push(root);
-        label[root] = 1; // El nodo raiz tiene etiqueta "par" (inicio del camino).
 
-        while (!Q.empty()) { // Mientras haya nodos por revisar...
-            int u = Q.front();
-            Q.pop();
-            
-            for (size_t i = 0; i < adj[u].size(); ++i) {
-                int v = adj[u][i];
-                
-                if (get_base(u) == get_base(v)) continue; // Si ya estan en el mismo grupo contraido, ignorar.
-
-                if (label[v] == 0) { // Si 'v' no ha sido visitado:
-                    label[v] = 2; // Etiquetar como impar.
-                    parent[v] = u;
-                    if (match[v] == -1) { // ¡Encontramos un nodo libre! Exito.
-                        augment_path(u, v); // Aumentamos el emparejamiento.
+        while (!Q.empty()) {
+            int v = Q.front(); Q.pop();
+            for (size_t i = 0; i < adj[v].size(); ++i) {
+                int to = adj[v][i];
+                if (base[v] == base[to] || match[v] == to) continue;
+                if (to == root || (match[to] != -1 && p[match[to]] != -1)) {
+                    contract(v, to);
+                } else if (p[to] == -1) {
+                    p[to] = v;
+                    if (match[to] == -1) {
+                        // augmenting path found: augment along path
+                        int cur = to;
+                        while (cur != -1) {
+                            int prev = p[cur];
+                            int next = -1;
+                            if (prev != -1) next = match[prev];
+                            match[cur] = prev;
+                            if (prev != -1) match[prev] = cur;
+                            cur = next;
+                        }
                         return true;
+                    } else {
+                        if (!used[match[to]]) {
+                            used[match[to]] = true;
+                            Q.push(match[to]);
+                        }
                     }
-                    // Si 'v' esta emparejado, continuamos la busqueda desde su pareja (match[v])
-                    label[match[v]] = 1; // Su pareja se etiqueta como par.
-                    Q.push(match[v]);
-                } else if (label[v] == 1) { // Si 'v' ya tiene etiqueta par (¡posible Flor!):
-                    // Contraccion de Blossom (simulado): Se necesitara logica completa aqui.
-                    int lca = find_lca(u, v);
-                    // Logica de contraccion/expansion aqui...
                 }
             }
         }
-        return false; // No se encontro camino aumentante desde esta raiz.
-    }
-    
-    // Funcion que simula la fase O(E) de Micali y Vazirani
-    // En MV, en cada gran fase, se encuentran todos los caminos aumentantes mas cortos simultaneamente.
-    bool find_all_shortest_augmenting_paths() {
-        bool augmented = false;
-        
-        // Simulacion: Recorrer todos los nodos libres e intentar encontrar UN camino aumentante (como en Edmonds).
-        for (int i = 1; i <= V; ++i) {
-            if (match[i] == -1) {
-                if (simple_augmenting_path_search(i)) {
-                    augmented = true;
-                }
-            }
-        }
-        
-        // Si se logro un aumento en este ciclo de busqueda, regresamos 'true'.
-        return augmented;
+        return false;
     }
 
 public:
-    // Constructor
-    MicaliVazirani(int num_nodos) : V(num_nodos) {
-        adj.resize(V + 1);
-        match.assign(V + 1, -1);
+    MicaliVazirani(int n) : V(n) {
+        adj.assign(V, vector<int>());
+        match.assign(V, -1);
+        p.assign(V, -1);
+        base.assign(V, 0);
+        used.assign(V, false);
+        blossom.assign(V, false);
     }
 
-    // Cargar el grafo con las aristas proporcionadas.
-    void load_graph(const vector<pair<int, int> >& edges) {
-        adj.assign(V + 1, vector<int>()); 
-        // ... (Anadir aristas a la lista de adyacencia) ...
-        // Reiniciar el emparejamiento para el nuevo grafo
-        match.assign(V + 1, -1);
+    void load_graph(const vector<pair<int,int> >& edges) {
+        adj.assign(V, vector<int>());
+        for (size_t i = 0; i < edges.size(); ++i) {
+            int u = edges[i].first;
+            int v = edges[i].second;
+            if (u < 0 || u >= V || v < 0 || v >= V) continue;
+            adj[u].push_back(v);
+        }
+        match.assign(V, -1);
     }
 
-    // Funcion principal: Calcula el Emparejamiento Maximo
-    // El ciclo 'while' simula las O(sqrt(V)) fases del algoritmo MV.
+    void addEdgeUndirected(int u, int v) {
+        if (u < 0 || u >= V || v < 0 || v >= V) return;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+
     int maxMatching() {
-        int max_m_size = 0;
-        
-        cout << "\n[PROCESO] Iniciando Algoritmo de Micali y Vazirani (Eficiencia O(E*sqrt(V)))..." << endl;
-        
-        int iterations = 0; 
-        // Mientra podamos encontrar caminos aumentantes Y no excedamos el limite de iteraciones (simulando O(sqrt(V))).
-        while (find_all_shortest_augmenting_paths() && iterations < V) {
-            // Recalculamos el tamano del emparejamiento despues de cada fase de aumento.
-            max_m_size = 0;
-            for(int i = 1; i <= V; ++i) {
-                if (match[i] != -1 && i < match[i]) {
-                    max_m_size++;
+        int res = 0;
+        // greedy init
+        for (int v = 0; v < V; ++v) {
+            if (match[v] == -1) {
+                for (size_t i = 0; i < adj[v].size(); ++i) {
+                    int to = adj[v][i];
+                    if (match[to] == -1) {
+                        match[v] = to;
+                        match[to] = v;
+                        ++res;
+                        break;
+                    }
                 }
             }
-            iterations++;
-            cout << " -> Iteracion " << iterations << ": Emparejamiento actual = " << max_m_size << endl;
         }
-        
-        // El resultado final es el tamano maximo encontrado.
-        return max_m_size;
+
+        while (true) {
+            bool found = false;
+            used.assign(V, false);
+            p.assign(V, -1);
+            base.resize(V);
+            for (int i = 0; i < V; ++i) base[i] = i;
+            blossom.assign(V, false);
+
+            for (int v = 0; v < V; ++v) {
+                if (match[v] == -1) {
+                    if (bfs(v)) {
+                        ++res;
+                        found = true;
+                        break; // restart after augmentation
+                    }
+                }
+            }
+            if (!found) break;
+        }
+        return res;
     }
 
-    // Funciones de utilidad para mostrar resultados
-    // Recolecta las aristas que finalmente quedaron emparejadas.
-    vector<pair<int, int> > getMatchingEdges() const {
-        vector<pair<int, int> > edges;
-        // ... (Recoleccion de pares (u, v) donde u < v) ...
+    vector<pair<int,int> > getMatchingEdges() const {
+        vector<pair<int,int> > edges;
+        for (int i = 0; i < V; ++i) {
+            if (match[i] != -1 && i < match[i]) {
+                edges.push_back(make_pair(i, match[i]));
+            }
+        }
         return edges;
     }
-    
-    // Cuenta cuantos nodos estan cubiertos por el emparejamiento.
+
     int countCoveredNodes() const {
         int covered = 0;
-        // ... (Conteo de nodos donde match[i] != -1) ...
+        for (int i = 0; i < V; ++i) {
+            if (match[i] != -1) covered++;
+        }
         return covered;
     }
-};
 
-// =========================================================================
-// MOSTRAR RESULTADOS Y MENU INTERACTIVO
-// =========================================================================
-
-void mostrarResultado(int res, MicaliVazirani& MV) {
-    vector<pair<int, int> > matchingResultante = MV.getMatchingEdges();
-    int nodosCubiertos = MV.countCoveredNodes();
-
-    cout << "\n===============================================\n";
-    cout << "  RESULTADO DEL EMPAREJAMIENTO DE MICALI Y VAZIRANI\n";
-    cout << "===============================================\n";
-    cout << "  Tamano del Pareo (Maximo): " << res << endl;
-    cout << "-----------------------------------------------\n";
-
-    // 1. Mostrar las aristas que forman el Pareo Maximo (M).
-    cout << "  Aristas en el Emparejamiento Maximo (M):\n";
-    // ... (Muestra las aristas) ...
-
-    // 2. Verificacion de Maximalidad (Explicita)
-    cout << "\nVERIFICACION DE MAXIMALIDAD:\n";
-    cout << "[SI ES MAXIMAL!] El pareo encontrado es **MAXIMO**. ";
-    cout << "Este algoritmo garantiza el mayor tamano de emparejamiento posible, por lo tanto, ";
-    cout << "ninguna arista puede ser anadida (es **MAXIMAL**).\n";
-
-    // 3. Verificacion de Perfeccion
-    cout << "\nVERIFICACION DE PERFECCION:\n";
-    cout << "  - Nodos totales en el grafo: " << nNodos << ".\n";
-    cout << "  - Nodos cubiertos por el pareo: " << nodosCubiertos << ".\n";
-    
-    if (nodosCubiertos == nNodos) {
-        cout << "[LOGRADO!] SE ENCONTRO PAREO **PERFECTO**. Todos los " << nNodos << " nodos estan cubiertos.\n";
-    } else {
-        cout << "[NO PERFECTO] El pareo es Maximo/Maximal, pero NO PERFECTO. Quedaron " << (nNodos - nodosCubiertos) << " nodos libres sin emparejar.\n";
-        cout << "  Relacion: " << nodosCubiertos << "/" << nNodos << endl;
+    vector<vector<int> > getAdjMatrix() const {
+        vector<vector<int> > M(V, vector<int>(V, 0));
+        for (int u = 0; u < V; ++u) {
+            for (size_t j = 0; j < adj[u].size(); ++j) {
+                int v = adj[u][j];
+                if (v >= 0 && v < V) M[u][v] = 1;
+            }
+        }
+        return M;
     }
 
+    // expose V for external use
+    int getV() const { return V; }
+};
+
+// ========== Utilidades de impresion ==========
+void imprimirMatriz(const vector<vector<int> >& M) {
+    if (M.empty()) {
+        cout << "(Matriz vacia)\n";
+        return;
+    }
+    int n = (int)M.size();
+    cout << "\nMatriz de adyacencia (" << n << " nodos, indices 0.." << (n-1) << "):\n";
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            cout << M[i][j] << " ";
+        }
+        cout << "\n";
+    }
+}
+
+void mostrarResultado(int res, MicaliVazirani& MV) {
+    vector<pair<int,int> > matching = MV.getMatchingEdges();
+    int covered = MV.countCoveredNodes();
+
+    cout << "\n===============================================\n";
+    cout << "  RESULTADO DEL EMPAREJAMIENTO (Edmonds / Blossom)\n";
+    cout << "===============================================\n";
+    cout << "  Tamano del pareo (maximo): " << res << "\n";
+    cout << "-----------------------------------------------\n";
+
+    cout << "  Aristas en el pareo (u -- v):\n";
+    if (matching.empty()) {
+        cout << "   (ninguna)\n";
+    } else {
+        for (size_t i = 0; i < matching.size(); ++i) {
+            cout << "   (" << matching[i].first << " -- " << matching[i].second << ")\n";
+        }
+    }
+
+    cout << "\n  Nodos totales: " << MV.getV() << "\n";
+    cout << "  Nodos cubiertos por el pareo: " << covered << "\n";
+    if (covered == MV.getV()) {
+        cout << "  [LOGRADO] Pareo PERFECTO.\n";
+    } else {
+        cout << "  [NO PERFECTO] Quedaron " << (MV.getV() - covered) << " nodos libres.\n";
+    }
     cout << "===============================================\n";
 }
 
+// ========== Menu interactivo ==========
 void menu() {
-    int op;
-    int resultado = 0;
-    MicaliVazirani* MV = NULL; // Puntero a la clase del algoritmo.
+    int op = -1;
+    MicaliVazirani* MV = NULL;
 
     do {
-        // Muestra el menu interactivo principal
-        cout << "\n===============================================\n";
-        cout << "  ALGORITMO DE EMPAREJAMIENTO DE MICALI Y VAZIRANI\n";
-        // ... (Caracteristicas y opciones) ...
-        
-        cout << "1. Ingresar Grafo\n";
-        cout << "2. Ejecutar Algoritmo MICALI-VAZIRANI para MAXIMO Pareo\n";
-        cout << "3. Mostrar Resultados y Verificaciones\n";
-        cout << "4. Salir\n";
-        // ... (Lectura de opcion) ...
-        
-        if (!(cin >> op)) { /* ... */ continue; }
+        cout << "\n=======================================\n";
+        cout << " MICALI-VAZIRANI / EDMONDS (0-based)\n";
+        cout << "=======================================\n";
+        cout << "1. Ingresar grafo manual (0-based)\n";
+        cout << "2. Ejecutar algoritmo (max matching)\n";
+        cout << "3. Mostrar resultados del emparejamiento\n";
+        cout << "4. Mostrar matriz de adyacencia (si hay grafo)\n";
+        cout << "5. Cargar grafo NO dirigido y NO ponderado (predefinido de 5 nodos)\n";
+        cout << "6. Eliminar grafo\n";
+        cout << "0. Salir\n";
+        cout << "Elige opcion: ";
+        if (!(cin >> op)) {
+            cout << "[ERROR] Entrada invalida.\n";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            op = -1;
+            continue;
+        }
 
         switch (op) {
-        case 1:
-            // Opcion 1: Ingreso del Grafo
-            // Pide al usuario la cantidad de nodos y aristas y las guarda.
-            // Crea una nueva instancia de la clase MicaliVazirani.
-            // ... (Logica de entrada) ...
+        case 1: {
+            // Ingresar grafo manual (0-based)
+            int n;
+            cout << "Numero de nodos (max " << MAXN << "): ";
+            cin >> n;
+            if (n <= 0 || n > MAXN) {
+                cout << "[ERROR] Numero de nodos invalido.\n";
+                break;
+            }
+            nNodos = n;
+            int m;
+            cout << "Numero de aristas: ";
+            cin >> m;
+            vector<pair<int,int> > edges;
+            cout << "Ingresa aristas (u v) con nodos 0.." << (n-1) << " (una por linea):\n";
+            for (int i = 0; i < m; ++i) {
+                int u,v;
+                cin >> u >> v;
+                if (u < 0 || u >= n || v < 0 || v >= n) {
+                    cout << "[ERROR] Arista invalida ignorada: " << u << " " << v << "\n";
+                    continue;
+                }
+                // For undirected usage, we will add both directions later if desired;
+                // Here we store a single directed pair (user can input either).
+                edges.push_back(make_pair(u,v));
+            }
+            if (MV) { delete MV; MV = NULL; }
+            MV = new MicaliVazirani(nNodos);
+            MV->load_graph(edges);
+            cout << "[OK] Grafo manual cargado (0-based).\n";
             break;
-
-        case 2:
-            // Opcion 2: Ejecutar el Algoritmo
-            // Llama a la funcion 'maxMatching' para calcular el emparejamiento.
-            if (nNodos == 0 || !MV) { /* ... */ break; }
-            resultado = MV->maxMatching();
-            cout << "\n[FINALIZADO] Algoritmo ejecutado. Se encontro un Pareo Maximo de tamano: " << resultado << endl;
-            break;
-
-        case 3:
-            // Opcion 3: Mostrar Resultados
-            // Presenta el analisis del resultado (Maximo, Maximal, Perfecto).
-            if (nNodos == 0 || !MV) { /* ... */ break; }
-            mostrarResultado(resultado, *MV);
-            break;
-
-        case 4:
-            // Opcion 4: Salir
-            cout << "\nSaliendo del programa... Hasta pronto!\n";
-            if (MV) delete MV; // Libera la memoria utilizada por la clase.
-            break;
-        default:
-            cout << "\n[ERROR] Opcion invalida.\n";
         }
-    } while (op != 4);
+
+        case 2: {
+            if (!MV) {
+                cout << "[ERROR] No hay grafo cargado.\n";
+                break;
+            }
+            cout << "[INFO] Ejecutando algoritmo para emparejamiento maximo...\n";
+            int result = MV->maxMatching();
+            cout << "[OK] Tamano del pareo maximo encontrado: " << result << "\n";
+            break;
+        }
+
+        case 3: {
+            if (!MV) {
+                cout << "[ERROR] No hay grafo cargado.\n";
+                break;
+            }
+            // compute matching size by calling maxMatching? We assume user ran option 2.
+            // But we can call getMatchingEdges and countCoveredNodes.
+            vector<pair<int,int> > matching = MV->getMatchingEdges();
+            int covered = MV->countCoveredNodes();
+            cout << "\n--- Resultado actual (segun estado interno) ---\n";
+            cout << "Tamano pareo (en aristas): " << matching.size() << "\n";
+            for (size_t i = 0; i < matching.size(); ++i) {
+                cout << " (" << matching[i].first << " -- " << matching[i].second << ")\n";
+            }
+            cout << "Nodos cubiertos: " << covered << " / " << MV->getV() << "\n";
+            break;
+        }
+
+        case 4: {
+            if (!MV) {
+                cout << "[ERROR] No hay grafo cargado.\n";
+                break;
+            }
+            vector<vector<int> > M = MV->getAdjMatrix();
+            imprimirMatriz(M);
+            break;
+        }
+
+        case 5: {
+            // Cargar el grafo predefinido (0-based), no dirigido: aÃ±adimos cada arista en ambas direcciones.
+            if (MV) { delete MV; MV = NULL; }
+            nNodos = 5;
+            MV = new MicaliVazirani(nNodos);
+
+            // Lista original (segun tu entrada). We'll add only unique undirected edges,
+            // but since addEdgeUndirected adds both directions, just call it with pairs.
+            // Your original edges included duplicates (u->v and v->u); we use set-like behaviour.
+            // We'll add the undirected edges (unique) corresponding to the connections:
+            // 0-1, 0-4, 0-3, 1-3, 1-2, 2-3  (these cover the list you provided)
+            MV->addEdgeUndirected(0, 1);
+            MV->addEdgeUndirected(0, 4);
+            MV->addEdgeUndirected(0, 3);
+            MV->addEdgeUndirected(1, 3);
+            MV->addEdgeUndirected(1, 2);
+            MV->addEdgeUndirected(2, 3);
+            // Note: edges like 3-0 etc are redundant because undirected additions already added them.
+
+            cout << "[OK] Grafo predefinido cargado (5 nodos, 0-based).\n";
+
+            vector<vector<int> > Mat = MV->getAdjMatrix();
+            imprimirMatriz(Mat);
+            break;
+        }
+
+        case 6: {
+            if (MV) {
+                delete MV;
+                MV = NULL;
+                nNodos = 0;
+                cout << "[OK] Grafo eliminado.\n";
+            } else {
+                cout << "No hay grafo para eliminar.\n";
+            }
+            break;
+        }
+
+        case 0:
+            cout << "Saliendo...\n";
+            break;
+
+        default:
+            cout << "[ERROR] Opcion invalida.\n";
+        }
+
+    } while (op != 0);
+
+    if (MV) delete MV;
 }
 
+// ========== main ==========
 int main() {
-    menu(); // Inicia el programa
+    menu();
     return 0;
 }
-
