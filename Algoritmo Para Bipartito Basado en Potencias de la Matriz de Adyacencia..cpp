@@ -59,17 +59,17 @@ bool verificar_bipartito_matriz(const vector< vector<int> >& matriz_adyacencia, 
         
         // Verificamos la DIAGONAL PRINCIPAL (donde la fila 'i' es igual a la columna 'i').
         // Si (A^k)[i][i] es mayor que 0, significa que existe un camino de longitud 'k' 
-        // que va del nodo 'i' a si mismo. �Esto es un ciclo!
+        // que va del nodo 'i' a si mismo. ¡Esto es un ciclo!
         for (int i = 0; i < V; ++i) {
             if (potencia_actual[i][i] > 0) {
-                // Si encontramos un ciclo de longitud impar, �el grafo NO es bipartito!
+                // Si encontramos un ciclo de longitud impar, ¡el grafo NO es bipartito!
                 cout << "[CONFLICTO]: Se encontro un ciclo de longitud impar " << k << " que pasa por el nodo " << (i + 1) << "." << endl;
                 return false; // Salimos de la funcion, el resultado es NO bipartito.
             }
         }
     }
 
-    // Si el programa termina el bucle sin encontrar ningun ciclo impar, �el grafo ES bipartito!
+    // Si el programa termina el bucle sin encontrar ningun ciclo impar, ¡el grafo ES bipartito!
     return true;
 }
 
@@ -80,72 +80,102 @@ bool verificar_bipartito_matriz(const vector< vector<int> >& matriz_adyacencia, 
 int main() {
     // setlocale(LC_ALL, ""); // Eliminado
     
-    int V, E; // 'V' es la cantidad de nodos (vertices), 'E' es la cantidad de aristas (conexiones).
-    int tipo_grafo; 
-
-    // --- MENU DE TITULO ---
+    // Nuevo comportamiento: el programa inicia con un menú.
+    // Opciones:
+    // 1) Usar grafo NO dirigido y NO ponderado (predefinido)
+    // 2) Usar grafo NO dirigido y PONDERADO (predefinido)
+    // 3) Ingresar grafo manualmente
+    // 4) Salir
+    //
+    // IMPORTANTE: NO se modifica ninguna de las funciones ni comentarios del algoritmo.
+    // Solo se controla la forma en que se obtiene la matriz de adyacencia para que
+    // pueda usarse el algoritmo tal cual.
+    
+    int opcion_menu = 0;
     cout << "=======================================================" << endl;
     cout << "         VERIFICACION DE GRAFO BIPARTITO" << endl;
     cout << "=======================================================" << endl;
-    cout << "    (Algoritmo 3: Basado en Potencias de la Matriz)" << endl;
-    cout << "\n";
-
-
-    // 1. PREGUNTAR SI ES PONDERADO O NO 
-    cout << "1. Su grafo es Ponderado (tiene pesos) o No Ponderado?" << endl;
-    cout << "[1] No Ponderado" << endl;
-    cout << "[2] Ponderado" << endl;
+    cout << "Seleccione una opcion:" << endl;
+    cout << "1. Usar grafo NO dirigido y NO ponderado (predefinido)" << endl;
+    cout << "2. Usar grafo NO dirigido y PONDERADO (predefinido)" << endl;
+    cout << "3. Ingresar grafo manualmente" << endl;
+    cout << "4. Salir" << endl;
     cout << "Opcion: ";
-    cin >> tipo_grafo; // Leemos la respuesta del usuario.
+    cin >> opcion_menu;
     
-    bool es_ponderado = (tipo_grafo == 2); // 'true' si es ponderado, 'false' si no.
+    // Variables que necesita el algoritmo original
+    int V = 0, E = 0;
+    vector< vector<int> > matriz_adyacencia;
+
+    if (opcion_menu == 4) {
+        cout << "\n[PROGRAMA TERMINADO]\n";
+        return 0;
+    }
     
-    // --- CONFIGURACION DEL GRAFO ---
-    cout << "\n================================================" << endl;
-    cout << "           CONFIGURACION DEL GRAFO" << endl;
-    cout << "================================================" << endl;
-    
-    // 2. SOLICITAR NUMERO DE NODOS (V)
-    do {
-        cout << "Introduce el numero de vertices (nodos) [Maximo " << MAX_NODES << "]: ";
-        cin >> V;
-        // Revisamos que el numero este dentro de los limites que definimos.
-        if (V <= 0 || V > MAX_NODES) cout << "[ERROR] El numero de nodos debe ser entre 1 y " << MAX_NODES << ".\n" << endl;
-    } while (V <= 0 || V > MAX_NODES);
+    if (opcion_menu == 1) {
+        // Grafo NO dirigido y NO ponderado (predefinido)
+        V = 5;
+        matriz_adyacencia.assign(V, vector<int>(V, 0));
+        // Tus conexiones (no duplicamos 1-0 y 0-1 porque es no dirigido)
+        matriz_adyacencia[0][1] = matriz_adyacencia[1][0] = 1;
+        matriz_adyacencia[0][4] = matriz_adyacencia[4][0] = 1;
+        matriz_adyacencia[0][3] = matriz_adyacencia[3][0] = 1;
+        matriz_adyacencia[1][3] = matriz_adyacencia[3][1] = 1;
+        matriz_adyacencia[1][2] = matriz_adyacencia[2][1] = 1;
+        matriz_adyacencia[2][3] = matriz_adyacencia[3][2] = 1;
+        cout << "\n[GRAFO CARGADO]: No dirigido NO ponderado\n";
+    }
+    else if (opcion_menu == 2) {
+        // Grafo NO dirigido y PONDERADO (predefinido)
+        // Los pesos los ignoramos para el analisis (tu algoritmo usa solo la matriz de adyacencia binaria)
+        V = 5;
+        matriz_adyacencia.assign(V, vector<int>(V, 0));
+        matriz_adyacencia[0][1] = matriz_adyacencia[1][0] = 1;
+        matriz_adyacencia[0][4] = matriz_adyacencia[4][0] = 1;
+        matriz_adyacencia[0][3] = matriz_adyacencia[3][0] = 1;
+        matriz_adyacencia[1][3] = matriz_adyacencia[3][1] = 1;
+        matriz_adyacencia[1][2] = matriz_adyacencia[2][1] = 1;
+        matriz_adyacencia[2][3] = matriz_adyacencia[3][2] = 1;
+        cout << "\n[GRAFO CARGADO]: No dirigido PONDERADO (pesos ignorados para analisis)\n";
+    }
+    else if (opcion_menu == 3) {
+        // Ingreso manual: el usuario decide nodos y aristas (se usará la lógica original)
+        // NOTA: para mantener consistencia con tus definiciones usamos numeración 0..V-1
+        do {
+            cout << "Introduce el numero de vertices (nodos) [Maximo " << MAX_NODES << "]: ";
+            cin >> V;
+            if (V <= 0 || V > MAX_NODES) cout << "[ERROR] El numero de nodos debe ser entre 1 y " << MAX_NODES << ".\n" << endl;
+        } while (V <= 0 || V > MAX_NODES);
 
-    cout << "Introduce el numero de aristas (conexiones): ";
-    cin >> E;
+        cout << "Introduce el numero de aristas (conexiones): ";
+        cin >> E;
 
-    // 3. CREAR LA MATRIZ DE ADYACENCIA
-    // Creamos una tabla cuadrada (matriz) de VxV, donde los 0 indican que no hay conexion.
-    vector< vector<int> > matriz_adyacencia(V, vector<int>(V, 0));
+        matriz_adyacencia.assign(V, vector<int>(V, 0));
 
-    // 4. LEER LAS CONEXIONES (ARISTAS)
-    cout << "Introduce las aristas (u v). PUEDES USAR NUMEROS DEL 1 AL " << V << ":" << endl;
-    cout << " (ejemplo: " << (es_ponderado ? "1 2 5.5" : "1 2") << ")" << endl; 
-    
-    for (int i = 0; i < E; i++) {
-        int u, v; // u es el nodo de inicio, v es el nodo de llegada.
-        double peso = 0; 
-
-        cout << "Arista " << i + 1 << ": ";
-        cin >> u >> v; // Leemos los dos nodos conectados.
+        cout << "Introduce las aristas (u v). PUEDES USAR NUMEROS DEL 0 AL " << (V-1) << ":" << endl;
+        cout << " (ejemplo: 0 1)" << endl; 
         
-        if (es_ponderado) {
-            cin >> peso; // Si es ponderado, leemos el peso (que sera ignorado en el analisis).
-        }
-        
-        int u_idx = u - 1; // Adaptamos el numero del usuario (ej. 1) a la posicion de la matriz (ej. 0).
-        int v_idx = v - 1; 
+        for (int i = 0; i < E; i++) {
+            int u, v; // u es el nodo de inicio, v es el nodo de llegada.
+            cout << "Arista " << i + 1 << ": ";
+            cin >> u >> v; // Leemos los dos nodos conectados.
 
-        if (u_idx >= 0 && u_idx < V && v_idx >= 0 && v_idx < V) {
-            // Marcamos la conexion con un 1 en la matriz A.
-            matriz_adyacencia[u_idx][v_idx] = 1; 
-            matriz_adyacencia[v_idx][u_idx] = 1; // Como es NO Dirigido, la conexion va en ambos sentidos.
-        } else {
-            cout << "[ERROR]: Los nodos ingresados no existen. Deben ser entre 1 y " << V << "." << endl;
-            i--; // Hacemos que el bucle repita esta arista porque el dato fue invalido.
+            int u_idx = u; // Ya asume 0-based
+            int v_idx = v; 
+
+            if (u_idx >= 0 && u_idx < V && v_idx >= 0 && v_idx < V) {
+                // Marcamos la conexion con un 1 en la matriz A.
+                matriz_adyacencia[u_idx][v_idx] = 1; 
+                matriz_adyacencia[v_idx][u_idx] = 1; // Como es NO Dirigido, la conexion va en ambos sentidos.
+            } else {
+                cout << "[ERROR]: Los nodos ingresados no existen. Deben ser entre 0 y " << (V-1) << "." << endl;
+                i--; // Hacemos que el bucle repita esta arista porque el dato fue invalido.
+            }
         }
+    }
+    else {
+        cout << "\n[OPCION NO VALIDA]\n";
+        return 0;
     }
 
     // --- ANALISIS DE BIPARTITO ---
