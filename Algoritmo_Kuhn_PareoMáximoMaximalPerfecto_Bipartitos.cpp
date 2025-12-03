@@ -1,9 +1,9 @@
 #include <iostream>  // Entrada y salida
 #include <vector>    // Vectores y listas de adyacencia
-#include <queue>     // Cola para BFS (verificaciÛn bipartita)
+#include <queue>     // Cola para BFS (verificaci√≥n bipartita)
 #include <limits>    // Para cin.ignore
-#include <locale.h>  // Para tildes y Ò
-#include <cmath>     // Para el c·lculo de la perfecciÛn (ceil/floor, aunque usaremos aritmÈtica entera)
+#include <locale.h>  // Para tildes y √±
+#include <cmath>     // Para el c√°lculo de la perfecci√≥n (ceil/floor, aunque usaremos aritm√©tica entera)
 
 using namespace std;
 
@@ -11,22 +11,22 @@ using namespace std;
 // ESTRUCTURAS Y VARIABLES GLOBALES
 // =========================================================================
 
-// TamaÒo m·ximo del grafo (ajustado para ser un poco m·s seguro)
+// Tama√±o m√°ximo del grafo (ajustado para ser un poco m√°s seguro)
 const int MAX_NODES = 200; 
 
-int V = 0; // N˙mero total de vÈrtices (nodos)
-int E = 0; // N˙mero total de aristas (conexiones)
+int V = 0; // N√∫mero total de v√©rtices (nodos)
+int E = 0; // N√∫mero total de aristas (conexiones)
 
-// Lista de adyacencia del grafo (para la verificaciÛn Bipartita)
+// Lista de adyacencia del grafo (para la verificaci√≥n Bipartita)
 vector<vector<int> > grafo_adyacencia;
 
 // ***************************************************************
-// 1. VERIFICACI”N DE GRAFO BIPARTITO (Requisito para Kuhn)
+// 1. VERIFICACI√ìN DE GRAFO BIPARTITO (Requisito para Kuhn)
 // ***************************************************************
 
 // Intenta colorear el grafo con 2 colores (0 y 1) usando BFS.
 bool esBipartito(int n_nodos, vector<vector<int> >& grafo, vector<int>& grupo_color) {
-    // Si la lista de colores (grupo_color) no tiene el tamaÒo correcto, la ajustamos y rellenamos con -1 (sin color).
+    // Si la lista de colores (grupo_color) no tiene el tama√±o correcto, la ajustamos y rellenamos con -1 (sin color).
     if (grupo_color.size() != (size_t)n_nodos) {
         grupo_color.assign(n_nodos, -1);
     } else {
@@ -68,14 +68,14 @@ bool esBipartito(int n_nodos, vector<vector<int> >& grafo, vector<int>& grupo_co
 }
 
 // ***************************************************************
-// 2. ALGORITMO DE KUHN (Pareo M·ximo en Bipartitos)
+// 2. ALGORITMO DE KUHN (Pareo M√°ximo en Bipartitos)
 // ***************************************************************
 
-// Estructuras especÌficas de Kuhn
-vector<int> match_to; // match_to[v] = u significa que el nodo v est· emparejado con u. -1 si est· libre.
-vector<bool> visited; // Para la b˙squeda DFS en cada iteraciÛn.
+// Estructuras espec√≠ficas de Kuhn
+vector<int> match_to; // match_to[v] = u significa que el nodo v est√° emparejado con u. -1 si est√° libre.
+vector<bool> visited; // Para la b√∫squeda DFS en cada iteraci√≥n.
 
-// FunciÛn de b˙squeda en profundidad (DFS) para encontrar un camino aumentante.
+// Funci√≥n de b√∫squeda en profundidad (DFS) para encontrar un camino aumentante.
 // Intenta emparejar el nodo 'u' (del Grupo A) con un nodo 'v' libre del Grupo B.
 // Devuelve true si encuentra un camino aumentante (es decir, logra hacer un nuevo emparejamiento).
 bool try_match(int u, vector<vector<int> >& grafo, const vector<int>& grupo_color) {
@@ -85,28 +85,28 @@ bool try_match(int u, vector<vector<int> >& grafo, const vector<int>& grupo_colo
         int v = grafo[u][i];
 
         // Solo consideramos aristas que van de A (u) a B (v).
-        // (La verificaciÛn de biparticiÛn ya hizo el filtrado de colores)
+        // (La verificaci√≥n de bipartici√≥n ya hizo el filtrado de colores)
         if (grupo_color[u] == 0 && grupo_color[v] == 1 && !visited[v]) {
             
-            // Marcamos 'v' como visitado en esta ejecuciÛn de DFS.
+            // Marcamos 'v' como visitado en esta ejecuci√≥n de DFS.
             visited[v] = true;
 
-            // CASO 1: 'v' est· libre (match_to[v] == -1), o
-            // CASO 2: 'v' est· emparejado con otro nodo (match_to[v] = u_anterior),
-            // y podemos encontrar un camino aumentante para 'u_anterior' a partir de ahÌ.
+            // CASO 1: 'v' est√° libre (match_to[v] == -1), o
+            // CASO 2: 'v' est√° emparejado con otro nodo (match_to[v] = u_anterior),
+            // y podemos encontrar un camino aumentante para 'u_anterior' a partir de ah√≠.
 
             if (match_to[v] == -1 || try_match(match_to[v], grafo, grupo_color)) {
                 // Si encontramos un camino, hacemos el emparejamiento.
                 // El camino aumentante invierte el estado de las aristas.
                 match_to[v] = u;
-                return true; // …xito: Encontramos un nuevo emparejamiento.
+                return true; // √âxito: Encontramos un nuevo emparejamiento.
             }
         }
     }
     return false; // No se pudo encontrar un camino aumentante desde 'u'.
 }
 
-// FunciÛn que ejecuta el algoritmo de Kuhn completo
+// Funci√≥n que ejecuta el algoritmo de Kuhn completo
 int kuhnMaxMatching(int n_nodos, vector<vector<int> >& grafo) {
     
     // 1. REQUISITO: VERIFICAR SI EL GRAFO ES BIPARTITO Y OBTENER GRUPOS
@@ -116,12 +116,12 @@ int kuhnMaxMatching(int n_nodos, vector<vector<int> >& grafo) {
         return 0;
     }
     
-    // 2. PREPARACI”N DE ESTRUCTURAS DE KUHN
-    // Inicializamos el vector de emparejamientos. -1 significa que el nodo est· libre.
+    // 2. PREPARACI√ìN DE ESTRUCTURAS DE KUHN
+    // Inicializamos el vector de emparejamientos. -1 significa que el nodo est√° libre.
     match_to.assign(n_nodos, -1);
     int max_matching_size = 0;
 
-    // 3. ENCONTRAR PAREO M¡XIMO
+    // 3. ENCONTRAR PAREO M√ÅXIMO
     // Iteramos sobre todos los nodos. Solo necesitamos iterar sobre los nodos del Grupo A (color 0).
     for (int u = 0; u < n_nodos; u++) {
         if (grupo_color[u] == 0) {
@@ -136,12 +136,12 @@ int kuhnMaxMatching(int n_nodos, vector<vector<int> >& grafo) {
         }
     }
 
-    // El resultado es el tamaÒo m·ximo del pareo.
+    // El resultado es el tama√±o m√°ximo del pareo.
     return max_matching_size;
 }
 
 // =========================================================================
-// FUNCIONES DE ENTRADA/SALIDA (MEN⁄)
+// FUNCIONES DE ENTRADA/SALIDA (MEN√ö)
 // =========================================================================
 
 void imprimirResultadoKuhn(int res) {
@@ -149,19 +149,19 @@ void imprimirResultadoKuhn(int res) {
     cout << "           RESULTADO DEL PAREO MAXIMO\n";
     cout << "===============================================\n";
     cout << "  Algoritmo: Kuhn (Garantiza Pareo MAXIMO)\n";
-    cout << "  TamaÒo del Pareo (Numero de aristas): " << res << endl;
+    cout << "  Tama√±o del Pareo (Numero de aristas): " << res << endl;
     cout << "-----------------------------------------------\n";
 
-    // 1. MAXIMALIDAD (VerificaciÛn)
+    // 1. MAXIMALIDAD (Verificaci√≥n)
     cout << "VERIFICACION DE MAXIMALIDAD:\n";
     if (res > 0) {
         cout << "[CONFIRMADO] El pareo es MAXIMAL, ya que el pareo MAXIMO siempre es maximal.\n";
     } else {
-        cout << "[VACIO] El pareo es vacÌo (0 aristas), lo cual es trivialmente Maximal.\n";
+        cout << "[VACIO] El pareo es vac√≠o (0 aristas), lo cual es trivialmente Maximal.\n";
     }
     cout << "-----------------------------------------------\n";
 
-    // 2. PERFECCI”N (VerificaciÛn)
+    // 2. PERFECCI√ìN (Verificaci√≥n)
     int nodos_cubiertos = 2 * res; // Cada arista cubre 2 nodos
     
     cout << "VERIFICACION DE PERFECCION:\n";
@@ -171,9 +171,9 @@ void imprimirResultadoKuhn(int res) {
     if (V % 2 != 0) {
         cout << "[IMPOSIBLE] No puede haber Pareo Perfecto, el numero de nodos (" << V << ") es impar.\n";
     } else if (nodos_cubiertos == V) {
-        cout << "[°LOGRADO!] SE ENCONTRO PAREO PERFECTO. Todos los " << V << " nodos estan cubiertos.\n";
+        cout << "[¬°LOGRADO!] SE ENCONTRO PAREO PERFECTO. Todos los " << V << " nodos estan cubiertos.\n";
     } else {
-        cout << "[NO PERFECTO] El pareo es M·ximo, pero NO Perfecto. Quedaron " << (V - nodos_cubiertos) << " nodos libres sin emparejar.\n";
+        cout << "[NO PERFECTO] El pareo es M√°ximo, pero NO Perfecto. Quedaron " << (V - nodos_cubiertos) << " nodos libres sin emparejar.\n";
     }
     cout << "-----------------------------------------------\n";
     
@@ -186,7 +186,7 @@ void imprimirResultadoKuhn(int res) {
         for (int v = 0; v < V; ++v) {
             if (match_to[v] != -1) {
                 // match_to[v] es el nodo 'u' del Grupo A. 'v' es el nodo del Grupo B.
-                // Sumamos 1 a los IDs para mostrarlos como el usuario los ingresÛ (desde 1).
+                // Sumamos 1 a los IDs para mostrarlos como el usuario los ingres√≥ (desde 1).
                 cout << "  > Nodo " << match_to[v] + 1 << " -- Nodo " << v + 1 << endl;
             }
         }
@@ -273,16 +273,16 @@ void menu() {
                     continue;
                 }
 
-                // Ajuste a base 0 para el cÛdigo
+                // Ajuste a base 0 para el c√≥digo
                 int u_idx = u - 1;
                 int v_idx = v - 1;
 
-                // ValidaciÛn de rango y auto-lazo.
+                // Validaci√≥n de rango y auto-lazo.
                 if (u < 1 || u > V || v < 1 || v > V || u == v) {
                     cout << "[ERROR] Nodos fuera de rango (1 a " << V << ") o arista de nodo a si mismo. Reingresa.\n";
                     i--; 
                 } else {
-                    // Agregamos la conexiÛn en ambos sentidos (Grafo No Dirigido).
+                    // Agregamos la conexi√≥n en ambos sentidos (Grafo No Dirigido).
                     grafo_adyacencia[u_idx].push_back(v_idx);
                     grafo_adyacencia[v_idx].push_back(u_idx); 
                 }
@@ -297,9 +297,9 @@ void menu() {
                 cout << "\n[ERROR] Debes ingresar el grafo primero (Opcion 1).\n";
                 break;
             }
-            // Ejecutar el c·lculo.
+            // Ejecutar el c√°lculo.
             resultado = kuhnMaxMatching(V, grafo_adyacencia);
-            cout << "\n[FINALIZADO] Algoritmo ejecutado. Se encontro un Pareo MAXIMO de tamaÒo: " << resultado << endl;
+            cout << "\n[FINALIZADO] Algoritmo ejecutado. Se encontro un Pareo MAXIMO de tama√±o: " << resultado << endl;
             break;
 
         case 3:
@@ -312,7 +312,7 @@ void menu() {
             break;
 
         case 4:
-            cout << "\nSaliendo del programa... °Hasta pronto!\n";
+            cout << "\nSaliendo del programa... ¬°Hasta pronto!\n";
             break;
 
         default:
@@ -322,7 +322,7 @@ void menu() {
     } while (op != 4);
 }
 
-// FunciÛn principal: lo primero que se ejecuta al iniciar el programa.
+// Funci√≥n principal: lo primero que se ejecuta al iniciar el programa.
 int main() {
     // Configura el idioma para mostrar caracteres correctamente.
     setlocale(LC_ALL, ""); 
