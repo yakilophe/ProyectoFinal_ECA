@@ -1,0 +1,34 @@
+# .github/workflows/ci-recorrido.yml
+
+name: CI Recorridos (BFS)
+
+on:
+  # 🚨 Se ejecuta solo cuando hay cambios en la rama 'Algoritmo_Recorrido'
+  push:
+    branches: [ Algoritmo_Recorrido ] 
+  pull_request:
+    branches: [ Algoritmo_Recorrido ]
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4 
+      
+    - name: Instalar Dependencias (CMake, GCC)
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake
+
+    - name: Configurar y Compilar
+      # Usa el CMakeLists.txt de la raíz
+      run: |
+        cmake -B build -S .
+        cmake --build build
+        
+    - name: Ejecutar Pruebas (Usando CTest)
+      # CTest encuentra el 'add_test' definido en tests/CMakeLists.txt
+      run: |
+        cd build
+        ctest --output-on-failure
