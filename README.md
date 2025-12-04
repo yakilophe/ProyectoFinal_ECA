@@ -1,4 +1,4 @@
-# Proyecto Final: Algoritmos de Grafos con Interfaz Web Interactiva
+# Proyecto Final: Algoritmos de Grafos
 
 <div align="center">
 
