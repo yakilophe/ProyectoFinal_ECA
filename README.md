@@ -289,8 +289,6 @@ de este software y los archivos de documentación asociados...
 
 Si este proyecto te resulta útil para aprender algoritmos de grafos, ¡considera darle una estrella en GitHub!
 
-[![Star History Chart](https://api.star-history.com/svg?repos=yakilophe/Proyecto-Final-Estructuras-Compuacionales-Avanzadas&type=Date)](https://star-history.com/#yakilophe/Proyecto-Final-Estructuras-Compuacionales-Avanzadas&Date)
-
 ### **Proyecto Académico - Estructuras Computacionales Avanzadas**
 
 **ICI - Tercer Semestre**  
