@@ -34,9 +34,19 @@ El proyecto se desarrolló con **metodología ágil Scrum** en un sprint de una 
 
 ## 🔗 Enlaces del proyecto  
 
-[![Ver Repositorio](https://img.shields.io/badge/📂_Repositorio_Principal-yakilophe/ProyectoFinal_ECA-8A2BE2?style=for-the-badge&logo=github&logoColor=white)](https://github.com/yakilophe/ProyectoFinal_ECA.git)
-[![Ver Commits](https://img.shields.io/badge/📜_Historial_de_Commits-Ver_todo_el_progreso-8A2BE2?style=for-the-badge&logo=git&logoColor=white)](https://github.com/yakilophe/ProyectoFinal_EA/commits/main)
-[![Tablero Scrum](https://img.shields.io/badge/📊_Tablero_Scrum_Interactivo-Acceder_al_tablero-8A2BE2?style=for-the-badge&logo=trello&logoColor=white)](https://github.com/yakilophe/ProyectoFinal_ECA/blob/Testeo-InterfazWeb/scrumtablero.html)
+<div align="center">
+  <a href="https://github.com/yakilophe/ProyectoFinal_ECA.git" style="background-color: #8A2BE2; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 10px; display: inline-block;">
+    📂 Repositorio Principal
+  </a>
+  
+  <a href="https://github.com/yakilophe/ProyectoFinal_ECA/commits/main" style="background-color: #8A2BE2; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 10px; display: inline-block;">
+    📜 Historial de Commits
+  </a>
+  
+  <a href="https://github.com/yakilophe/ProyectoFinal_ECA/tree/Testeo-InterfazWeb" style="background-color: #8A2BE2; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 10px; display: inline-block;">
+    📊 Rama de Testeo e Interfaz
+  </a>
+</div>
 
 ---
 
@@ -55,17 +65,32 @@ ProyectoFinal_ECA/
 │   ├── 6-arbol-expansion/        # Kruskal, Prim, Reverse-Kruskal
 │   ├── 7-grafo-bipartito/        # BFS, multiplicación de matrices, DFS
 │   └── 8-pareo-matching/         # Edmonds, Greedy, Hopcroft-Karp, Húngaro, Random Greedy
-├── testeo/                       # Rama dedicada a pruebas
+├── Testeo-InterfazWeb/           # Rama con interfaz web y tablero Scrum
+│   ├── scrumtablero.html         # Tablero Scrum interactivo
+│   ├── index.html                # Interfaz principal
+│   └── tests/                    # Pruebas web
+├── testeo/                       # Rama dedicada a pruebas en C++
 │   ├── test-bfs.cpp
 │   ├── test-dfs.cpp
 │   ├── test-dijkstra.cpp
 │   ├── test-kruskal.cpp
 │   ├── test-bipartito.cpp
-│   └── ...                       # Tests para cada algoritmo implementado
-├── scrumtablero.html             # Tablero Scrum interactivo
-├── .github/workflows/            # CI/CD (si aplica)
+│   └── ...
+├── .github/workflows/            # CI/CD
 └── Makefile / CMakeLists.txt     # Sistema de compilación
 ```
+
+---
+
+## 🌐 Acceso a las ramas principales
+
+**Rama principal (main):** [https://github.com/yakilophe/ProyectoFinal_ECA](https://github.com/yakilophe/ProyectoFinal_ECA)
+
+**Rama de testeo e interfaz web:** [https://github.com/yakilophe/ProyectoFinal_ECA/tree/Testeo-InterfazWeb](https://github.com/yakilophe/ProyectoFinal_ECA/tree/Testeo-InterfazWeb)
+
+**Tablero Scrum interactivo:** [scrumtablero.html en Testeo-InterfazWeb](https://github.com/yakilophe/ProyectoFinal_ECA/blob/Testeo-InterfazWeb/scrumtablero.html)
+
+**Historial de commits completo:** [Commits del proyecto](https://github.com/yakilophe/ProyectoFinal_ECA/commits)
 
 ---
 
@@ -180,8 +205,10 @@ El uso de **Scrum** permitió organizar el trabajo en un tiempo limitado, con ro
 
 ---
 
-**🔗 Repositorio principal:** [https://github.com/yakilophe/ProyectoFinal_ECA.git](https://github.com/yakilophe/ProyectoFinal_ECA.git)  
-**📜 Historial de commits:** [Ver todos los commits](https://github.com/yakilophe/ProyectoFinal_EA/commits/main)  
-**📊 Tablero Scrum interactivo:** [scrumtablero.html](https://github.com/yakilophe/ProyectoFinal_ECA/blob/Testeo-InterfazWeb/scrumtablero.html)  
+<div align="center">
+  <p><strong>🔗 Repositorio principal:</strong> <a href="https://github.com/yakilophe/ProyectoFinal_ECA">https://github.com/yakilophe/ProyectoFinal_ECA</a></p>
+  <p><strong>📊 Rama con interfaz web:</strong> <a href="https://github.com/yakilophe/ProyectoFinal_ECA/tree/Testeo-InterfazWeb">Testeo-InterfazWeb</a></p>
+  <p><strong>📜 Historial completo:</strong> <a href="https://github.com/yakilophe/ProyectoFinal_ECA/commits">Ver todos los commits</a></p>
+</div>
 
 *Proyecto desarrollado como parte de la materia Estructuras Computacionales Avanzadas, 2025.*
