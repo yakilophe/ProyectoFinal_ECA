@@ -39,12 +39,12 @@ El proyecto se desarrolló con **metodología ágil Scrum** en un sprint de una 
     📂 Repositorio Principal
   </a>
   
-  <a href="https://github.com/yakilophe/ProyectoFinal_ECA/commits/main" style="background-color: #8A2BE2; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 10px; display: inline-block;">
+  <a href="https://github.com/yakilophe/ProyectoFinal_ECA/commits" style="background-color: #8A2BE2; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 10px; display: inline-block;">
     📜 Historial de Commits
   </a>
   
-  <a href="https://github.com/yakilophe/ProyectoFinal_ECA/tree/Testeo-InterfazWeb" style="background-color: #8A2BE2; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 10px; display: inline-block;">
-    📊 Rama de Testeo e Interfaz
+  <a href="https://raw.githack.com/yakilophe/ProyectoFinal_ECA/Testeo-InterfazWeb/scrumtablero.html" style="background-color: #8A2BE2; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 10px; display: inline-block;">
+    📊 Tablero Scrum (Vista Web)
   </a>
 </div>
 
@@ -66,7 +66,7 @@ ProyectoFinal_ECA/
 │   ├── 7-grafo-bipartito/        # BFS, multiplicación de matrices, DFS
 │   └── 8-pareo-matching/         # Edmonds, Greedy, Hopcroft-Karp, Húngaro, Random Greedy
 ├── Testeo-InterfazWeb/           # Rama con interfaz web y tablero Scrum
-│   ├── scrumtablero.html         # Tablero Scrum interactivo
+│   ├── scrumtablero.html         # Tablero Scrum interactivo (VISIBLE EN WEB)
 │   ├── index.html                # Interfaz principal
 │   └── tests/                    # Pruebas web
 ├── testeo/                       # Rama dedicada a pruebas en C++
@@ -82,15 +82,19 @@ ProyectoFinal_ECA/
 
 ---
 
-## 🌐 Acceso a las ramas principales
+## 🌐 Acceso directo a las páginas web
 
-**Rama principal (main):** [https://github.com/yakilophe/ProyectoFinal_ECA](https://github.com/yakilophe/ProyectoFinal_ECA)
+**✅ Tablero Scrum (vista funcional):**  
+https://raw.githack.com/yakilophe/ProyectoFinal_ECA/Testeo-InterfazWeb/scrumtablero.html
 
-**Rama de testeo e interfaz web:** [https://github.com/yakilophe/ProyectoFinal_ECA/tree/Testeo-InterfazWeb](https://github.com/yakilophe/ProyectoFinal_ECA/tree/Testeo-InterfazWeb)
+**Rama principal (main):**  
+https://github.com/yakilophe/ProyectoFinal_ECA
 
-**Tablero Scrum interactivo:** [scrumtablero.html en Testeo-InterfazWeb](https://github.com/yakilophe/ProyectoFinal_ECA/blob/Testeo-InterfazWeb/scrumtablero.html)
+**Rama de testeo e interfaz web:**  
+https://github.com/yakilophe/ProyectoFinal_ECA/tree/Testeo-InterfazWeb
 
-**Historial de commits completo:** [Commits del proyecto](https://github.com/yakilophe/ProyectoFinal_ECA/commits)
+**Historial de commits completo:**  
+https://github.com/yakilophe/ProyectoFinal_ECA/commits
 
 ---
 
@@ -207,7 +211,7 @@ El uso de **Scrum** permitió organizar el trabajo en un tiempo limitado, con ro
 
 <div align="center">
   <p><strong>🔗 Repositorio principal:</strong> <a href="https://github.com/yakilophe/ProyectoFinal_ECA">https://github.com/yakilophe/ProyectoFinal_ECA</a></p>
-  <p><strong>📊 Rama con interfaz web:</strong> <a href="https://github.com/yakilophe/ProyectoFinal_ECA/tree/Testeo-InterfazWeb">Testeo-InterfazWeb</a></p>
+  <p><strong>📊 Tablero Scrum (Vista Web):</strong> <a href="https://raw.githack.com/yakilophe/ProyectoFinal_ECA/Testeo-InterfazWeb/scrumtablero.html">Ver Tablero Interactivo</a></p>
   <p><strong>📜 Historial completo:</strong> <a href="https://github.com/yakilophe/ProyectoFinal_ECA/commits">Ver todos los commits</a></p>
 </div>
 
