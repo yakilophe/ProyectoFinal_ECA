@@ -1,0 +1,1779 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorador de Algoritmos de Grafos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --tech-blue: #0a0e29;
+            --tech-purple: #6a11cb;
+            --tech-pink: #ff2a6d;
+            --tech-cyan: #00d4ff;
+            --light-bg: #f8f9ff;
+            --card-bg: #121633;
+            --text-light: #e0e0ff;
+            --text-dark: #0a0e29;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--tech-blue);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(106, 17, 203, 0.15) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 42, 109, 0.15) 0%, transparent 20%);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+            position: relative;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            background: linear-gradient(90deg, var(--tech-pink), var(--tech-purple), var(--tech-cyan));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 30px rgba(106, 17, 203, 0.5);
+            margin-bottom: 10px;
+            animation: pulse 2s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { text-shadow: 0 0 20px rgba(106, 17, 203, 0.5); }
+            100% { text-shadow: 0 0 40px rgba(255, 42, 109, 0.7); }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+
+        .control-panel {
+            background: rgba(18, 22, 51, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(106, 17, 203, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .panel-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--tech-cyan);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-title i {
+            color: var(--tech-pink);
+        }
+
+        .graph-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .graph-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .graph-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--tech-purple);
+            box-shadow: 0 10px 20px rgba(106, 17, 203, 0.3);
+        }
+
+        .graph-card.active {
+            border-color: var(--tech-pink);
+            box-shadow: 0 10px 20px rgba(255, 42, 109, 0.3);
+        }
+
+        .graph-type {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--tech-cyan);
+        }
+
+        .graph-details {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .graph-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--tech-pink);
+        }
+
+        .algorithm-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .algorithm-btn {
+            background: linear-gradient(135deg, var(--tech-purple), #2575fc);
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .algorithm-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.4);
+            background: linear-gradient(135deg, #6a11cb, #ff2a6d);
+        }
+
+        .algorithm-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 1100px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .visualization-section, .details-section {
+            background: rgba(18, 22, 51, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(106, 17, 203, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--tech-cyan);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .graph-visualization {
+            height: 500px;
+            background: rgba(10, 14, 41, 0.7);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .graph-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .run-btn {
+            background: linear-gradient(135deg, var(--tech-pink), #ff8a00);
+            color: white;
+            flex-grow: 1;
+        }
+
+        .run-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 42, 109, 0.4);
+        }
+
+        .reset-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            border: 1px solid rgba(106, 17, 203, 0.5);
+        }
+
+        .reset-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .details-content {
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .algorithm-info {
+            margin-bottom: 30px;
+        }
+
+        .algorithm-name {
+            font-size: 1.3rem;
+            color: var(--tech-pink);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .algorithm-description {
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+
+        .complexity {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .complexity-item {
+            background: rgba(106, 17, 203, 0.2);
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .graph-type-info {
+            background: rgba(0, 212, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--tech-cyan);
+            margin-top: 20px;
+        }
+
+        .graph-type-title {
+            color: var(--tech-cyan);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .status-message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            background: rgba(255, 42, 109, 0.1);
+            border-left: 4px solid var(--tech-pink);
+            display: none;
+        }
+
+        .status-message.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 40px;
+            border-top: 1px solid rgba(106, 17, 203, 0.3);
+            color: var(--text-light);
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .node {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: white;
+            z-index: 10;
+            transition: all 0.5s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .edge {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.5);
+            z-index: 1;
+            transform-origin: 0 0;
+        }
+
+        .weight {
+            position: absolute;
+            color: var(--tech-pink);
+            font-weight: bold;
+            background: rgba(10, 14, 41, 0.8);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            z-index: 5;
+        }
+
+        .node.visited {
+            background-color: var(--tech-pink) !important;
+            box-shadow: 0 0 20px var(--tech-pink);
+        }
+
+        .node.current {
+            background-color: var(--tech-cyan) !important;
+            box-shadow: 0 0 25px var(--tech-cyan);
+            transform: scale(1.2);
+        }
+
+        .edge.visited {
+            background-color: var(--tech-pink) !important;
+            box-shadow: 0 0 10px var(--tech-pink);
+        }
+
+        .edge.current {
+            background-color: var(--tech-cyan) !important;
+            box-shadow: 0 0 15px var(--tech-cyan);
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .pulse-animation {
+            animation: pulseNode 2s infinite;
+        }
+
+        @keyframes pulseNode {
+            0% { box-shadow: 0 0 0 0 rgba(255, 42, 109, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 42, 109, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 42, 109, 0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="title"><i class="fas fa-project-diagram"></i> Explorador de Algoritmos de Grafos</h1>
+            <p class="subtitle">Visualización interactiva de algoritmos de grafos aplicados a diferentes tipos de estructuras. Selecciona un grafo y un algoritmo para ver su funcionamiento paso a paso.</p>
+        </header>
+
+        <div class="control-panel">
+            <h2 class="panel-title"><i class="fas fa-sliders-h"></i> Panel de Control</h2>
+            
+            <div class="graph-selection">
+                <div class="graph-card active" data-graph="1">
+                    <h3 class="graph-type">No Dirigido - No Ponderado</h3>
+                    <p class="graph-details">5 nodos, 12 aristas (bidireccionales)</p>
+                    <div class="graph-stats">
+                        <span>Nodos: 5</span>
+                        <span>Aristas: 12</span>
+                    </div>
+                </div>
+                
+                <div class="graph-card" data-graph="2">
+                    <h3 class="graph-type">Dirigido - No Ponderado</h3>
+                    <p class="graph-details">5 nodos, 6 aristas (direccionales)</p>
+                    <div class="graph-stats">
+                        <span>Nodos: 5</span>
+                        <span>Aristas: 6</span>
+                    </div>
+                </div>
+                
+                <div class="graph-card" data-graph="3">
+                    <h3 class="graph-type">No Dirigido - Ponderado</h3>
+                    <p class="graph-details">5 nodos, 12 aristas con pesos</p>
+                    <div class="graph-stats">
+                        <span>Nodos: 5</span>
+                        <span>Aristas: 12</span>
+                    </div>
+                </div>
+                
+                <div class="graph-card" data-graph="4">
+                    <h3 class="graph-type">Dirigido - Ponderado</h3>
+                    <p class="graph-details">5 nodos, 6 aristas con pesos</p>
+                    <div class="graph-stats">
+                        <span>Nodos: 5</span>
+                        <span>Aristas: 6</span>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="panel-title"><i class="fas fa-code"></i> Algoritmos Disponibles</h3>
+            <div class="algorithm-selection" id="algorithmButtons">
+                <!-- Los botones se generarán dinámicamente con JavaScript -->
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="visualization-section">
+                <h2 class="section-title"><i class="fas fa-eye"></i> Visualización del Grafo</h2>
+                <div class="graph-visualization" id="graphVisualization">
+                    <!-- El grafo se dibujará aquí con JavaScript -->
+                    <div class="graph-placeholder">
+                        <i class="fas fa-project-diagram" style="font-size: 5rem; color: var(--tech-purple); opacity: 0.5;"></i>
+                        <p style="margin-top: 20px; color: var(--text-light); opacity: 0.7;">Selecciona un algoritmo para visualizar su ejecución</p>
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #6a11cb;"></div>
+                        <span>Nodo normal</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: var(--tech-pink);"></div>
+                        <span>Nodo visitado</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: var(--tech-cyan);"></div>
+                        <span>Nodo actual</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: rgba(255, 255, 255, 0.5);"></div>
+                        <span>Arista normal</span>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button class="control-btn run-btn" id="runAlgorithm">
+                        <i class="fas fa-play"></i> Ejecutar Algoritmo
+                    </button>
+                    <button class="control-btn reset-btn" id="resetVisualization">
+                        <i class="fas fa-redo"></i> Reiniciar
+                    </button>
+                </div>
+                
+                <div class="status-message" id="statusMessage">
+                    <!-- Mensajes de estado se mostrarán aquí -->
+                </div>
+            </div>
+            
+            <div class="details-section">
+                <h2 class="section-title"><i class="fas fa-info-circle"></i> Detalles del Algoritmo</h2>
+                <div class="details-content" id="algorithmDetails">
+                    <!-- Los detalles del algoritmo se cargarán aquí -->
+                    <div class="algorithm-info">
+                        <h3 class="algorithm-name"><i class="fas fa-question-circle"></i> Información del Algoritmo</h3>
+                        <p class="algorithm-description">Selecciona un algoritmo de la lista para ver su descripción, complejidad y detalles de implementación.</p>
+                        <p class="algorithm-description">Cada algoritmo tiene diferentes requisitos y funciona mejor con ciertos tipos de grafos.</p>
+                    </div>
+                    
+                    <div class="graph-type-info">
+                        <h4 class="graph-type-title">Información del Grafo Actual</h4>
+                        <p><strong>Tipo:</strong> No Dirigido - No Ponderado</p>
+                        <p><strong>Nodos:</strong> 5 (0, 1, 2, 3, 4)</p>
+                        <p><strong>Aristas:</strong> 12 conexiones bidireccionales</p>
+                        <p><strong>Algoritmos compatibles:</strong> Todos los algoritmos de recorrido, componentes conexas, verificación de árbol, etc.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Explorador de Algoritmos de Grafos - Visualización Interactiva</p>
+            <p>Incluye 4 grafos diferentes: No Dirigido/No Ponderado, Dirigido/No Ponderado, No Dirigido/Ponderado, Dirigido/Ponderado</p>
+            <p style="margin-top: 10px;">Desarrollado con HTML, CSS y JavaScript <i class="fas fa-heart" style="color: var(--tech-pink);"></i></p>
+        </footer>
+    </div>
+
+    <script>
+        // Definición de los grafos
+        const graphs = {
+            1: {
+                name: "No Dirigido - No Ponderado",
+                directed: false,
+                weighted: false,
+                nodes: 5,
+                edges: 12,
+                connections: [
+                    [0, 1], [0, 4], [0, 3],
+                    [1, 0], [1, 3], [1, 2],
+                    [2, 1], [2, 3],
+                    [3, 2], [3, 1], [3, 0],
+                    [4, 0]
+                ]
+            },
+            2: {
+                name: "Dirigido - No Ponderado",
+                directed: true,
+                weighted: false,
+                nodes: 5,
+                edges: 6,
+                connections: [
+                    [1, 0], [0, 3], [1, 2],
+                    [3, 2], [3, 1], [4, 0]
+                ]
+            },
+            3: {
+                name: "No Dirigido - Ponderado",
+                directed: false,
+                weighted: true,
+                nodes: 5,
+                edges: 12,
+                connections: [
+                    [0, 1, 4], [0, 4, 6], [0, 3, 9],
+                    [1, 0, 4], [1, 3, 8], [1, 2, 7],
+                    [2, 1, 7], [2, 3, 5],
+                    [3, 2, 5], [3, 1, 8], [3, 0, 9],
+                    [4, 0, 6]
+                ]
+            },
+            4: {
+                name: "Dirigido - Ponderado",
+                directed: true,
+                weighted: true,
+                nodes: 5,
+                edges: 6,
+                connections: [
+                    [1, 0, 3], [0, 3, 12], [1, 2, 18],
+                    [3, 2, 15], [3, 1, 9], [4, 0, 6]
+                ]
+            }
+        };
+
+        // Definición de algoritmos
+        const algorithms = [
+            { id: "dfs", name: "DFS (Depth-First Search)", icon: "fas fa-sink", compatible: [1, 2, 3, 4] },
+            { id: "bfs", name: "BFS (Breadth-First Search)", icon: "fas fa-expand-arrows-alt", compatible: [1, 2, 3, 4] },
+            { id: "connected", name: "Componentes Conexas", icon: "fas fa-link", compatible: [1, 3] },
+            { id: "shortest", name: "Caminos Más Cortos", icon: "fas fa-route", compatible: [1, 2, 3, 4] },
+            { id: "tree", name: "Verificar si es Árbol", icon: "fas fa-tree", compatible: [1, 2] },
+            { id: "mst", name: "Árbol de Expansión Mínima", icon: "fas fa-sitemap", compatible: [1, 3] },
+            { id: "bipartite", name: "Grafo Bipartito", icon: "fas fa-columns", compatible: [1, 2] },
+            { id: "matching", name: "Pareo (Matching)", icon: "fas fa-handshake", compatible: [1, 2] }
+        ];
+
+        // Información detallada de cada algoritmo
+        const algorithmDetails = {
+            dfs: {
+                name: "DFS (Depth-First Search)",
+                description: "DFS es un algoritmo de recorrido de grafos que explora lo más profundo posible a lo largo de cada rama antes de retroceder. Utiliza una pila (implícita o explícita) para realizar el recorrido.",
+                steps: [
+                    "Selecciona un nodo inicial y marca como visitado",
+                    "Explora recursivamente todos los vecinos no visitados",
+                    "Cuando no hay más vecinos por explorar, retrocede (backtrack)",
+                    "Continúa hasta que todos los nodos alcanzables hayan sido visitados"
+                ],
+                complexity: {
+                    time: "O(V + E)",
+                    space: "O(V)",
+                    notes: "V = vértices, E = aristas"
+                },
+                compatible: "Todos los tipos de grafos"
+            },
+            bfs: {
+                name: "BFS (Breadth-First Search)",
+                description: "BFS es un algoritmo de recorrido de grafos que explora todos los vecinos en el nivel actual antes de pasar a los nodos en el siguiente nivel. Utiliza una cola para realizar el recorrido.",
+                steps: [
+                    "Selecciona un nodo inicial y lo añade a la cola",
+                    "Mientras la cola no esté vacía, saca el primer nodo",
+                    "Visita todos los vecinos no visitados del nodo actual",
+                    "Añade los vecinos no visitados a la cola",
+                    "Continúa hasta que la cola esté vacía"
+                ],
+                complexity: {
+                    time: "O(V + E)",
+                    space: "O(V)",
+                    notes: "Ideal para encontrar el camino más corto en grafos no ponderados"
+                },
+                compatible: "Todos los tipos de grafos"
+            },
+            connected: {
+                name: "Componentes Conexas",
+                description: "Encuentra todas las componentes conexas de un grafo no dirigido. Una componente conexa es un subgrafo en el que cualquier par de vértices está conectado por un camino.",
+                steps: [
+                    "Inicializa un contador de componentes en 0",
+                    "Para cada nodo no visitado, ejecuta DFS o BFS",
+                    "Cada ejecución de DFS/BFS marca una componente conexa",
+                    "Incrementa el contador por cada componente encontrada"
+                ],
+                complexity: {
+                    time: "O(V + E)",
+                    space: "O(V)",
+                    notes: "Solo funciona en grafos no dirigidos"
+                },
+                compatible: "Grafos no dirigidos (ponderados o no)"
+            },
+            shortest: {
+                name: "Caminos Más Cortos",
+                description: "Encuentra el camino más corto desde un nodo origen a todos los demás nodos. Para grafos ponderados se usa Dijkstra, para no ponderados BFS, y para grafos con pesos negativos Bellman-Ford.",
+                steps: [
+                    "Inicializa distancias a infinito, excepto el origen a 0",
+                    "Relaja todas las aristas repetidamente",
+                    "Para cada arista (u, v) con peso w, si distancia[u] + w < distancia[v], actualiza distancia[v]",
+                    "Repite el paso anterior V-1 veces (Bellman-Ford)"
+                ],
+                complexity: {
+                    time: "O(V*E) para Bellman-Ford, O((V+E) log V) para Dijkstra",
+                    space: "O(V)",
+                    notes: "Depende del algoritmo específico utilizado"
+                },
+                compatible: "Todos los tipos de grafos"
+            },
+            tree: {
+                name: "Verificar si es Árbol",
+                description: "Determina si un grafo es un árbol. Un árbol es un grafo conexo sin ciclos. Para grafos no dirigidos, basta con verificar que sea conexo y tenga V-1 aristas.",
+                steps: [
+                    "Verifica que el grafo sea conexo (usando DFS/BFS)",
+                    "Cuenta el número de aristas",
+                    "Para un grafo no dirigido, verifica que E = V-1",
+                    "Para un grafo dirigido, busca un nodo raíz y verifica accesibilidad"
+                ],
+                complexity: {
+                    time: "O(V + E)",
+                    space: "O(V)",
+                    notes: "Para grafos dirigidos, el algoritmo es más complejo"
+                },
+                compatible: "Grafos no dirigidos y dirigidos no ponderados"
+            },
+            mst: {
+                name: "Árbol de Expansión Mínima",
+                description: "Encuentra un subconjunto de aristas que conecta todos los vértices con el peso total mínimo posible. Algoritmos comunes: Prim y Kruskal.",
+                steps: [
+                    "Inicializa un árbol con un solo vértice",
+                    "Encuentra la arista de menor peso que conecta el árbol con un vértice fuera de él",
+                    "Añade el vértice y la arista al árbol",
+                    "Repite hasta que todos los vértices estén incluidos"
+                ],
+                complexity: {
+                    time: "O(E log V) para Prim con heap binario",
+                    space: "O(V + E)",
+                    notes: "Solo para grafos no dirigidos y conexos"
+                },
+                compatible: "Grafos no dirigidos ponderados"
+            },
+            bipartite: {
+                name: "Grafo Bipartito",
+                description: "Determina si un grafo es bipartito (sus vértices pueden dividirse en dos conjuntos independientes). Se puede resolver coloreando el grafo con dos colores.",
+                steps: [
+                    "Asigna color 0 al nodo inicial",
+                    "Recorre el grafo (DFS/BFS) asignando colores alternados",
+                    "Si encuentras dos nodos adyacentes con el mismo color, no es bipartito",
+                    "Si completas la coloración sin conflictos, es bipartito"
+                ],
+                complexity: {
+                    time: "O(V + E)",
+                    space: "O(V)",
+                    notes: "Los grafos con ciclos impares no son bipartitos"
+                },
+                compatible: "Grafos no dirigidos y dirigidos no ponderados"
+            },
+            matching: {
+                name: "Pareo (Matching)",
+                description: "Encuentra un conjunto de aristas sin vértices en común. Un matching máximo es el que contiene el mayor número posible de aristas.",
+                steps: [
+                    "Inicializa matching vacío",
+                    "Busca caminos aumentantes en el grafo",
+                    "Invierte las aristas en el camino aumentante para aumentar el matching",
+                    "Repite hasta que no haya más caminos aumentantes"
+                ],
+                complexity: {
+                    time: "O(E√V) para Hopcroft-Karp",
+                    space: "O(V + E)",
+                    notes: "Para grafos bipartitos, existen algoritmos más eficientes"
+                },
+                compatible: "Grafos no dirigidos y dirigidos no ponderados"
+            }
+        };
+
+        // Estado de la aplicación
+        let currentGraphId = 1;
+        let currentAlgorithm = null;
+        let visualizationRunning = false;
+        let animationSpeed = 800; // ms entre pasos
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeGraphCards();
+            initializeAlgorithmButtons();
+            renderGraph();
+            updateAlgorithmDetails();
+            
+            // Event listeners
+            document.getElementById('runAlgorithm').addEventListener('click', runAlgorithm);
+            document.getElementById('resetVisualization').addEventListener('click', resetVisualization);
+        });
+
+        // Inicializar tarjetas de grafos
+        function initializeGraphCards() {
+            const graphCards = document.querySelectorAll('.graph-card');
+            graphCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Remover clase active de todas las tarjetas
+                    graphCards.forEach(c => c.classList.remove('active'));
+                    
+                    // Agregar clase active a la tarjeta clickeada
+                    this.classList.add('active');
+                    
+                    // Actualizar grafo actual
+                    currentGraphId = parseInt(this.getAttribute('data-graph'));
+                    
+                    // Renderizar el nuevo grafo
+                    renderGraph();
+                    
+                    // Actualizar detalles
+                    updateAlgorithmDetails();
+                    
+                    // Mostrar mensaje
+                    showStatus(`Grafo cambiado a: ${graphs[currentGraphId].name}`);
+                });
+            });
+        }
+
+        // Inicializar botones de algoritmos
+        function initializeAlgorithmButtons() {
+            const container = document.getElementById('algorithmButtons');
+            container.innerHTML = '';
+            
+            algorithms.forEach(algorithm => {
+                const button = document.createElement('button');
+                button.className = 'algorithm-btn';
+                button.innerHTML = `<i class="${algorithm.icon}"></i> ${algorithm.name}`;
+                button.setAttribute('data-algorithm', algorithm.id);
+                
+                // Deshabilitar si no es compatible con el grafo actual
+                if (!algorithm.compatible.includes(currentGraphId)) {
+                    button.disabled = true;
+                    button.title = `Este algoritmo no es compatible con ${graphs[currentGraphId].name}`;
+                }
+                
+                button.addEventListener('click', function() {
+                    if (this.disabled) return;
+                    
+                    // Remover selección de todos los botones
+                    document.querySelectorAll('.algorithm-btn').forEach(btn => {
+                        btn.style.background = 'linear-gradient(135deg, var(--tech-purple), #2575fc)';
+                    });
+                    
+                    // Resaltar botón seleccionado
+                    this.style.background = 'linear-gradient(135deg, #6a11cb, #ff2a6d)';
+                    
+                    // Actualizar algoritmo actual
+                    currentAlgorithm = algorithm.id;
+                    
+                    // Actualizar detalles
+                    updateAlgorithmDetails();
+                    
+                    // Mostrar mensaje
+                    showStatus(`Algoritmo seleccionado: ${algorithm.name}`);
+                });
+                
+                container.appendChild(button);
+            });
+        }
+
+        // Renderizar el grafo en el canvas
+        function renderGraph() {
+            const container = document.getElementById('graphVisualization');
+            container.innerHTML = '';
+            
+            const graph = graphs[currentGraphId];
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            
+            // Posicionar nodos en un círculo
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(width, height) * 0.35;
+            
+            // Crear nodos
+            for (let i = 0; i < graph.nodes; i++) {
+                const angle = (2 * Math.PI * i) / graph.nodes - Math.PI / 2;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                
+                const node = document.createElement('div');
+                node.className = 'node';
+                node.id = `node-${i}`;
+                node.textContent = i;
+                node.style.left = `${x}px`;
+                node.style.top = `${y}px`;
+                node.style.backgroundColor = getNodeColor(i);
+                node.style.transform = `translate(-50%, -50%)`;
+                
+                container.appendChild(node);
+            }
+            
+            // Crear aristas
+            graph.connections.forEach((conn, index) => {
+                const from = conn[0];
+                const to = conn[1];
+                const weight = graph.weighted ? conn[2] : null;
+                
+                const fromNode = document.getElementById(`node-${from}`);
+                const toNode = document.getElementById(`node-${to}`);
+                
+                if (!fromNode || !toNode) return;
+                
+                const fromRect = fromNode.getBoundingClientRect();
+                const toRect = toNode.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+                
+                const x1 = fromRect.left - containerRect.left + fromRect.width / 2;
+                const y1 = fromRect.top - containerRect.top + fromRect.height / 2;
+                const x2 = toRect.left - containerRect.left + toRect.width / 2;
+                const y2 = toRect.top - containerRect.top + toRect.height / 2;
+                
+                // Calcular longitud y ángulo de la línea
+                const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+                const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+                
+                // Crear la línea
+                const edge = document.createElement('div');
+                edge.className = 'edge';
+                edge.id = `edge-${from}-${to}`;
+                edge.style.width = `${length}px`;
+                edge.style.height = '3px';
+                edge.style.left = `${x1}px`;
+                edge.style.top = `${y1}px`;
+                edge.style.transform = `rotate(${angle}deg)`;
+                edge.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+                
+                // Si es dirigido, añadir flecha
+                if (graph.directed) {
+                    edge.style.background = 'linear-gradient(90deg, rgba(255,255,255,0.7) 85%, transparent 100%)';
+                }
+                
+                container.appendChild(edge);
+                
+                // Añadir peso si es ponderado
+                if (graph.weighted && weight !== null) {
+                    const weightEl = document.createElement('div');
+                    weightEl.className = 'weight';
+                    weightEl.textContent = weight;
+                    weightEl.style.left = `${(x1 + x2) / 2}px`;
+                    weightEl.style.top = `${(y1 + y2) / 2 - 15}px`;
+                    weightEl.style.transform = `translate(-50%, -50%)`;
+                    container.appendChild(weightEl);
+                }
+            });
+            
+            // Actualizar botones de algoritmos
+            initializeAlgorithmButtons();
+        }
+
+        // Obtener color para un nodo
+        function getNodeColor(index) {
+            const colors = [
+                '#6a11cb', '#2575fc', '#ff2a6d', '#00d4ff', '#ff8a00'
+            ];
+            return colors[index % colors.length];
+        }
+
+        // Actualizar detalles del algoritmo
+        function updateAlgorithmDetails() {
+            const container = document.getElementById('algorithmDetails');
+            const graph = graphs[currentGraphId];
+            
+            if (!currentAlgorithm) {
+                container.innerHTML = `
+                    <div class="algorithm-info">
+                        <h3 class="algorithm-name"><i class="fas fa-question-circle"></i> Información del Algoritmo</h3>
+                        <p class="algorithm-description">Selecciona un algoritmo de la lista para ver su descripción, complejidad y detalles de implementación.</p>
+                        <p class="algorithm-description">Cada algoritmo tiene diferentes requisitos y funciona mejor con ciertos tipos de grafos.</p>
+                    </div>
+                    
+                    <div class="graph-type-info">
+                        <h4 class="graph-type-title">Información del Grafo Actual</h4>
+                        <p><strong>Tipo:</strong> ${graph.name}</p>
+                        <p><strong>Nodos:</strong> ${graph.nodes} (0 a ${graph.nodes-1})</p>
+                        <p><strong>Aristas:</strong> ${graph.edges} conexiones ${graph.directed ? 'direccionales' : 'bidireccionales'}</p>
+                        <p><strong>Ponderado:</strong> ${graph.weighted ? 'Sí' : 'No'}</p>
+                        <p><strong>Algoritmos compatibles:</strong> ${getCompatibleAlgorithms()}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const details = algorithmDetails[currentAlgorithm];
+            const algorithm = algorithms.find(a => a.id === currentAlgorithm);
+            
+            container.innerHTML = `
+                <div class="algorithm-info">
+                    <h3 class="algorithm-name"><i class="${algorithm.icon}"></i> ${details.name}</h3>
+                    <p class="algorithm-description">${details.description}</p>
+                    
+                    <h4 style="color: var(--tech-cyan); margin-top: 15px;">Pasos del Algoritmo:</h4>
+                    <ol style="margin-left: 20px; margin-bottom: 15px;">
+                        ${details.steps.map(step => `<li style="margin-bottom: 8px;">${step}</li>`).join('')}
+                    </ol>
+                    
+                    <div class="complexity">
+                        <div class="complexity-item">
+                            <strong>Tiempo:</strong> ${details.complexity.time}
+                        </div>
+                        <div class="complexity-item">
+                            <strong>Espacio:</strong> ${details.complexity.space}
+                        </div>
+                        <div class="complexity-item">
+                            <strong>Notas:</strong> ${details.complexity.notes}
+                        </div>
+                    </div>
+                    
+                    <p><strong>Compatibilidad:</strong> ${details.compatible}</p>
+                </div>
+                
+                <div class="graph-type-info">
+                    <h4 class="graph-type-title">Información del Grafo Actual</h4>
+                    <p><strong>Tipo:</strong> ${graph.name}</p>
+                    <p><strong>Nodos:</strong> ${graph.nodes} (0 a ${graph.nodes-1})</p>
+                    <p><strong>Aristas:</strong> ${graph.edges} conexiones ${graph.directed ? 'direccionales' : 'bidireccionales'}</p>
+                    <p><strong>Ponderado:</strong> ${graph.weighted ? 'Sí' : 'No'}</p>
+                    <p><strong>Este algoritmo es ${algorithm.compatible.includes(currentGraphId) ? 'COMPATIBLE' : 'NO COMPATIBLE'} con este grafo</strong></p>
+                </div>
+            `;
+        }
+
+        // Obtener algoritmos compatibles con el grafo actual
+        function getCompatibleAlgorithms() {
+            const compatible = algorithms.filter(a => a.compatible.includes(currentGraphId));
+            return compatible.map(a => a.name).join(', ');
+        }
+
+        // Ejecutar algoritmo seleccionado
+        function runAlgorithm() {
+            if (visualizationRunning) {
+                showStatus("Ya hay una visualización en ejecución. Espera a que termine.");
+                return;
+            }
+            
+            if (!currentAlgorithm) {
+                showStatus("Por favor, selecciona un algoritmo primero.");
+                return;
+            }
+            
+            const algorithm = algorithms.find(a => a.id === currentAlgorithm);
+            if (!algorithm.compatible.includes(currentGraphId)) {
+                showStatus(`El algoritmo ${algorithm.name} no es compatible con ${graphs[currentGraphId].name}.`);
+                return;
+            }
+            
+            visualizationRunning = true;
+            showStatus(`Ejecutando ${algorithm.name} en ${graphs[currentGraphId].name}...`);
+            
+            // Resetear visualización
+            resetVisualization(true);
+            
+            // Ejecutar algoritmo según tipo
+            switch(currentAlgorithm) {
+                case 'dfs':
+                    executeDFS();
+                    break;
+                case 'bfs':
+                    executeBFS();
+                    break;
+                case 'connected':
+                    executeConnectedComponents();
+                    break;
+                case 'shortest':
+                    executeShortestPath();
+                    break;
+                case 'tree':
+                    executeTreeCheck();
+                    break;
+                case 'mst':
+                    executeMST();
+                    break;
+                case 'bipartite':
+                    executeBipartiteCheck();
+                    break;
+                case 'matching':
+                    executeMatching();
+                    break;
+                default:
+                    visualizationRunning = false;
+                    showStatus("Algoritmo no implementado aún.");
+            }
+        }
+
+        // Ejecutar DFS
+        function executeDFS() {
+            const graph = graphs[currentGraphId];
+            const visited = new Array(graph.nodes).fill(false);
+            const stack = [0]; // Comenzar desde el nodo 0
+            let step = 0;
+            
+            function dfsStep() {
+                if (stack.length === 0 || step >= 20) {
+                    visualizationRunning = false;
+                    showStatus("DFS completado. Todos los nodos alcanzables han sido visitados.");
+                    return;
+                }
+                
+                const node = stack.pop();
+                
+                if (!visited[node]) {
+                    // Marcar nodo como visitado
+                    visited[node] = true;
+                    const nodeElement = document.getElementById(`node-${node}`);
+                    nodeElement.classList.add('visited');
+                    nodeElement.classList.add('current');
+                    nodeElement.classList.add('pulse-animation');
+                    
+                    // Obtener vecinos
+                    const neighbors = [];
+                    graph.connections.forEach(conn => {
+                        if (conn[0] === node && !visited[conn[1]]) {
+                            neighbors.push(conn[1]);
+                        }
+                        // Si no es dirigido, considerar conexiones inversas
+                        if (!graph.directed && conn[1] === node && !visited[conn[0]]) {
+                            neighbors.push(conn[0]);
+                        }
+                    });
+                    
+                    // Añadir vecinos a la pila
+                    neighbors.forEach(neighbor => {
+                        stack.push(neighbor);
+                    });
+                    
+                    // Resaltar aristas visitadas
+                    neighbors.forEach(neighbor => {
+                        const edgeId = graph.directed ? `edge-${node}-${neighbor}` : 
+                                       (document.getElementById(`edge-${node}-${neighbor}`) ? 
+                                        `edge-${node}-${neighbor}` : `edge-${neighbor}-${node}`);
+                        const edgeElement = document.getElementById(edgeId);
+                        if (edgeElement) {
+                            edgeElement.classList.add('visited');
+                        }
+                    });
+                    
+                    step++;
+                    
+                    // Quitar clase current después de un tiempo
+                    setTimeout(() => {
+                        nodeElement.classList.remove('current');
+                        nodeElement.classList.remove('pulse-animation');
+                    }, animationSpeed - 100);
+                }
+                
+                setTimeout(dfsStep, animationSpeed);
+            }
+            
+            dfsStep();
+        }
+
+        // Ejecutar BFS
+        function executeBFS() {
+            const graph = graphs[currentGraphId];
+            const visited = new Array(graph.nodes).fill(false);
+            const queue = [0]; // Comenzar desde el nodo 0
+            visited[0] = true;
+            let step = 0;
+            
+            function bfsStep() {
+                if (queue.length === 0 || step >= 20) {
+                    visualizationRunning = false;
+                    showStatus("BFS completado. Todos los nodos alcanzables han sido visitados.");
+                    return;
+                }
+                
+                const node = queue.shift();
+                const nodeElement = document.getElementById(`node-${node}`);
+                nodeElement.classList.add('visited');
+                nodeElement.classList.add('current');
+                nodeElement.classList.add('pulse-animation');
+                
+                // Obtener vecinos
+                const neighbors = [];
+                graph.connections.forEach(conn => {
+                    if (conn[0] === node && !visited[conn[1]]) {
+                        neighbors.push(conn[1]);
+                        visited[conn[1]] = true;
+                    }
+                    // Si no es dirigido, considerar conexiones inversas
+                    if (!graph.directed && conn[1] === node && !visited[conn[0]]) {
+                        neighbors.push(conn[0]);
+                        visited[conn[0]] = true;
+                    }
+                });
+                
+                // Añadir vecinos a la cola
+                queue.push(...neighbors);
+                
+                // Resaltar aristas visitadas
+                neighbors.forEach(neighbor => {
+                    const edgeId = graph.directed ? `edge-${node}-${neighbor}` : 
+                                   (document.getElementById(`edge-${node}-${neighbor}`) ? 
+                                    `edge-${node}-${neighbor}` : `edge-${neighbor}-${node}`);
+                    const edgeElement = document.getElementById(edgeId);
+                    if (edgeElement) {
+                        edgeElement.classList.add('visited');
+                    }
+                });
+                
+                step++;
+                
+                // Quitar clase current después de un tiempo
+                setTimeout(() => {
+                    nodeElement.classList.remove('current');
+                    nodeElement.classList.remove('pulse-animation');
+                }, animationSpeed - 100);
+                
+                setTimeout(bfsStep, animationSpeed);
+            }
+            
+            bfsStep();
+        }
+
+        // Ejecutar Componentes Conexas
+        function executeConnectedComponents() {
+            if (graphs[currentGraphId].directed) {
+                showStatus("Las componentes conexas solo se pueden calcular en grafos no dirigidos.");
+                visualizationRunning = false;
+                return;
+            }
+            
+            const graph = graphs[currentGraphId];
+            const visited = new Array(graph.nodes).fill(false);
+            let components = 0;
+            let currentComponent = 0;
+            
+            function exploreComponent(startNode) {
+                const queue = [startNode];
+                visited[startNode] = true;
+                
+                function exploreStep() {
+                    if (queue.length === 0) {
+                        components++;
+                        showStatus(`Componente conexa ${components} encontrada con ${currentComponent} nodos.`);
+                        currentComponent = 0;
+                        
+                        // Buscar siguiente nodo no visitado
+                        const nextNode = visited.findIndex(v => !v);
+                        if (nextNode !== -1) {
+                            exploreComponent(nextNode);
+                        } else {
+                            visualizationRunning = false;
+                            showStatus(`Se encontraron ${components} componentes conexas en total.`);
+                        }
+                        return;
+                    }
+                    
+                    const node = queue.shift();
+                    const nodeElement = document.getElementById(`node-${node}`);
+                    
+                    // Colorear según componente
+                    const colors = ['#6a11cb', '#ff2a6d', '#00d4ff', '#ff8a00', '#2575fc'];
+                    nodeElement.style.backgroundColor = colors[components % colors.length];
+                    nodeElement.classList.add('visited');
+                    nodeElement.classList.add('current');
+                    nodeElement.classList.add('pulse-animation');
+                    
+                    currentComponent++;
+                    
+                    // Obtener vecinos
+                    graph.connections.forEach(conn => {
+                        if (conn[0] === node && !visited[conn[1]]) {
+                            queue.push(conn[1]);
+                            visited[conn[1]] = true;
+                            
+                            // Resaltar arista
+                            const edgeElement = document.getElementById(`edge-${node}-${conn[1]}`);
+                            if (edgeElement) {
+                                edgeElement.style.backgroundColor = colors[components % colors.length];
+                                edgeElement.classList.add('visited');
+                            }
+                        }
+                        if (conn[1] === node && !visited[conn[0]]) {
+                            queue.push(conn[0]);
+                            visited[conn[0]] = true;
+                            
+                            // Resaltar arista
+                            const edgeElement = document.getElementById(`edge-${conn[0]}-${node}`);
+                            if (edgeElement) {
+                                edgeElement.style.backgroundColor = colors[components % colors.length];
+                                edgeElement.classList.add('visited');
+                            }
+                        }
+                    });
+                    
+                    // Quitar clase current después de un tiempo
+                    setTimeout(() => {
+                        nodeElement.classList.remove('current');
+                        nodeElement.classList.remove('pulse-animation');
+                    }, animationSpeed - 100);
+                    
+                    setTimeout(exploreStep, animationSpeed);
+                }
+                
+                exploreStep();
+            }
+            
+            exploreComponent(0);
+        }
+
+        // Ejecutar Caminos Más Cortos
+        function executeShortestPath() {
+            const graph = graphs[currentGraphId];
+            
+            // Para simplicidad, encontramos caminos desde el nodo 0
+            const distances = new Array(graph.nodes).fill(Infinity);
+            distances[0] = 0;
+            const visited = new Array(graph.nodes).fill(false);
+            let step = 0;
+            
+            function shortestPathStep() {
+                if (step >= graph.nodes) {
+                    visualizationRunning = false;
+                    
+                    // Mostrar distancias finales
+                    let distancesText = "Distancias desde nodo 0: ";
+                    distances.forEach((d, i) => {
+                        distancesText += `Nodo ${i}: ${d === Infinity ? '∞' : d}, `;
+                    });
+                    showStatus(`Caminos más cortos completados. ${distancesText}`);
+                    return;
+                }
+                
+                // Encontrar nodo no visitado con distancia mínima
+                let minDist = Infinity;
+                let minNode = -1;
+                
+                for (let i = 0; i < graph.nodes; i++) {
+                    if (!visited[i] && distances[i] < minDist) {
+                        minDist = distances[i];
+                        minNode = i;
+                    }
+                }
+                
+                if (minNode === -1) {
+                    visualizationRunning = false;
+                    showStatus("Caminos más cortos completados.");
+                    return;
+                }
+                
+                // Marcar nodo como visitado
+                visited[minNode] = true;
+                const nodeElement = document.getElementById(`node-${minNode}`);
+                nodeElement.classList.add('visited');
+                nodeElement.classList.add('current');
+                nodeElement.classList.add('pulse-animation');
+                
+                // Actualizar distancias de vecinos
+                graph.connections.forEach(conn => {
+                    if (conn[0] === minNode) {
+                        const neighbor = conn[1];
+                        const weight = graph.weighted ? conn[2] : 1;
+                        
+                        if (distances[minNode] + weight < distances[neighbor]) {
+                            distances[neighbor] = distances[minNode] + weight;
+                            
+                            // Resaltar arista utilizada
+                            const edgeElement = document.getElementById(`edge-${minNode}-${neighbor}`);
+                            if (edgeElement) {
+                                edgeElement.classList.add('visited');
+                                edgeElement.classList.add('current');
+                                
+                                // Añadir etiqueta con distancia
+                                const weightEl = edgeElement.nextElementSibling;
+                                if (weightEl && weightEl.classList.contains('weight')) {
+                                    weightEl.textContent = `${weight} (dist: ${distances[neighbor]})`;
+                                    weightEl.style.color = '#00d4ff';
+                                    weightEl.style.fontWeight = 'bold';
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                step++;
+                
+                // Quitar clase current después de un tiempo
+                setTimeout(() => {
+                    nodeElement.classList.remove('current');
+                    nodeElement.classList.remove('pulse-animation');
+                    
+                    // Quitar clase current de aristas
+                    document.querySelectorAll('.edge.current').forEach(edge => {
+                        edge.classList.remove('current');
+                    });
+                }, animationSpeed - 100);
+                
+                setTimeout(shortestPathStep, animationSpeed);
+            }
+            
+            shortestPathStep();
+        }
+
+        // Ejecutar verificación de árbol
+        function executeTreeCheck() {
+            const graph = graphs[currentGraphId];
+            
+            // Para grafos no dirigidos: árbol = conexo y sin ciclos (E = V-1)
+            // Para grafos dirigidos: más complejo (necesita raíz y accesibilidad única)
+            
+            if (!graph.directed) {
+                // Verificar si E = V-1
+                if (graph.edges !== graph.nodes - 1) {
+                    showStatus("NO es árbol: El número de aristas no es V-1.");
+                    highlightAllEdges('#ff2a6d');
+                    visualizationRunning = false;
+                    return;
+                }
+                
+                // Verificar conexidad con BFS
+                const visited = new Array(graph.nodes).fill(false);
+                const queue = [0];
+                visited[0] = true;
+                let visitedCount = 1;
+                
+                function checkConnectivityStep() {
+                    if (queue.length === 0) {
+                        if (visitedCount === graph.nodes) {
+                            showStatus("SÍ es árbol: Grafo conexo sin ciclos.");
+                            highlightAllEdges('#00d4ff');
+                        } else {
+                            showStatus("NO es árbol: Grafo no conexo.");
+                            highlightAllEdges('#ff2a6d');
+                        }
+                        visualizationRunning = false;
+                        return;
+                    }
+                    
+                    const node = queue.shift();
+                    const nodeElement = document.getElementById(`node-${node}`);
+                    nodeElement.classList.add('visited');
+                    nodeElement.classList.add('current');
+                    nodeElement.classList.add('pulse-animation');
+                    
+                    // Obtener vecinos
+                    graph.connections.forEach(conn => {
+                        if (conn[0] === node && !visited[conn[1]]) {
+                            queue.push(conn[1]);
+                            visited[conn[1]] = true;
+                            visitedCount++;
+                            
+                            // Resaltar arista
+                            const edgeElement = document.getElementById(`edge-${node}-${conn[1]}`);
+                            if (edgeElement) {
+                                edgeElement.classList.add('visited');
+                            }
+                        }
+                    });
+                    
+                    // Quitar clase current después de un tiempo
+                    setTimeout(() => {
+                        nodeElement.classList.remove('current');
+                        nodeElement.classList.remove('pulse-animation');
+                    }, animationSpeed - 100);
+                    
+                    setTimeout(checkConnectivityStep, animationSpeed);
+                }
+                
+                checkConnectivityStep();
+            } else {
+                // Para grafos dirigidos: simplificación
+                showStatus("Verificación de árbol para grafos dirigidos no implementada completamente.");
+                visualizationRunning = false;
+            }
+        }
+
+        // Ejecutar Árbol de Expansión Mínima
+        function executeMST() {
+            if (graphs[currentGraphId].directed) {
+                showStatus("El árbol de expansión mínima solo se puede calcular en grafos no dirigidos.");
+                visualizationRunning = false;
+                return;
+            }
+            
+            if (!graphs[currentGraphId].weighted) {
+                showStatus("El grafo debe ser ponderado para calcular el árbol de expansión mínima.");
+                visualizationRunning = false;
+                return;
+            }
+            
+            // Algoritmo de Prim simplificado
+            const graph = graphs[currentGraphId];
+            const inMST = new Array(graph.nodes).fill(false);
+            const mstEdges = [];
+            inMST[0] = true;
+            let mstWeight = 0;
+            let edgesAdded = 0;
+            
+            function primStep() {
+                if (edgesAdded === graph.nodes - 1) {
+                    visualizationRunning = false;
+                    showStatus(`Árbol de expansión mínima completado. Peso total: ${mstWeight}.`);
+                    return;
+                }
+                
+                // Encontrar la arista de menor peso que conecta el MST con un nodo fuera
+                let minEdge = null;
+                let minWeight = Infinity;
+                
+                // Buscar en todas las aristas
+                graph.connections.forEach(conn => {
+                    const u = conn[0];
+                    const v = conn[1];
+                    const weight = conn[2];
+                    
+                    // Si un extremo está en MST y el otro no
+                    if ((inMST[u] && !inMST[v]) || (!inMST[u] && inMST[v])) {
+                        if (weight < minWeight) {
+                            minWeight = weight;
+                            minEdge = {u, v, weight};
+                        }
+                    }
+                });
+                
+                if (!minEdge) {
+                    visualizationRunning = false;
+                    showStatus("No se puede completar el MST. El grafo puede no ser conexo.");
+                    return;
+                }
+                
+                // Añadir la arista al MST
+                mstEdges.push(minEdge);
+                mstWeight += minWeight;
+                inMST[minEdge.u] = true;
+                inMST[minEdge.v] = true;
+                edgesAdded++;
+                
+                // Resaltar nodos y arista
+                const nodeU = document.getElementById(`node-${minEdge.u}`);
+                const nodeV = document.getElementById(`node-${minEdge.v}`);
+                nodeU.classList.add('visited');
+                nodeV.classList.add('visited');
+                nodeU.classList.add('current');
+                nodeV.classList.add('current');
+                
+                // Encontrar y resaltar la arista
+                let edgeElement = document.getElementById(`edge-${minEdge.u}-${minEdge.v}`);
+                if (!edgeElement) {
+                    edgeElement = document.getElementById(`edge-${minEdge.v}-${minEdge.u}`);
+                }
+                
+                if (edgeElement) {
+                    edgeElement.classList.add('visited');
+                    edgeElement.classList.add('current');
+                    edgeElement.style.backgroundColor = '#00d4ff';
+                    edgeElement.style.height = '5px';
+                    
+                    // Resaltar el peso
+                    const weightEl = edgeElement.nextElementSibling;
+                    if (weightEl && weightEl.classList.contains('weight')) {
+                        weightEl.textContent = `${minEdge.weight} (MST)`;
+                        weightEl.style.color = '#00d4ff';
+                        weightEl.style.fontWeight = 'bold';
+                        weightEl.style.fontSize = '1rem';
+                    }
+                }
+                
+                showStatus(`Arista añadida al MST: ${minEdge.u}-${minEdge.v} con peso ${minEdge.weight}. Peso total: ${mstWeight}`);
+                
+                // Quitar clase current después de un tiempo
+                setTimeout(() => {
+                    nodeU.classList.remove('current');
+                    nodeV.classList.remove('current');
+                    if (edgeElement) edgeElement.classList.remove('current');
+                }, animationSpeed - 100);
+                
+                setTimeout(primStep, animationSpeed);
+            }
+            
+            primStep();
+        }
+
+        // Ejecutar verificación de grafo bipartito
+        function executeBipartiteCheck() {
+            const graph = graphs[currentGraphId];
+            const colors = new Array(graph.nodes).fill(-1); // -1: no coloreado, 0: color A, 1: color B
+            let isBipartite = true;
+            
+            function bipartiteStep(startNode) {
+                const queue = [startNode];
+                colors[startNode] = 0;
+                
+                function colorStep() {
+                    if (queue.length === 0) {
+                        // Verificar si quedan nodos sin colorear
+                        const nextNode = colors.findIndex(c => c === -1);
+                        if (nextNode !== -1) {
+                            colors[nextNode] = 0;
+                            queue.push(nextNode);
+                            setTimeout(colorStep, animationSpeed);
+                        } else {
+                            visualizationRunning = false;
+                            if (isBipartite) {
+                                showStatus("SÍ es bipartito: El grafo puede dividirse en dos conjuntos independientes.");
+                            } else {
+                                showStatus("NO es bipartito: Se encontró un ciclo impar.");
+                            }
+                        }
+                        return;
+                    }
+                    
+                    const node = queue.shift();
+                    const nodeElement = document.getElementById(`node-${node}`);
+                    const nodeColor = colors[node];
+                    
+                    // Colorear nodo
+                    nodeElement.style.backgroundColor = nodeColor === 0 ? '#6a11cb' : '#ff2a6d';
+                    nodeElement.classList.add('visited');
+                    nodeElement.classList.add('current');
+                    nodeElement.classList.add('pulse-animation');
+                    
+                    // Colorear vecinos con el color opuesto
+                    graph.connections.forEach(conn => {
+                        if (conn[0] === node) {
+                            const neighbor = conn[1];
+                            
+                            if (colors[neighbor] === -1) {
+                                colors[neighbor] = 1 - nodeColor;
+                                queue.push(neighbor);
+                            } else if (colors[neighbor] === nodeColor) {
+                                // Conflicto: vecino tiene el mismo color
+                                isBipartite = false;
+                                
+                                // Resaltar arista conflictiva
+                                const edgeElement = document.getElementById(`edge-${node}-${neighbor}`);
+                                if (edgeElement) {
+                                    edgeElement.style.backgroundColor = '#ff0000';
+                                    edgeElement.style.height = '5px';
+                                    edgeElement.style.boxShadow = '0 0 10px #ff0000';
+                                }
+                            }
+                            
+                            // Resaltar arista
+                            const edgeElement = document.getElementById(`edge-${node}-${neighbor}`);
+                            if (edgeElement && edgeElement.style.backgroundColor !== '#ff0000') {
+                                edgeElement.classList.add('visited');
+                                edgeElement.style.backgroundColor = nodeColor === 0 ? '#6a11cb' : '#ff2a6d';
+                            }
+                        }
+                    });
+                    
+                    // Quitar clase current después de un tiempo
+                    setTimeout(() => {
+                        nodeElement.classList.remove('current');
+                        nodeElement.classList.remove('pulse-animation');
+                    }, animationSpeed - 100);
+                    
+                    setTimeout(colorStep, animationSpeed);
+                }
+                
+                colorStep();
+            }
+            
+            bipartiteStep(0);
+        }
+
+        // Ejecutar algoritmo de matching
+        function executeMatching() {
+            // Para simplicidad, solo mostramos un matching maximal simple
+            const graph = graphs[currentGraphId];
+            const matched = new Array(graph.nodes).fill(false);
+            const matchingEdges = [];
+            
+            function findMatchingStep() {
+                // Encontrar una arista cuyos extremos no estén emparejados
+                let foundEdge = null;
+                
+                for (let i = 0; i < graph.connections.length; i++) {
+                    const conn = graph.connections[i];
+                    const u = conn[0];
+                    const v = conn[1];
+                    
+                    if (!matched[u] && !matched[v]) {
+                        foundEdge = {u, v, index: i};
+                        break;
+                    }
+                }
+                
+                if (!foundEdge) {
+                    visualizationRunning = false;
+                    showStatus(`Matching maximal encontrado con ${matchingEdges.length} aristas.`);
+                    return;
+                }
+                
+                // Añadir arista al matching
+                matched[foundEdge.u] = true;
+                matched[foundEdge.v] = true;
+                matchingEdges.push(foundEdge);
+                
+                // Resaltar nodos y arista
+                const nodeU = document.getElementById(`node-${foundEdge.u}`);
+                const nodeV = document.getElementById(`node-${foundEdge.v}`);
+                nodeU.classList.add('visited');
+                nodeV.classList.add('visited');
+                nodeU.classList.add('current');
+                nodeV.classList.add('current');
+                
+                // Resaltar arista
+                let edgeElement = document.getElementById(`edge-${foundEdge.u}-${foundEdge.v}`);
+                if (!edgeElement && !graph.directed) {
+                    edgeElement = document.getElementById(`edge-${foundEdge.v}-${foundEdge.u}`);
+                }
+                
+                if (edgeElement) {
+                    edgeElement.classList.add('visited');
+                    edgeElement.classList.add('current');
+                    edgeElement.style.backgroundColor = '#00d4ff';
+                    edgeElement.style.height = '5px';
+                    edgeElement.style.boxShadow = '0 0 10px #00d4ff';
+                }
+                
+                showStatus(`Arista añadida al matching: ${foundEdge.u}-${foundEdge.v}. Total: ${matchingEdges.length} aristas.`);
+                
+                // Quitar clase current después de un tiempo
+                setTimeout(() => {
+                    nodeU.classList.remove('current');
+                    nodeV.classList.remove('current');
+                    if (edgeElement) edgeElement.classList.remove('current');
+                }, animationSpeed - 100);
+                
+                setTimeout(findMatchingStep, animationSpeed);
+            }
+            
+            findMatchingStep();
+        }
+
+        // Resaltar todas las aristas con un color específico
+        function highlightAllEdges(color) {
+            document.querySelectorAll('.edge').forEach(edge => {
+                edge.style.backgroundColor = color;
+                edge.classList.add('visited');
+            });
+        }
+
+        // Reiniciar visualización
+        function resetVisualization(silent = false) {
+            // Remover todas las clases de visualización
+            document.querySelectorAll('.node').forEach(node => {
+                node.classList.remove('visited', 'current', 'pulse-animation');
+                node.style.backgroundColor = getNodeColor(parseInt(node.id.replace('node-', '')));
+            });
+            
+            document.querySelectorAll('.edge').forEach(edge => {
+                edge.classList.remove('visited', 'current');
+                edge.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+                edge.style.height = '3px';
+                edge.style.boxShadow = 'none';
+                
+                // Restaurar color de fondo para aristas dirigidas
+                if (graphs[currentGraphId].directed) {
+                    edge.style.background = 'linear-gradient(90deg, rgba(255,255,255,0.7) 85%, transparent 100%)';
+                }
+            });
+            
+            document.querySelectorAll('.weight').forEach(weight => {
+                const edgeId = weight.previousElementSibling?.id;
+                if (edgeId) {
+                    const [_, from, to] = edgeId.match(/edge-(\d+)-(\d+)/) || [];
+                    if (from && to) {
+                        // Encontrar el peso original
+                        const graph = graphs[currentGraphId];
+                        const connection = graph.connections.find(conn => 
+                            conn[0] == from && conn[1] == to);
+                        if (connection && graph.weighted) {
+                            weight.textContent = connection[2];
+                            weight.style.color = '#ff2a6d';
+                            weight.style.fontWeight = 'bold';
+                            weight.style.fontSize = '0.8rem';
+                        }
+                    }
+                }
+            });
+            
+            visualizationRunning = false;
+            
+            if (!silent) {
+                showStatus("Visualización reiniciada.");
+            }
+        }
+
+        // Mostrar mensaje de estado
+        function showStatus(message) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.classList.add('active');
+            
+            // Ocultar después de 5 segundos
+            setTimeout(() => {
+                statusEl.classList.remove('active');
+            }, 5000);
+        }
+
+        // Redimensionar el grafo cuando cambia el tamaño de la ventana
+        window.addEventListener('resize', function() {
+            if (!visualizationRunning) {
+                renderGraph();
+            }
+        });
+    </script>
+</body>
+</html>
