@@ -4,12 +4,10 @@
 
 ![GIF relacionado con grafos](https://th.bing.com/th/id/R.18a4949fc9c8067172d3b96e302e7097?rik=%2fLZCQFlB6A7KlQ&pid=ImgRaw&r=0)
 
-<div align="center" style="margin: 30px 0;">
 [![Repositorio Principal](https://img.shields.io/badge/Repositorio_Principal-yakilophe/ProyectoFinal_ECA-FF69B4?style=for-the-badge&logo=github&logoColor=white)](https://github.com/yakilophe/ProyectoFinal_ECA.git)
 [![Historial de Commits](https://img.shields.io/badge/Historial_de_Commits-Ver_progreso-FF69B4?style=for-the-badge&logo=git&logoColor=white)](https://github.com/yakilophe/ProyectoFinal_ECA/commits)
 [![Tablero Scrum](https://img.shields.io/badge/Tablero_Scrum_Interactivo-Ver_tablero-FF69B4?style=for-the-badge&logo=trello&logoColor=white)](https://raw.githack.com/yakilophe/ProyectoFinal_ECA/Testeo-InterfazWeb/scrumtablero.html)
 [![Documentación PDF](https://img.shields.io/badge/Documentación_Completa-Descargar_PDF-FF69B4?style=for-the-badge&logo=adobeacrobatreader&logoColor=white)](https://github.com/yakilophe/ProyectoFinal_ECA/blob/main/proyecto_estructura_3er.pdf)
-</div>
 
 ---
 
@@ -184,10 +182,8 @@ El uso de Scrum permitió organizar el trabajo en un tiempo limitado, con roles 
 
 ---
 
-<div align="center" style="margin-top: 30px;">
 [![Repositorio Principal](https://img.shields.io/badge/Repositorio_Principal-yakilophe/ProyectoFinal_ECA-FF69B4?style=for-the-badge&logo=github&logoColor=white)](https://github.com/yakilophe/ProyectoFinal_ECA.git)
 [![Tablero Scrum](https://img.shields.io/badge/Tablero_Scrum-Vista_Interactiva-FF69B4?style=for-the-badge&logo=trello&logoColor=white)](https://raw.githack.com/yakilophe/ProyectoFinal_ECA/Testeo-InterfazWeb/scrumtablero.html)
 [![Documentación](https://img.shields.io/badge/Documentación_Completa-Descargar_PDF-FF69B4?style=for-the-badge&logo=adobeacrobatreader&logoColor=white)](https://github.com/yakilophe/ProyectoFinal_ECA/blob/main/proyecto_estructura_3er.pdf)
-</div>
 
 *Proyecto desarrollado como parte de la materia Estructuras Computacionales Avanzadas, 2025.*
