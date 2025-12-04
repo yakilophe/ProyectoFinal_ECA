@@ -5,34 +5,23 @@
 ![GIF relacionado con grafos](https://th.bing.com/th/id/R.18a4949fc9c8067172d3b96e302e7097?rik=%2fLZCQFlB6A7KlQ&pid=ImgRaw&r=0)
 
 <div align="center" style="margin: 30px 0;">
-  <a href="https://github.com/yakilophe/ProyectoFinal_ECA.git" style="background-color: #FF69B4; color: white; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 8px; display: inline-block; border: none;">
-    Repositorio Principal
-  </a>
-  
-  <a href="https://github.com/yakilophe/ProyectoFinal_ECA/commits" style="background-color: #FF69B4; color: white; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 8px; display: inline-block; border: none;">
-    Historial de Commits
-  </a>
-  
-  <a href="https://raw.githack.com/yakilophe/ProyectoFinal_ECA/Testeo-InterfazWeb/scrumtablero.html" style="background-color: #FF69B4; color: white; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 8px; display: inline-block; border: none;">
-    Tablero Scrum Interactivo
-  </a>
-  
-  <a href="https://github.com/yakilophe/ProyectoFinal_ECA/blob/main/proyecto_estructura_3er.pdf" style="background-color: #FF69B4; color: white; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 8px; display: inline-block; border: none;">
-    Documentación PDF
-  </a>
+[![Repositorio Principal](https://img.shields.io/badge/Repositorio_Principal-yakilophe/ProyectoFinal_ECA-FF69B4?style=for-the-badge&logo=github&logoColor=white)](https://github.com/yakilophe/ProyectoFinal_ECA.git)
+[![Historial de Commits](https://img.shields.io/badge/Historial_de_Commits-Ver_progreso-FF69B4?style=for-the-badge&logo=git&logoColor=white)](https://github.com/yakilophe/ProyectoFinal_ECA/commits)
+[![Tablero Scrum](https://img.shields.io/badge/Tablero_Scrum_Interactivo-Ver_tablero-FF69B4?style=for-the-badge&logo=trello&logoColor=white)](https://raw.githack.com/yakilophe/ProyectoFinal_ECA/Testeo-InterfazWeb/scrumtablero.html)
+[![Documentación PDF](https://img.shields.io/badge/Documentación_Completa-Descargar_PDF-FF69B4?style=for-the-badge&logo=adobeacrobatreader&logoColor=white)](https://github.com/yakilophe/ProyectoFinal_ECA/blob/main/proyecto_estructura_3er.pdf)
 </div>
 
 ---
 
 ## Integrantes del equipo
 
-| Nombre                        | Rol asignado   | Responsabilidades principales |
-|-------------------------------|----------------|-------------------------------|
-| Norma Yakelin Herrada López   | Scrum Master   | Facilitar el equipo, gestionar tablero (GitHub), eliminar impedimentos, asegurar metodología ágil. |
-| Gustavo Trueba Cardoso        | Product Owner  | Definir y priorizar historias de usuario, validar criterios de aceptación (Big-O, pruebas). |
-| Luis Octavio Delgado Ramírez  | Developer      | Implementación de código fuente, refactorización y escritura de pruebas unitarias. |
-| Valeria Itzel Trinidad González | Developer    | Implementación de código fuente, refactorización y escritura de pruebas unitarias. |
-| Ángel Joshua González Bennetts| Developer      | Implementación de código fuente, documentación técnica y análisis de complejidad. |
+| Nombre | Rol asignado | Responsabilidades principales |
+|--------|--------------|-------------------------------|
+| Norma Yakelin Herrada López | Scrum Master | Facilitar el equipo, gestionar tablero (GitHub), eliminar impedimentos, asegurar metodología ágil |
+| Gustavo Trueba Cardoso | Product Owner | Definir y priorizar historias de usuario, validar criterios de aceptación (Big-O, pruebas) |
+| Luis Octavio Delgado Ramírez | Developer | Implementación de código fuente, refactorización y escritura de pruebas unitarias |
+| Valeria Itzel Trinidad González | Developer | Implementación de código fuente, refactorización y escritura de pruebas unitarias |
+| Ángel Joshua González Bennetts | Developer | Implementación de código fuente, documentación técnica y análisis de complejidad |
 
 ---
 
@@ -81,25 +70,6 @@ ProyectoFinal_ECA/
 ├── .github/workflows/            # CI/CD
 └── Makefile / CMakeLists.txt     # Sistema de compilación
 ```
-
----
-
-## Acceso directo a las páginas web
-
-**Tablero Scrum (vista funcional):**  
-https://raw.githack.com/yakilophe/ProyectoFinal_ECA/Testeo-InterfazWeb/scrumtablero.html
-
-**Rama principal (main):**  
-https://github.com/yakilophe/ProyectoFinal_ECA
-
-**Rama de testeo e interfaz web:**  
-https://github.com/yakilophe/ProyectoFinal_ECA/tree/Testeo-InterfazWeb
-
-**Historial de commits completo:**  
-https://github.com/yakilophe/ProyectoFinal_ECA/commits
-
-**Documentación PDF:**  
-https://github.com/yakilophe/ProyectoFinal_ECA/blob/main/proyecto_estructura_3er.pdf
 
 ---
 
@@ -153,28 +123,28 @@ https://github.com/yakilophe/ProyectoFinal_ECA/blob/main/proyecto_estructura_3er
 
 ## Análisis de complejidad (Big-O)
 
-| Algoritmo / Estructura          | Tiempo         | Espacio       |
-|---------------------------------|----------------|---------------|
-| Matriz de adyacencia           | O(N²)          | O(N²)         |
-| Lista de adyacencia (visual.)  | O(N²)          | O(N²)         |
-| Matriz de incidencia           | O(V×E)         | O(V×E)        |
-| BFS/DFS (con matriz)           | O(N²)          | O(N²)         |
-| Componentes conexas (BFS/DFS)  | O(N²)          | O(N²)         |
-| Union-Find                     | O(N²)          | O(N²)         |
-| Gabow / Kosaraju / Tarjan      | O(N²)          | O(N²)         |
-| Backtracking con poda          | O(N!)          | O(N²)         |
-| Bellman-Ford                   | O(N³)          | O(N²)         |
-| Floyd-Warshall                 | O(N³)          | O(N²)         |
-| Verificación árbol (DFS/BFS)   | O(V+E)         | O(V+E)        |
-| Kruskal                        | O(E log E)     | O(V+E)        |
-| Prim                           | O(V²)          | O(V²)         |
-| Reverse-Kruskal                | O(E²)          | O(V²)         |
-| Bipartito (BFS/DFS)            | O(V+E)         | O(V+E)        |
-| Bipartito (mult. matrices)     | O(V⁴)          | O(V²)         |
-| Edmonds (Blossom)              | O(V³)          | O(V+E)        |
-| Greedy matching                | O(E)           | O(V+E)        |
-| Hopcroft-Karp                  | O(E√V)         | O(V+E)        |
-| Húngaro                        | O(V³)          | O(V²)         |
+| Algoritmo / Estructura | Tiempo | Espacio |
+|-----------------------|--------|---------|
+| Matriz de adyacencia | O(N²) | O(N²) |
+| Lista de adyacencia (visual.) | O(N²) | O(N²) |
+| Matriz de incidencia | O(V×E) | O(V×E) |
+| BFS/DFS (con matriz) | O(N²) | O(N²) |
+| Componentes conexas (BFS/DFS) | O(N²) | O(N²) |
+| Union-Find | O(N²) | O(N²) |
+| Gabow / Kosaraju / Tarjan | O(N²) | O(N²) |
+| Backtracking con poda | O(N!) | O(N²) |
+| Bellman-Ford | O(N³) | O(N²) |
+| Floyd-Warshall | O(N³) | O(N²) |
+| Verificación árbol (DFS/BFS) | O(V+E) | O(V+E) |
+| Kruskal | O(E log E) | O(V+E) |
+| Prim | O(V²) | O(V²) |
+| Reverse-Kruskal | O(E²) | O(V²) |
+| Bipartito (BFS/DFS) | O(V+E) | O(V+E) |
+| Bipartito (mult. matrices) | O(V⁴) | O(V²) |
+| Edmonds (Blossom) | O(V³) | O(V+E) |
+| Greedy matching | O(E) | O(V+E) |
+| Hopcroft-Karp | O(E√V) | O(V+E) |
+| Húngaro | O(V³) | O(V²) |
 
 ---
 
@@ -214,10 +184,10 @@ El uso de Scrum permitió organizar el trabajo en un tiempo limitado, con roles 
 
 ---
 
-<div align="center">
-  <p><strong>Repositorio principal:</strong> <a href="https://github.com/yakilophe/ProyectoFinal_ECA">https://github.com/yakilophe/ProyectoFinal_ECA</a></p>
-  <p><strong>Tablero Scrum (Vista Web):</strong> <a href="https://raw.githack.com/yakilophe/ProyectoFinal_ECA/Testeo-InterfazWeb/scrumtablero.html">Ver Tablero Interactivo</a></p>
-  <p><strong>Documentación completa:</strong> <a href="https://github.com/yakilophe/ProyectoFinal_ECA/blob/main/proyecto_estructura_3er.pdf">Descargar PDF</a></p>
+<div align="center" style="margin-top: 30px;">
+[![Repositorio Principal](https://img.shields.io/badge/Repositorio_Principal-yakilophe/ProyectoFinal_ECA-FF69B4?style=for-the-badge&logo=github&logoColor=white)](https://github.com/yakilophe/ProyectoFinal_ECA.git)
+[![Tablero Scrum](https://img.shields.io/badge/Tablero_Scrum-Vista_Interactiva-FF69B4?style=for-the-badge&logo=trello&logoColor=white)](https://raw.githack.com/yakilophe/ProyectoFinal_ECA/Testeo-InterfazWeb/scrumtablero.html)
+[![Documentación](https://img.shields.io/badge/Documentación_Completa-Descargar_PDF-FF69B4?style=for-the-badge&logo=adobeacrobatreader&logoColor=white)](https://github.com/yakilophe/ProyectoFinal_ECA/blob/main/proyecto_estructura_3er.pdf)
 </div>
 
 *Proyecto desarrollado como parte de la materia Estructuras Computacionales Avanzadas, 2025.*
