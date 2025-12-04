@@ -1,334 +1,187 @@
-# Proyecto Final: Algoritmos de Grafos
-
-<div align="center">
-
-<!-- Typing Animation -->
-![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=30&duration=4000&pause=1000&color=7C3AED&center=true&vCenter=true&width=800&height=80&lines=PROYECTO+FINAL+DE+GRAFOS;20+ALGORITMOS+IMPLEMENTADOS;INTERFAZ+WEB+INTERACTIVA;VISUALIZACION+EN+TIEMPO+REAL)
-
-<!-- Badges -->
-<p align="center">
-  <img src="https://img.shields.io/badge/C++-17+-blue?style=for-the-badge&logo=c%2B%2B&logoColor=white" alt="C++">
-  <img src="https://img.shields.io/badge/Testeo_En_Vivo-brightgreen?style=for-the-badge" alt="Demo">
-  <img src="https://img.shields.io/badge/Estrella_Agradecida-yellow?style=for-the-badge" alt="Stars">
-</p>
-
-<!-- Graph Animation -->
-<img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMml3Mmhkd2t2c3NrbnZodzJpc3hjNHB4MzZnaWRuYmF4bW92dW16aCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/26tn33aiTi1jkl6H6/giphy.gif" width="400" alt="Graph Animation">
-
-</div>
-
-## **¡Prueba el Testeo Interactivo de los +20 algoritmos completados!**
-
-<div align="center">
-
-[![Demo Button](https://img.shields.io/badge/PROBAR_DEMO_EN_VIVO-8B5CF6?style=for-the-badge&logo=rocket&logoColor=white)](https://yakilophe.github.io/Proyecto-Final-Estructuras-Compuacionales-Avanzadas/)
-[![GitHub Repo](https://img.shields.io/badge/VER_CODIGO_FUENTE-000000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/yakilophe/Proyecto-Final-Estructuras-Compuacionales-Avanzadas)
-
-</div>
-
-## **Tabla de Contenidos**
-
-| Sección | Descripción | Estado |
-|---------|-------------|---------|
-| **Demo Interactiva** | Interfaz web para visualizar grafos | **COMPLETO** |
-| **Algoritmos C++** | Implementaciones optimizadas | **COMPLETO** |
-| **Visualización** | Animaciones en tiempo real | **FUNCIONANDO** |
-| **Pruebas** | Tests unitarios y de integración | **DISPONIBLE** |
-| **Documentación** | Guías y tutoriales | **COMPLETO** |
-
-## **Características Principales**
-
-### **Visualización Interactiva**
-```
-- Creación de grafos con clic y arrastre
-- Coloreado automático de nodos
-- Animaciones de recorrido (DFS/BFS)
-- Panel de estadísticas en tiempo real
-- Exportación de resultados
-- Modo oscuro/claro
-```
-
-### **Algoritmos Implementados**
-<div align="center">
-
-| Categoría | Algoritmos | Estado |
-|-----------|------------|---------|
-| **Caminos Cortos** | Dijkstra, Bellman-Ford, Floyd-Warshall | COMPLETO |
-| **MST** | Kruskal, Prim, Reverse-Kruskal | COMPLETO |
-| **Recorrido** | DFS, BFS, DFS Iterativo | COMPLETO |
-| **Componentes** | Union-Find, Kosaraju, Tarjan | COMPLETO |
-| **Matching** | Hopcroft-Karp, Edmonds, Hungarian | COMPLETO |
-| **Flujo** | Ford-Fulkerson, Dinic | COMPLETO |
-
-</div>
-
-## **Instrucciones de Uso**
-
-```bash
-# 1. Clona el repositorio
-git clone https://github.com/yakilophe/ProyectoFinal_ECA.git
-
-# 2. Navega al directorio
-cd Proyecto-Final-Estructuras-Compuacionales-Avanzadas
-
-# 3. Abre la interfaz web
-# En macOS:
-open index.html
-# En Windows:
-start index.html
-# En Linux:
-xdg-open index.html
-```
-
-## **Demo Rápida**
-
-<div align="center">
-
-### **Controles Principales**
-```
-+-----------------------------------------+
-|        CONTROLES PRINCIPALES            |
-+-----------------------------------------+
-| Click izquierdo:    Agregar nodo        |
-| Click derecho:      Eliminar nodo       |
-| Arrastrar:          Crear conexión      |
-| Ctrl+Click:         Seleccionar múltiple|
-| Espacio:            Ejecutar algoritmo  |
-| R:                  Reiniciar vista     |
-| S:                  Guardar grafo       |
-| L:                  Cargar grafo        |
-+-----------------------------------------+
-```
-
-</div>
-
-## **Ejemplos de Código**
-
-### **Ejemplo 1: Crear Grafo y Ejecutar Dijkstra**
-```javascript
-// Inicializar grafo interactivo
-const graph = new InteractiveGraph();
-
-// Agregar nodos con coordenadas
-graph.addNode({x: 100, y: 100, label: 'A'});
-graph.addNode({x: 200, y: 100, label: 'B'});
-graph.addNode({x: 150, y: 200, label: 'C'});
-
-// Conectar nodos con pesos
-graph.addEdge(0, 1, {weight: 5});
-graph.addEdge(1, 2, {weight: 3});
-graph.addEdge(2, 0, {weight: 7});
-
-// Ejecutar algoritmo de Dijkstra
-const dijkstra = new Dijkstra(graph);
-const results = dijkstra.findShortestPath(0, 2);
-
-// Mostrar resultados
-console.log('Distancia:', results.distance);
-console.log('Camino:', results.path);
-graph.highlightPath(results.path);
-```
-
-### **Ejemplo 2: Analizar Componentes Conexas**
-```javascript
-// Cargar grafo de ejemplo
-graph.loadExample('social-network');
-
-// Encontrar componentes conexas
-const components = new ConnectedComponents(graph);
-const componentCount = components.findComponents();
-
-// Mostrar información
-console.log('Componentes encontradas:', componentCount);
-console.log('Tamaño de cada componente:', components.getComponentSizes());
-
-// Colorear por componente
-graph.colorByComponent(components.getComponents());
-```
-
-## **Estadísticas del Proyecto**
-
-<div align="center">
-
-```
-ESTRUCTURA DEL PROYECTO:
-├── 15+ archivos HTML/CSS/JS
-├── 20+ algoritmos implementados
-├── 50+ pruebas unitarias
-├── Documentación completa
-└── Interfaz 100% interactiva
-
-RENDIMIENTO:
-├── C++: 0.15ms (BFS en grafo mediano)
-├── JavaScript: 0.45ms (mismo algoritmo)
-└── Visualización: 60 FPS estables
-
-METRICAS ACADEMICAS:
-├── Complejidad analizada: 100%
-├── Optimizaciones: implementadas
-└── Documentación: profesional
-```
-
-</div>
-
-## **Tecnologías Utilizadas**
-
-<div align="center">
-
-<p align="center">
-  <img src="https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white" alt="HTML5">
-  <img src="https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white" alt="CSS3">
-  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black" alt="JavaScript">
-  <img src="https://img.shields.io/badge/C++-00599C?style=flat-square&logo=c%2B%2B&logoColor=white" alt="C++">
-  <img src="https://img.shields.io/badge/Canvas_API-FF6B6B?style=flat-square&logo=html5&logoColor=white" alt="Canvas">
-  <img src="https://img.shields.io/badge/WebGL-990000?style=flat-square&logo=webgl&logoColor=white" alt="WebGL">
-</p>
-
-</div>
-
-## **Algoritmos Disponibles**
-
-### **Caminos Más Cortos**
-- **Dijkstra** - Para grafos sin pesos negativos
-- **Bellman-Ford** - Permite pesos negativos
-- **Floyd-Warshall** - Todos contra todos
-- **A*** - Con heurísticas (en desarrollo)
-
-### **Árbol de Expansión Mínima**
-- **Kruskal** - Basado en unión-búsqueda
-- **Prim** - Basado en cola de prioridad
-- **Reverse Kruskal** - Para árbol máximo
-
-### **Recorridos**
-- **DFS** - En profundidad (recursivo/iterativo)
-- **BFS** - En anchura (con cola)
-- **DFS Iterativo** - Sin desbordamiento de pila
-
-### **Componentes Conexas**
-- **Union-Find** - Estructura eficiente
-- **Kosaraju** - Para grafos dirigidos
-- **Tarjan** - Algoritmo lineal
-
-### **Matching y Flujo**
-- **Hopcroft-Karp** - Matching bipartito
-- **Edmonds** - Matching general
-- **Hungarian** - Asignación
-- **Ford-Fulkerson** - Flujo máximo
-- **Dinic** - Flujo optimizado
-
-## **Cómo Contribuir**
-
-```bash
-# 1. Haz fork del repositorio
-# 2. Clona tu fork localmente
-git clone https://github.com/TU-USUARIO/ProyectoFinal_ECA.git
-
-# 3. Crea una rama para tu feature
-git checkout -b mi-nueva-funcionalidad
-
-# 4. Desarrolla tus cambios
-# ... realiza modificaciones ...
-
-# 5. Haz commit de los cambios
-git add .
-git commit -m "Agrega nueva funcionalidad: descripción breve"
-
-# 6. Sube los cambios a tu fork
-git push origin mi-nueva-funcionalidad
-
-# 7. Crea un Pull Request en GitHub
-```
-
-### **Áreas de Contribución:**
-- **Reportar problemas** - [Issues](https://github.com/yakilophe/ProyectoFinal_ECA/issues)
-- **Sugerir mejoras** - [Discussions](https://github.com/yakilophe/ProyectoFinal_ECA/discussions)
-- **Mejorar documentación** - Editar archivos .md
-- **Optimizar algoritmos** - Mejorar rendimiento
-- **Agregar ejemplos** - Nuevos grafos de prueba
-
-## **Recursos de Aprendizaje**
-
-### **Tutoriales Incluidos:**
-1. **Introducción a Grafos** - Conceptos básicos y terminología
-2. **Uso de la Interfaz** - Guía completa de todas las funciones
-3. **Algoritmos Paso a Paso** - Explicaciones detalladas
-4. **API Reference** - Documentación técnica completa
-
-### **Ejercicios Prácticos:**
-```
-1. Crear un grafo simple (5 nodos)
-2. Ejecutar DFS desde el nodo 0
-3. Encontrar componentes conexas
-4. Calcular árbol de expansión mínima
-5. Resolver problema de caminos más cortos
-6. Aplicar matching bipartito
-```
-
-## **Logros del Proyecto**
-
-<div align="center">
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Proyecto_Final_98/100-blueviolet" alt="Calificación">
-  <img src="https://img.shields.io/badge/20+_Algoritmos-green" alt="Algoritmos">
-  <img src="https://img.shields.io/badge/Interfaz_Interactiva-orange" alt="Interfaz">
-  <img src="https://img.shields.io/badge/Documentacion_Completa-yellow" alt="Documentación">
-</p>
-
-</div>
-
-## **Soporte y Contacto**
-
-### **¿Necesitas ayuda?**
-1. **Revisa la documentación** incluida en /docs
-2. **Prueba los ejemplos** interactivos
-3. **Reporta bugs** en GitHub Issues
-4. **Consulta dudas** en Discussions
-
-### **Contacto:**
-- **GitHub**: [@yakilophe](https://github.com/yakilophe)
-- **Repositorio**: [Proyecto Final Grafos](https://github.com/yakilophe/ProyectoFinal_ECA)
-- **Demo Online**: [Interfaz Interactiva](https://yakilophe.github.io/Proyecto-Final-Estructuras-Compuacionales-Avanzadas/)
-
-## **Licencia**
-
-Este proyecto está bajo la **Licencia MIT**.
-
-```
-MIT License
-
-Copyright (c) 2025 Yakilophe
-
-Se concede permiso, libre de cargos, a cualquier persona que obtenga una copia
-de este software y los archivos de documentación asociados (el "Software"),
-a utilizar el Software sin restricción, incluyendo sin limitación los derechos
-a usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar, y/o vender
-copias del Software, y a permitir a las personas a las que se les proporcione el Software
-a hacer lo mismo, sujeto a las siguientes condiciones:
-
-El aviso de copyright anterior y este aviso de permiso se incluirán en todas
-las copias o partes sustanciales del Software.
-```
-
-<div align="center">
-
-## **¡Dale una Estrella al Proyecto!**
-
-Si este proyecto te resulta útil para aprender algoritmos de grafos, ¡considera darle una estrella en GitHub!
-
-### **Proyecto Académico - Estructuras Computacionales Avanzadas**
-
-**ICI - Tercer Semestre**  
-**Período: Agosto - Diciembre 2025**
-
-</div>
+# 🧠 Repositorio de Algoritmos de Grafos  
+## Proyecto Final – Estructuras Computacionales Avanzadas  
+### Fecha de entrega: 4 de diciembre de 2025  
+
+![GIF relacionado con grafos](https://media.giphy.com/media/3o7abAHdYvZdBNnGZq/giphy.gif)  
 
 ---
 
-<div align="center">
+## 📋 Integrantes del equipo  
 
-**"Los grafos son el lenguaje universal de las relaciones"**
+| Nombre                        | Rol asignado   | Responsabilidades principales                                                                 |
+|-------------------------------|----------------|-----------------------------------------------------------------------------------------------|
+| Norma Yakelin Herrada López   | Scrum Master   | Facilitar el equipo, gestionar tablero (GitHub), eliminar impedimentos, asegurar metodología ágil. |
+| Gustavo Trueba Cardoso        | Product Owner  | Definir y priorizar historias de usuario, validar criterios de aceptación (Big‑O, pruebas).   |
+| Luis Octavio Delgado Ramírez  | Developer      | Implementación de código fuente, refactorización y escritura de pruebas unitarias.            |
+| Valeria Itzel Trinidad González | Developer    | Implementación de código fuente, refactorización y escritura de pruebas unitarias.            |
+| Ángel Joshua González Bennetts| Developer      | Implementación de código fuente, documentación técnica y análisis de complejidad.             |
 
-_Creado con dedicación para el aprendizaje de algoritmos_
+---
 
-</div>
+## 📅 Metodología – Scrum  
+
+El proyecto se desarrolló con **metodología ágil Scrum** en un sprint de una semana, usando **GitHub Projects** como tablero de seguimiento.  
+
+- **Equipo Scrum:**  
+  - Scrum Master: Norma Yakelin Herrada López  
+  - Product Owner: Gustavo Trueba Cardoso  
+  - Developers: Luis Octavio Delgado, Valeria Itzel Trinidad, Ángel Joshua González  
+
+- **Duración del sprint:** 27 de noviembre – 3 de diciembre 2025  
+- **Objetivo:** Implementar, probar y documentar algoritmos de grafos en C++ con buenas prácticas, pruebas automatizadas y documentación técnica.  
+
+---
+
+## 🔗 Enlaces del proyecto  
+
+[![Ver Repositorio](https://img.shields.io/badge/📂_Repositorio_Principal-yakilophe/ProyectoFinal_ECA-8A2BE2?style=for-the-badge&logo=github&logoColor=white)](https://github.com/yakilophe/ProyectoFinal_ECA.git)
+[![Ver Commits](https://img.shields.io/badge/📜_Historial_de_Commits-Ver_todo_el_progreso-8A2BE2?style=for-the-badge&logo=git&logoColor=white)](https://github.com/yakilophe/ProyectoFinal_EA/commits/main)
+[![Tablero Scrum](https://img.shields.io/badge/📊_Tablero_Scrum_Interactivo-Acceder_al_tablero-8A2BE2?style=for-the-badge&logo=trello&logoColor=white)](https://github.com/yakilophe/ProyectoFinal_ECA/blob/Testeo-InterfazWeb/scrumtablero.html)
+
+---
+
+## 🗂️ Estructura del repositorio  
+
+```
+ProyectoFinal_ECA/
+├── README.md
+├── docs/                         # Documentación adicional
+├── src/                          # Código fuente principal
+│   ├── 1-representacion-grafos/  # Matriz de adyacencia, lista, incidencia
+│   ├── 2-algoritmos-recorrido/   # BFS, DFS
+│   ├── 3-componentes-conexas/    # BFS, DFS, Union-Find, Gabow, Kosaraju, Tarjan
+│   ├── 4-caminos-cortos/         # Backtracking con poda, Bellman-Ford, Floyd-Warshall
+│   ├── 5-verificacion-arbol/     # DFS, BFS y grados, DFS con N-1
+│   ├── 6-arbol-expansion/        # Kruskal, Prim, Reverse-Kruskal
+│   ├── 7-grafo-bipartito/        # BFS, multiplicación de matrices, DFS
+│   └── 8-pareo-matching/         # Edmonds, Greedy, Hopcroft-Karp, Húngaro, Random Greedy
+├── testeo/                       # Rama dedicada a pruebas
+│   ├── test-bfs.cpp
+│   ├── test-dfs.cpp
+│   ├── test-dijkstra.cpp
+│   ├── test-kruskal.cpp
+│   ├── test-bipartito.cpp
+│   └── ...                       # Tests para cada algoritmo implementado
+├── scrumtablero.html             # Tablero Scrum interactivo
+├── .github/workflows/            # CI/CD (si aplica)
+└── Makefile / CMakeLists.txt     # Sistema de compilación
+```
+
+---
+
+## 📊 Algoritmos implementados  
+
+### 1. Representación de grafos  
+- Matriz de adyacencia (no dirigido, ponderado/no ponderado)  
+- Visualización como lista de adyacencia (no dirigido, ponderado/no ponderado)  
+- Matriz de incidencia (dirigido/no dirigido, ponderado/no ponderado)  
+
+### 2. Algoritmos de recorrido  
+- BFS (Breadth‑First Search)  
+- DFS (Depth‑First Search)  
+
+### 3. Componentes conexas  
+- Con BFS  
+- Con DFS  
+- Con Union‑Find  
+- Gabow  
+- Kosaraju  
+- Tarjan  
+
+### 4. Caminos más cortos  
+- Backtracking con poda  
+- Bellman‑Ford  
+- Floyd‑Warshall  
+
+### 5. Verificación de árbol  
+- DFS  
+- BFS y grados  
+- DFS, grados y N‑1  
+
+### 6. Árbol de expansión  
+- Kruskal  
+- Prim  
+- Reverse‑Kruskal  
+
+### 7. Grafo bipartito  
+- BFS  
+- Multiplicación de matrices  
+- DFS  
+
+### 8. Pareo (Matching)  
+- Edmonds (Blossom)  
+- Greedy  
+- Hopcroft‑Karp  
+- Húngaro (Kuhn‑Munkres)  
+- Random Greedy  
+
+---
+
+## ⏱️ Análisis de complejidad (Big‑O)  
+
+| Algoritmo / Estructura          | Tiempo         | Espacio       |
+|---------------------------------|----------------|---------------|
+| Matriz de adyacencia           | O(N²)          | O(N²)         |
+| Lista de adyacencia (visual.)  | O(N²)          | O(N²)         |
+| Matriz de incidencia           | O(V×E)         | O(V×E)        |
+| BFS/DFS (con matriz)           | O(N²)          | O(N²)         |
+| Componentes conexas (BFS/DFS)  | O(N²)          | O(N²)         |
+| Union‑Find                     | O(N²)          | O(N²)         |
+| Gabow / Kosaraju / Tarjan      | O(N²)          | O(N²)         |
+| Backtracking con poda          | O(N!)          | O(N²)         |
+| Bellman‑Ford                   | O(N³)          | O(N²)         |
+| Floyd‑Warshall                 | O(N³)          | O(N²)         |
+| Verificación árbol (DFS/BFS)   | O(V+E)         | O(V+E)        |
+| Kruskal                        | O(E log E)     | O(V+E)        |
+| Prim                           | O(V²)          | O(V²)         |
+| Reverse‑Kruskal                | O(E²)          | O(V²)         |
+| Bipartito (BFS/DFS)            | O(V+E)         | O(V+E)        |
+| Bipartito (mult. matrices)     | O(V⁴)          | O(V²)         |
+| Edmonds (Blossom)              | O(V³)          | O(V+E)        |
+| Greedy matching                | O(E)           | O(V+E)        |
+| Hopcroft‑Karp                  | O(E√V)         | O(V+E)        |
+| Húngaro                        | O(V³)          | O(V²)         |
+
+---
+
+## 📈 Análisis y discusión  
+
+La implementación se realizó principalmente con **matrices de adyacencia**, lo que facilita la verificación de conexiones en O(1), pero eleva la complejidad en grafos dispersos para recorridos y componentes conexas a O(N²).  
+
+El uso de **Scrum** permitió organizar el trabajo en un tiempo limitado, con roles definidos, ceremonias regulares y seguimiento visual mediante GitHub Projects. La integración de pruebas unitarias y documentación técnica aseguró la calidad del código entregado.  
+
+---
+
+## ✅ Conclusiones  
+
+- Se implementaron más de **20 algoritmos de grafos** en C++ con análisis de complejidad.  
+- La metodología ágil **Scrum** fue efectiva para coordinar al equipo y cumplir los objetivos en una semana.  
+- La estructura modular del repositorio (rama `src/` por categorías y rama `testeo/` para pruebas) facilita el mantenimiento y la extensión futura.  
+- El análisis de Big‑O realizado para cada algoritmo proporciona una guía clara sobre su aplicabilidad y limitaciones en diferentes contextos.  
+
+---
+
+## 📚 Referencias  
+
+1. Aprende con IA. (2025). Entendiendo grafos bipartitos [Video]. YouTube.  
+2. UCAM Universidad Católica de Murcia. (2016). Matemática Discreta – Grafo bipartido [Video]. YouTube.  
+3. Universitat Politècnica de València. (2011). Problema de emparejamientos [Video]. YouTube.  
+4. Usha's EduVids. (2024). Graph Matching, Maximal Matching, Maximum matching, Perfect Matching [Video]. YouTube.  
+5. OptWhiz. (2022). Can we assign everyone a job? (maximum matchings) | Bipartite Matchings [Video]. YouTube.  
+6. Varun Sir. (s.f.). BFS & DFS | Breadth First Search | Depth First Search [Video]. YouTube.  
+7. WilliamFiset. (2020). Tarjan's Strongly Connected Component (SCC) Algorithm [Video]. YouTube.  
+8. The code bit. (2025). Gabow's Algorithm Explained [Video]. YouTube.  
+9. Potato Coders. (2020). Union Find in 5 minutes [Video]. YouTube.  
+10. HeadEasy. (2023). Kosaraju's Algorithm | Strongly Connected Components [Video]. YouTube.  
+11. Juan Villalpando. (2021). Método Kruskal y Prim; Árbol Recubridor Mínimo y Máximo [Video]. YouTube.  
+12. Balvin, J. (2022). Árbol de Expansión Mínima (Prim + Kruskal) [Video]. YouTube.  
+13. Rodríguez, F. (2020). Grafos: Árbol parcial mínimo con algoritmo de Prim [Video]. YouTube.  
+14. Estudiante Digital. (2021). Árbol de Expansión Mínima – Algoritmo de Kruskal [Video]. YouTube.  
+
+---
+
+**🔗 Repositorio principal:** [https://github.com/yakilophe/ProyectoFinal_ECA.git](https://github.com/yakilophe/ProyectoFinal_ECA.git)  
+**📜 Historial de commits:** [Ver todos los commits](https://github.com/yakilophe/ProyectoFinal_EA/commits/main)  
+**📊 Tablero Scrum interactivo:** [scrumtablero.html](https://github.com/yakilophe/ProyectoFinal_ECA/blob/Testeo-InterfazWeb/scrumtablero.html)  
+
+*Proyecto desarrollado como parte de la materia Estructuras Computacionales Avanzadas, 2025.*
