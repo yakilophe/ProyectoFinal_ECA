@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tableros del Proyecto de Grafos</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', 'Arial', sans-serif;
+    }
+
+    body {
+        background: linear-gradient(135deg, #0a0a1a 0%, #15152b 100%);
+        color: #e0e0ff;
+        padding: 20px;
+        min-height: 100vh;
+        background-image: 
+            radial-gradient(circle at 10% 20%, rgba(0, 150, 255, 0.1) 0%, transparent 20%),
+            radial-gradient(circle at 90% 80%, rgba(255, 0, 150, 0.1) 0%, transparent 20%);
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 40px;
+        font-size: 2.8rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #fff;
+        text-shadow: 
+            0 0 5px #00ccff,
+            0 0 10px #00ccff,
+            0 0 20px #00ccff,
+            0 0 40px #0066ff;
+        padding: 20px;
+        border-radius: 10px;
+        background: rgba(0, 20, 40, 0.5);
+        border: 1px solid rgba(0, 150, 255, 0.3);
+        box-shadow: 0 0 20px rgba(0, 150, 255, 0.2);
+        position: relative;
+    }
+
+    h1::after {
+        content: "⚡";
+        position: absolute;
+        right: 30px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 2rem;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+
+    .tab-container {
+        margin-bottom: 35px;
+        background: rgba(10, 15, 35, 0.8);
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 
+            0 0 25px rgba(0, 150, 255, 0.3),
+            0 0 10px rgba(255, 0, 150, 0.2) inset;
+        border: 1px solid rgba(0, 200, 255, 0.4);
+        transition: transform 0.3s, box-shadow 0.3s;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .tab-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #00ccff, #ff00cc, #00ccff);
+    }
+
+    .tab-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 
+            0 0 35px rgba(0, 150, 255, 0.5),
+            0 0 15px rgba(255, 0, 150, 0.3) inset;
+    }
+
+    h2 {
+        color: #aaddff;
+        margin-bottom: 15px;
+        font-size: 1.8rem;
+        text-shadow: 0 0 10px rgba(0, 200, 255, 0.7);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    h2::before {
+        content: "▸";
+        color: #ff00cc;
+        font-size: 1.5rem;
+    }
+
+    .tab-container p {
+        color: #b0b0ff;
+        margin-bottom: 20px;
+        padding-left: 20px;
+        border-left: 3px solid #00ccff;
+        background: rgba(0, 50, 100, 0.2);
+        padding: 10px 15px;
+        border-radius: 0 5px 5px 0;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 0 15px rgba(0, 100, 200, 0.3);
+    }
+
+    thead {
+        background: linear-gradient(90deg, rgba(0, 100, 200, 0.8), rgba(150, 0, 200, 0.8));
+        border-bottom: 3px solid #00ccff;
+    }
+
+    th {
+        padding: 18px 15px;
+        text-align: left;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #e0f0ff;
+        text-shadow: 0 0 5px rgba(0, 200, 255, 0.5);
+        border-right: 1px solid rgba(0, 200, 255, 0.3);
+        position: relative;
+    }
+
+    th:last-child {
+        border-right: none;
+    }
+
+    th::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 10%;
+        width: 80%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, #00ccff, transparent);
+    }
+
+    tbody tr {
+        background: rgba(20, 30, 60, 0.6);
+        border-bottom: 1px solid rgba(0, 150, 255, 0.2);
+        transition: all 0.3s;
+    }
+
+    tbody tr:nth-child(even) {
+        background: rgba(25, 35, 70, 0.6);
+    }
+
+    tbody tr:hover {
+        background: rgba(0, 100, 200, 0.3);
+        box-shadow: 0 0 15px rgba(0, 150, 255, 0.4) inset;
+        transform: scale(1.005);
+    }
+
+    td {
+        padding: 16px 15px;
+        border-right: 1px solid rgba(0, 150, 255, 0.2);
+        color: #d0d0ff;
+    }
+
+    td:last-child {
+        border-right: none;
+    }
+
+    .red {
+        color: #ff3366;
+        font-weight: bold;
+        text-shadow: 0 0 8px rgba(255, 0, 100, 0.7);
+        background: rgba(255, 0, 100, 0.1);
+        padding: 5px 10px;
+        border-radius: 20px;
+        display: inline-block;
+        border: 1px solid rgba(255, 0, 100, 0.4);
+    }
+
+    .yellow {
+        color: #ffff00;
+        font-weight: bold;
+        text-shadow: 0 0 8px rgba(255, 255, 0, 0.7);
+        background: rgba(255, 255, 0, 0.1);
+        padding: 5px 10px;
+        border-radius: 20px;
+        display: inline-block;
+        border: 1px solid rgba(255, 255, 0, 0.4);
+        animation: glow-yellow 2s infinite alternate;
+    }
+
+    @keyframes glow-yellow {
+        from { box-shadow: 0 0 5px rgba(255, 255, 0, 0.3); }
+        to { box-shadow: 0 0 10px rgba(255, 255, 0, 0.6); }
+    }
+
+    .green {
+        color: #00ff88;
+        font-weight: bold;
+        text-shadow: 0 0 8px rgba(0, 255, 136, 0.7);
+        background: rgba(0, 255, 136, 0.1);
+        padding: 5px 10px;
+        border-radius: 20px;
+        display: inline-block;
+        border: 1px solid rgba(0, 255, 136, 0.4);
+    }
+
+    .status-emoji {
+        margin-right: 8px;
+        font-size: 1.2em;
+    }
+
+    .category-tag {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        background: rgba(100, 0, 200, 0.2);
+        color: #cc99ff;
+        border: 1px solid rgba(150, 0, 255, 0.4);
+        text-shadow: 0 0 5px rgba(150, 0, 255, 0.5);
+    }
+
+    .date-cell {
+        font-family: 'Courier New', monospace;
+        color: #99ccff;
+        background: rgba(0, 50, 100, 0.2);
+        padding: 5px 10px;
+        border-radius: 5px;
+        border: 1px solid rgba(0, 150, 255, 0.3);
+    }
+
+    .responsible {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #00ccff, #ff00cc);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: white;
+        font-size: 0.9rem;
+        box-shadow: 0 0 10px rgba(0, 200, 255, 0.5);
+    }
+
+    .progress-bar {
+        height: 8px;
+        background: rgba(0, 100, 200, 0.2);
+        border-radius: 4px;
+        margin: 20px 0 10px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #00ccff, #ff00cc);
+        border-radius: 4px;
+        width: 33%;
+        transition: width 0.5s;
+        box-shadow: 0 0 10px rgba(0, 200, 255, 0.7);
+    }
+
+    .container-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .container-stats {
+        display: flex;
+        gap: 15px;
+    }
+
+    .stat {
+        background: rgba(0, 50, 100, 0.3);
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        border: 1px solid rgba(0, 150, 255, 0.3);
+    }
+
+    .stat.completed {
+        color: #00ff88;
+        border-color: rgba(0, 255, 136, 0.4);
+    }
+
+    .stat.in-progress {
+        color: #ffff00;
+        border-color: rgba(255, 255, 0, 0.4);
+    }
+
+    .stat.pending {
+        color: #ff3366;
+        border-color: rgba(255, 0, 100, 0.4);
+    }
+
+    footer {
+        text-align: center;
+        margin-top: 50px;
+        padding: 20px;
+        color: #99ccff;
+        font-size: 0.9rem;
+        border-top: 1px solid rgba(0, 150, 255, 0.3);
+        text-shadow: 0 0 5px rgba(0, 150, 255, 0.5);
+    }
+
+    .tech-icon {
+        display: inline-block;
+        margin: 0 10px;
+        animation: float 3s infinite ease-in-out;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+    }
+
+    @media (max-width: 768px) {
+        body {
+            padding: 10px;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            padding: 15px;
+        }
+        
+        .tab-container {
+            padding: 15px;
+        }
+        
+        th, td {
+            padding: 12px 8px;
+            font-size: 0.9rem;
+        }
+        
+        .container-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        h1 {
+            font-size: 1.5rem;
+        }
+        
+        h2 {
+            font-size: 1.3rem;
+        }
+        
+        table {
+            display: block;
+            overflow-x: auto;
+        }
+    }
+
+    /* Efectos de partículas RGB */
+    .rgb-particle {
+        position: fixed;
+        width: 3px;
+        height: 3px;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: -1;
+        animation: particle-float 15s infinite linear;
+    }
+
+    @keyframes particle-float {
+        0% {
+            transform: translateY(100vh) translateX(0);
+            opacity: 0;
+        }
+        10% {
+            opacity: 0.7;
+        }
+        90% {
+            opacity: 0.7;
+        }
+        100% {
+            transform: translateY(-100px) translateX(100px);
+            opacity: 0;
+        }
+    }
+</style>
+</head>
+<body>
+<!-- Efectos de partículas RGB -->
+<div id="rgb-particles"></div>
+
+<h1>⚡ Tableros del Proyecto Final - Estructuras Computacionales Avanzadas</h1>
+
+<!-- TABLERO 1 -->
+<div class="tab-container">
+    <div class="container-header">
+        <h2>Tablero 1: Todas las tareas pendientes</h2>
+        <div class="container-stats">
+            <div class="stat pending">12 Pendientes</div>
+        </div>
+    </div>
+    <p>Representación del backlog inicial sin avances.</p>
+    <div class="progress-bar">
+        <div class="progress-fill" style="width: 0%"></div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Tarea</th><th>Descripción</th><th>Responsable</th><th>Estado</th><th>Inicio</th><th>Límite</th><th>Categoría</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Aquí se pega TODO el tablero original, completo -->
+            <tr>
+                <td>Crear estructura del proyecto</td>
+                <td>Carpetas base + repo GitHub</td>
+                <td><div class="responsible"><div class="avatar">Y</div><span>Yakelin</span></div></td>
+                <td><span class="red"><span class="status-emoji">🔴</span> Pendiente</span></td>
+                <td class="date-cell">27 nov</td>
+                <td class="date-cell">27 nov</td>
+                <td><span class="category-tag">Configuración</span></td>
+            </tr>
+            <tr>
+                <td>Matriz de adyacencia</td>
+                <td>Clase + funciones básicas</td>
+                <td><div class="responsible"><div class="avatar">L</div><span>Luis</span></div></td>
+                <td><span class="red"><span class="status-emoji">🔴</span> Pendiente</span></td>
+                <td class="date-cell">27 nov</td>
+                <td class="date-cell">28 nov</td>
+                <td><span class="category-tag">Grafos</span></td>
+            </tr>
+            <tr>
+                <td>Lista de adyacencia</td>
+                <td>Implementación con templates</td>
+                <td><div class="responsible"><div class="avatar">L</div><span>Luis</span></div></td>
+                <td><span class="red"><span class="status-emoji">🔴</span> Pendiente</span></td>
+                <td class="date-cell">27 nov</td>
+                <td class="date-cell">28 nov</td>
+                <td><span class="category-tag">Grafos</span></td>
+            </tr>
+            <tr>
+                <td>Implementar DFS</td>
+                <td>Recorrido en profundidad</td>
+                <td><div class="responsible"><div class="avatar">V</div><span>Valeria</span></div></td>
+                <td><span class="red"><span class="status-emoji">🔴</span> Pendiente</span></td>
+                <td class="date-cell">28 nov</td>
+                <td class="date-cell">29 nov</td>
+                <td><span class="category-tag">Recorridos</span></td>
+            </tr>
+            <tr>
+                <td>Implementar BFS</td>
+                <td>Recorrido en anchura</td>
+                <td><div class="responsible"><div class="avatar">V</div><span>Valeria</span></div></td>
+                <td><span class="red"><span class="status-emoji">🔴</span> Pendiente</span></td>
+                <td class="date-cell">28 nov</td>
+                <td class="date-cell">29 nov</td>
+                <td><span class="category-tag">Recorridos</span></td>
+            </tr>
+            <tr>
+                <td>Componentes (Union-Find)</td>
+                <td>Estructuras + UF</td>
+                <td><div class="responsible"><div class="avatar">V</div><span>Valeria</span></div></td>
+                <td><span class="red"><span class="status-emoji">🔴</span> Pendiente</span></td>
+                <td class="date-cell">29 nov</td>
+                <td class="date-cell">30 nov</td>
+                <td><span class="category-tag">Componentes</span></td>
+            </tr>
+            <tr>
+                <td>Bellman-Ford</td>
+                <td>Algoritmo caminos cortos</td>
+                <td><div class="responsible"><div class="avatar">V</div><span>Valeria</span></div></td>
+                <td><span class="red"><span class="status-emoji">🔴</span> Pendiente</span></td>
+                <td class="date-cell">01 dic</td>
+                <td class="date-cell">02 dic</td>
+                <td><span class="category-tag">Caminos</span></td>
+            </tr>
+            <tr>
+                <td>Kruskal</td>
+                <td>Árbol de expansión mínima</td>
+                <td><div class="responsible"><div class="avatar">L</div><span>Luis</span></div></td>
+                <td><span class="red"><span class="status-emoji">🔴</span> Pendiente</span></td>
+                <td class="date-cell">02 dic</td>
+                <td class="date-cell">03 dic</td>
+                <td><span class="category-tag">MST</span></td>
+            </tr>
+            <tr>
+                <td>Matching Húngaro</td>
+                <td>Algoritmo de asignación</td>
+                <td><div class="responsible"><div class="avatar">J</div><span>Joshua</span></div></td>
+                <td><span class="red"><span class="status-emoji">🔴</span> Pendiente</span></td>
+                <td class="date-cell">03 dic</td>
+                <td class="date-cell">03 dic</td>
+                <td><span class="category-tag">Matching</span></td>
+            </tr>
+            <tr>
+                <td>Documentación</td>
+                <td>README + análisis Big-O</td>
+                <td><div class="responsible"><div class="avatar">G</div><span>Gustavo</span></div></td>
+                <td><span class="red"><span class="status-emoji">🔴</span> Pendiente</span></td>
+                <td class="date-cell">02 dic</td>
+                <td class="date-cell">03 dic</td>
+                <td><span class="category-tag">Documentación</span></td>
+            </tr>
+            <tr>
+                <td>Bipartito BFS</td>
+                <td>Verificación bipartita</td>
+                <td><div class="responsible"><div class="avatar">J</div><span>Joshua</span></div></td>
+                <td><span class="red"><span class="status-emoji">🔴</span> Pendiente</span></td>
+                <td class="date-cell">03 dic</td>
+                <td class="date-cell">03 dic</td>
+                <td><span class="category-tag">Bipartito</span></td>
+            </tr>
+            <tr>
+                <td>Subir a GitHub</td>
+                <td>Commits finales</td>
+                <td><div class="responsible"><div class="avatar">Y</div><span>Yakelin</span></div></td>
+                <td><span class="red"><span class="status-emoji">🔴</span> Pendiente</span></td>
+                <td class="date-cell">03 dic</td>
+                <td class="date-cell">03 dic</td>
+                <td><span class="category-tag">Entrega</span></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- TABLERO 2 -->
+<div class="tab-container">
+    <div class="container-header">
+        <h2>Tablero 2: Mixto (Pendientes, En progreso, Completadas)</h2>
+        <div class="container-stats">
+            <div class="stat completed">3 Completadas</div>
+            <div class="stat in-progress">5 En progreso</div>
+            <div class="stat pending">2 Pendientes</div>
+        </div>
+    </div>
+    <p>Estado representativo del proyecto durante el desarrollo.</p>
+    <div class="progress-bar">
+        <div class="progress-fill" style="width: 33%"></div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Tarea</th><th>Descripción</th><th>Responsable</th><th>Estado</th><th>Inicio</th><th>Límite</th><th>Categoría</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Crear estructura del proyecto</td>
+                <td>Carpetas base + repo</td>
+                <td><div class="responsible"><div class="avatar">Y</div><span>Yakelin</span></div></td>
+                <td><span class="yellow"><span class="status-emoji">🟡</span> En progreso</span></td>
+                <td class="date-cell">27 nov</td>
+                <td class="date-cell">27 nov</td>
+                <td><span class="category-tag">Configuración</span></td>
+            </tr>
+            <tr>
+                <td>Matriz de adyacencia</td>
+                <td>Clase + funciones</td>
+                <td><div class="responsible"><div class="avatar">L</div><span>Luis</span></div></td>
+                <td><span class="yellow"><span class="status-emoji">🟡</span> En progreso</span></td>
+                <td class="date-cell">27 nov</td>
+                <td class="date-cell">28 nov</td>
+                <td><span class="category-tag">Grafos</span></td>
+            </tr>
+            <tr>
+                <td>Lista de adyacencia</td>
+                <td>Implementación</td>
+                <td><div class="responsible"><div class="avatar">L</div><span>Luis</span></div></td>
+                <td><span class="red"><span class="status-emoji">🔴</span> Pendiente</span></td>
+                <td class="date-cell">27 nov</td>
+                <td class="date-cell">28 nov</td>
+                <td><span class="category-tag">Grafos</span></td>
+            </tr>
+            <tr>
+                <td>Implementar DFS</td>
+                <td>Recorrido profundidad</td>
+                <td><div class="responsible"><div class="avatar">V</div><span>Valeria</span></div></td>
+                <td><span class="green"><span class="status-emoji">🟢</span> Completado</span></td>
+                <td class="date-cell">28 nov</td>
+                <td class="date-cell">29 nov</td>
+                <td><span class="category-tag">Recorridos</span></td>
+            </tr>
+            <tr>
+                <td>Implementar BFS</td>
+                <td>Recorrido anchura</td>
+                <td><div class="responsible"><div class="avatar">V</div><span>Valeria</span></div></td>
+                <td><span class="yellow"><span class="status-emoji">🟡</span> En progreso</span></td>
+                <td class="date-cell">28 nov</td>
+                <td class="date-cell">29 nov</td>
+                <td><span class="category-tag">Recorridos</span></td>
+            </tr>
+            <tr>
+                <td>Componentes (Union-Find)</td>
+                <td>Estructuras + UF</td>
+                <td><div class="responsible"><div class="avatar">V</div><span>Valeria</span></div></td>
+                <td><span class="yellow"><span class="status-emoji">🟡</span> En progreso</span></td>
+                <td class="date-cell">29 nov</td>
+                <td class="date-cell">30 nov</td>
+                <td><span class="category-tag">Componentes</span></td>
+            </tr>
+            <tr>
+                <td>Bellman-Ford</td>
+                <td>Algoritmo</td>
+                <td><div class="responsible"><div class="avatar">V</div><span>Valeria</span></div></td>
+                <td><span class="green"><span class="status-emoji">🟢</span> Completado</span></td>
+                <td class="date-cell">01 dic</td>
+                <td class="date-cell">02 dic</td>
+                <td><span class="category-tag">Caminos</span></td>
+            </tr>
+            <tr>
+                <td>Kruskal</td>
+                <td>Algoritmo</td>
+                <td><div class="responsible"><div class="avatar">L</div><span>Luis</span></div></td>
+                <td><span class="yellow"><span class="status-emoji">🟡</span> En progreso</span></td>
+                <td class="date-cell">02 dic</td>
+                <td class="date-cell">03 dic</td>
+                <td><span class="category-tag">MST</span></td>
+            </tr>
+            <tr>
+                <td>Matching Húngaro</td>
+                <td>Algoritmo</td>
+                <td><div class="responsible"><div class="avatar">J</div><span>Joshua</span></div></td>
+                <td><span class="green"><span class="status-emoji">🟢</span> Completado</span></td>
+                <td class="date-cell">03 dic</td>
+                <td class="date-cell">03 dic</td>
+                <td><span class="category-tag">Matching</span></td>
+            </tr>
+            <tr>
+                <td>Documentación</td>
+                <td>README + Big-O</td>
+                <td><div class="responsible"><div class="avatar">G</div><span>Gustavo</span></div></td>
+                <td><span class="yellow"><span class="status-emoji">🟡</span> En progreso</span></td>
+                <td class="date-cell">02 dic</td>
+                <td class="date-cell">03 dic</td>
+                <td><span class="category-tag">Documentación</span></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- TABLERO 3 -->
+<div class="tab-container">
+    <div class="container-header">
+        <h2>Tablero 3: Todas las tareas completadas</h2>
+        <div class="container-stats">
+            <div class="stat completed">13 Completadas</div>
+        </div>
+    </div>
+    <p>Tablero final del proyecto completado al 100%.</p>
+    <div class="progress-bar">
+        <div class="progress-fill" style="width: 100%"></div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Tarea</th><th>Descripción</th><th>Responsable</th><th>Estado</th><th>Inicio</th><th>Límite</th><th>Categoría</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Crear estructura del proyecto</td>
+                <td>Carpeta /src, /docs, /tests</td>
+                <td><div class="responsible"><div class="avatar">Y</div><span>Yakelin</span></div></td>
+                <td><span class="green"><span class="status-emoji">🟢</span> Completado</span></td>
+                <td class="date-cell">27 nov</td>
+                <td class="date-cell">27 nov</td>
+                <td><span class="category-tag">Configuración</span></td>
+            </tr>
+            <tr>
+                <td>Matriz de adyacencia</td>
+                <td>Clase y métodos</td>
+                <td><div class="responsible"><div class="avatar">L</div><span>Luis</span></div></td>
+                <td><span class="green"><span class="status-emoji">🟢</span> Completado</span></td>
+                <td class="date-cell">27 nov</td>
+                <td class="date-cell">28 nov</td>
+                <td><span class="category-tag">Grafos</span></td>
+            </tr>
+            <tr>
+                <td>Lista de adyacencia</td>
+                <td>Implementación</td>
+                <td><div class="responsible"><div class="avatar">L</div><span>Luis</span></div></td>
+                <td><span class="green"><span class="status-emoji">🟢</span> Completado</span></td>
+                <td class="date-cell">27 nov</td>
+                <td class="date-cell">28 nov</td>
+                <td><span class="category-tag">Grafos</span></td>
+            </tr>
+            <tr>
+                <td>DFS</td>
+                <td>Recorrido profundidad</td>
+                <td><div class="responsible"><div class="avatar">V</div><span>Valeria</span></div></td>
+                <td><span class="green"><span class="status-emoji">🟢</span> Completado</span></td>
+                <td class="date-cell">28 nov</td>
+                <td class="date-cell">29 nov</td>
+                <td><span class="category-tag">Recorridos</span></td>
+            </tr>
+            <tr>
+                <td>BFS</td>
+                <td>Recorrido anchura</td>
+                <td><div class="responsible"><div class="avatar">V</div><span>Valeria</span></div></td>
+                <td><span class="green"><span class="status-emoji">🟢</span> Completado</span></td>
+                <td class="date-cell">28 nov</td>
+                <td class="date-cell">29 nov</td>
+                <td><span class="category-tag">Recorridos</span></td>
+            </tr>
+            <tr>
+                <td>Union-Find</td>
+                <td>Estructuras + UF</td>
+                <td><div class="responsible"><div class="avatar">V</div><span>Valeria</span></div></td>
+                <td><span class="green"><span class="status-emoji">🟢</span> Completado</span></td>
+                <td class="date-cell">29 nov</td>
+                <td class="date-cell">30 nov</td>
+                <td><span class="category-tag">Componentes</span></td>
+            </tr>
+            <tr>
+                <td>Gabow</td>
+                <td>Gabow.cpp</td>
+                <td><div class="responsible"><div class="avatar">V</div><span>Valeria</span></div></td>
+                <td><span class="green"><span class="status-emoji">🟢</span> Completado</span></td>
+                <td class="date-cell">30 nov</td>
+                <td class="date-cell">30 nov</td>
+                <td><span class="category-tag">Componentes</span></td>
+            </tr>
+            <tr>
+                <td>Bellman-Ford</td>
+                <td>Algoritmo</td>
+                <td><div class="responsible"><div class="avatar">V</div><span>Valeria</span></div></td>
+                <td><span class="green"><span class="status-emoji">🟢</span> Completado</span></td>
+                <td class="date-cell">01 dic</td>
+                <td class="date-cell">02 dic</td>
+                <td><span class="category-tag">Caminos</span></td>
+            </tr>
+            <tr>
+                <td>Kruskal</td>
+                <td>Algoritmo</td>
+                <td><div class="responsible"><div class="avatar">L</div><span>Luis</span></div></td>
+                <td><span class="green"><span class="status-emoji">🟢</span> Completado</span></td>
+                <td class="date-cell">02 dic</td>
+                <td class="date-cell">03 dic</td>
+                <td><span class="category-tag">MST</span></td>
+            </tr>
+            <tr>
+                <td>Bipartito BFS</td>
+                <td>Verificación</td>
+                <td><div class="responsible"><div class="avatar">J</div><span>Joshua</span></div></td>
+                <td><span class="green"><span class="status-emoji">🟢</span> Completado</span></td>
+                <td class="date-cell">03 dic</td>
+                <td class="date-cell">03 dic</td>
+                <td><span class="category-tag">Bipartito</span></td>
+            </tr>
+            <tr>
+                <td>Matching Húngaro</td>
+                <td>Algoritmo</td>
+                <td><div class="responsible"><div class="avatar">J</div><span>Joshua</span></div></td>
+                <td><span class="green"><span class="status-emoji">🟢</span> Completado</span></td>
+                <td class="date-cell">03 dic</td>
+                <td class="date-cell">03 dic</td>
+                <td><span class="category-tag">Matching</span></td>
+            </tr>
+            <tr>
+                <td>Documentación</td>
+                <td>README + Big-O</td>
+                <td><div class="responsible"><div class="avatar">G</div><span>Gustavo</span></div></td>
+                <td><span class="green"><span class="status-emoji">🟢</span> Completado</span></td>
+                <td class="date-cell">02 dic</td>
+                <td class="date-cell">03 dic</td>
+                <td><span class="category-tag">Documentación</span></td>
+            </tr>
+            <tr>
+                <td>Subir a GitHub</td>
+                <td>Commits finales</td>
+                <td><div class="responsible"><div class="avatar">Y</div><span>Yakelin</span></div></td>
+                <td><span class="green"><span class="status-emoji">🟢</span> Completado</span></td>
+                <td class="date-cell">03 dic</td>
+                <td class="date-cell">03 dic</td>
+                <td><span class="category-tag">Entrega</span></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<footer>
+    <p>
+        <span class="tech-icon">💻</span> 
+        Proyecto de Grafos - Estructuras Computacionales Avanzadas 
+        <span class="tech-icon">⚡</span>
+    </p>
+    <p>Tema Neón Azul-Tech con Rosa RGB Gamer | Integrantes: Yakelin, Luis, Valeria, Joshua, Gustavo</p>
+</footer>
+
+<script>
+    // Crear efectos de partículas RGB
+    function createParticles() {
+        const container = document.getElementById('rgb-particles');
+        const colors = ['#00ccff', '#ff00cc', '#00ff88', '#ffff00'];
+        
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'rgb-particle';
+            
+            // Posición aleatoria
+            particle.style.left = Math.random() * 100 + 'vw';
+            
+            // Color aleatorio
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            particle.style.backgroundColor = color;
+            particle.style.boxShadow = `0 0 10px ${color}`;
+            
+            // Tamaño aleatorio
+            const size = Math.random() * 4 + 1;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            
+            // Animación aleatoria
+            const duration = Math.random() * 20 + 10;
+            const delay = Math.random() * 5;
+            particle.style.animationDuration = duration + 's';
+            particle.style.animationDelay = delay + 's';
+            
+            container.appendChild(particle);
+        }
+    }
+    
+    // Efecto de hover en filas con más detalle
+    document.querySelectorAll('tbody tr').forEach(row => {
+        row.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.01)';
+            this.style.zIndex = '10';
+        });
+        
+        row.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+            this.style.zIndex = '1';
+        });
+    });
+    
+    // Actualizar progreso automáticamente
+    function updateProgress() {
+        const progressBars = document.querySelectorAll('.progress-fill');
+        
+        // Tablero 1: 0%
+        progressBars[0].style.width = '0%';
+        
+        // Tablero 2: 30%
+        progressBars[1].style.width = '33%';
+        
+        // Tablero 3: 100%
+        progressBars[2].style.width = '100%';
+    }
+    
+    // Inicializar efectos
+    document.addEventListener('DOMContentLoaded', function() {
+        createParticles();
+        updateProgress();
+        
+        // Efecto de escritura para el título
+        const title = document.querySelector('h1');
+        const originalText = title.textContent;
+        title.textContent = '';
+        
+        let i = 0;
+        const typeWriter = () => {
+            if (i < originalText.length) {
+                title.textContent += originalText.charAt(i);
+                i++;
+                setTimeout(typeWriter, 50);
+            }
+        };
+        
+        // Iniciar efecto de escritura después de un breve retraso
+        setTimeout(typeWriter, 500);
+    });
+</script>
+</body>
+</html>
