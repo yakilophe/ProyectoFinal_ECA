@@ -59,11 +59,11 @@ ProyectoFinal_ECA/
 │   ├── index.html                # Interfaz principal
 │   └── tests/                    # Pruebas web
 ├── testeo/                       # Rama dedicada a pruebas en C++
-│   ├── test-bfs.cpp
-│   ├── test-dfs.cpp
-│   ├── test-dijkstra.cpp
-│   ├── test-kruskal.cpp
-│   ├── test-bipartito.cpp
+│   ├── test-bfs.jpg
+│   ├── test-dfs.jpg
+│   ├── test-dijkstra.jpg
+│   ├── test-kruskal.jpg
+│   ├── test-bipartito.jpg
 │   └── ...
 ├── .github/workflows/            # CI/CD
 └── Makefile / CMakeLists.txt     # Sistema de compilación
