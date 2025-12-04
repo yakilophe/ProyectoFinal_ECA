@@ -1,0 +1,4 @@
+Hola, bienvenido este repositorio contiene una rama por cada tipo de algoritmo y cada rama contiene su carpeta de src donde se encuentras los programas implementados con c++, para
+hacer más dinámico se incluyo un tablero de scrumm interactivo y una página donde se puede visualizar el funcionamiento de la mayoría de los algoritmos en js, html y css.
+La documentación ya esta implementada principalmente para ver el big O de los programas, por último cada rama tiene un readme.md para explicar de que trata este
+tipo de algoritmo.
