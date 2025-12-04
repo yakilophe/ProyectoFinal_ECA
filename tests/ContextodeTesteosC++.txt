@@ -1,4 +1,4 @@
-En esta carpeta se pueden ver todas las capturas de testeo que se hicieron, hicimos algunas con CMake, pero resultó mas favorecedor hacerlo de esta forma a través de compiladores de c++ con grafos definidos.
+Hay una rama llamada testeo-interfaz web donde se pueden ver todas las capturas de testeo que se hicieron, hicimos algunas con CMake, pero resultó mas favorecedor hacerlo de esta forma a través de compiladores de c++ con grafos definidos.
 Los grafos que se usaron fueron 4, como se pide el proyecto:
 grafo no dirigido y no ponderado
 5 nodos
@@ -51,3 +51,4 @@ conexiones	peso
 3-2		15
 3-1		9
 4-0		6
+
